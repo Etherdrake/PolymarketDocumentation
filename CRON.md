@@ -1,118 +1,69 @@
-# Polymarket Documentation - Daily Sync Cron Job
+# Polymarket Documentation - Daily Update Instructions for AI Agent
 
-## Overview
-This cron job checks for updates to the Polymarket documentation and pushes any changes to the GitHub repository daily.
+## Mission
+Your task is to check for updates to the Polymarket documentation and push any changes to the GitHub repository daily.
 
-## Schedule
-- **Time:** Every day at 06:00 UTC (adjust to your preference)
-- **Frequency:** Daily
+## What You Are
+You are an AI assistant responsible for keeping the Polymarket documentation synchronized with the official docs.polymarket.com website.
 
-## Instructions
+## When to Run
+Execute this task once per day. Choose a consistent time (e.g., early morning your time).
 
-### 1. Check for Updates
-```bash
-# Navigate to the repository
-cd /home/himalaya/clawd/PolymarketDocumentation
+## Step-by-Step Instructions
 
-# Fetch latest from remote
-git fetch origin
-
-# Check for changes
-git status
-
-# If there are changes in TARGET.md, re-run the scrape
-if [ -n "$(git diff origin/main -- TARGET.md)" ]; then
-    echo "TARGET.md changed - re-scraping..."
-    ./scrape.sh
-fi
+### Step 1: Navigate to the Repository
+Go to the PolymarketDocumentation folder:
+```
+/home/himalaya/clawd/PolymarketDocumentation
 ```
 
-### 2. Add and Commit Changes
-```bash
-# Add all new/modified files
-git add -A
+### Step 2: Check if TARGET.md Has New URLs
+Read the TARGET.md file and check if any new URLs have been added compared to what's already been scraped. The file contains a list of documentation URLs that need to be fetched.
 
-# Check if there are changes to commit
-if [ -n "$(git status --porcelain)" ]; then
-    git commit -m "Update Polymarket documentation - $(date -u +%Y-%m-%d)"
-else
-    echo "No changes to commit"
-    exit 0
-fi
+### Step 3: Scrape New or Updated Pages
+For each URL in TARGET.md that doesn't already have a corresponding file in the docs/ folder, or if you suspect the official docs have been updated:
+
+1. Use the web_fetch tool or curl to fetch each URL
+2. Save the content as a .md file in the appropriate docs/ subfolder
+3. Match the folder structure to the URL path (e.g., `/quickstart/overview.md` goes in `docs/quickstart/`)
+
+### Step 4: Check for Changes
+Run `git status` to see what files have been added or modified.
+
+### Step 5: Commit Changes
+If there are new or updated files:
+1. Add all changes: `git add -A`
+2. Commit with a message that includes today's date, for example: "Update Polymarket documentation - 2026-02-14"
+3. Use `git commit` to save the changes locally
+
+### Step 6: Push to GitHub
+After committing, push the changes to the remote repository:
 ```
-
-### 3. Push Changes
-```bash
 git push origin main
 ```
 
-## Complete Cron Script
+### Step 7: Report
+Tell the user what was done:
+- How many new files were added
+- Which sections were updated
+- Confirm the push was successful
 
-Save this as `daily-sync.sh` and run via cron:
+## Important Notes
 
-```bash
-#!/bin/bash
-# Polymarket Documentation Daily Sync
-# Runs daily to check for doc updates and push changes
+- Only commit and push if there are actual changes
+- If TARGET.md hasn't changed and all docs are already scraped, simply report "No updates needed today"
+- Keep the folder structure organized - match the URL paths
+- The repository is at: https://github.com/Etherdrake/PolymarketDocumentation
 
-set -e
+## Example Output
 
-REPO_DIR="/home/himalaya/clawd/PolymarketDocumentation"
-cd "$REPO_DIR"
+When you complete this task, say something like:
 
-echo "=== $(date -u) Starting daily sync ==="
+"Checked Polymarket documentation. No new URLs in TARGET.md and all 117 files already present. No update needed today."
 
-# Fetch latest
-git fetch origin
+OR:
 
-# Check if TARGET.md changed
-if ! git diff --quiet origin/main -- TARGET.md; then
-    echo "TARGET.md changed - re-scraping..."
-    ./scrape.sh
-fi
+"Updated Polymarket documentation: Added 3 new API reference files (get-market-price, get-order-book, list-events). Pushed to GitHub successfully."
 
-# Stage all changes
-git add -A
-
-# Check if there are changes to commit
-if [ -n "$(git status --porcelain)" ]; then
-    echo "Committing changes..."
-    git commit -m "Update Polymarket documentation - $(date -u +%Y-%m-%d)"
-    
-    echo "Pushing to GitHub..."
-    git push origin main
-    
-    echo "=== Sync complete ==="
-else
-    echo "No changes to commit"
-fi
-```
-
-## Cron Setup
-
-Add to crontab:
-```bash
-# Daily at 06:00 UTC
-0 6 * * * /home/himalaya/clawd/PolymarketDocumentation/daily-sync.sh >> /home/himalaya/clawd/PolymarketDocumentation/sync.log 2>&1
-```
-
-Or use OpenClaw cron:
-```bash
-openclaw cron add --schedule "0 6 * * *" --payload "systemEvent" --text "Run Polymarket docs daily sync" --sessionTarget "main"
-```
-
-## Log File
-Logs are written to: `sync.log`
-
-## Manual Run
-To run manually:
-```bash
-cd /home/himalaya/clawd/PolymarketDocumentation
-./daily-sync.sh
-```
-
-## Notes
-- The scrape script fetches all URLs listed in TARGET.md
-- Only commits if there are actual changes
-- Skips commit if docs haven't changed
-- Safe to run multiple times per day if needed
+## Manual Trigger
+If the user asks you to check for updates, run through these steps immediately rather than waiting for your daily schedule.
