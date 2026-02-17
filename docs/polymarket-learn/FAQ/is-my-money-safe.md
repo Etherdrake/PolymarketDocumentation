@@ -1,8 +1,12 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Is My Money Safe?
 
 > Yes. Polymarket is non-custodial, so you're in control of your funds.
 
-#### Non-custodial, you're in control
+#### Non-custodial, you’re in control
 
 Polymarket recognizes the importance of a trustworthy environment for managing your funds. To ensure this, Polymarket uses non-custodial wallets, meaning we never take possession of your USDC. This approach gives you full control over your assets, providing protection against potential security threats like hacks, misuse, and unauthorized transactions.
 
