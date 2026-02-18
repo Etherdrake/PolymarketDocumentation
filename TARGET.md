@@ -186,3 +186,58 @@ https://docs.polymarket.com/developers/proxy-wallet.md
 
 ## Negative Risk
 https://docs.polymarket.com/developers/neg-risk/overview.md
+
+## Changelog
+https://docs.polymarket.com/changelog/changelog.md
+
+## Polymarket Learn - FAQ
+https://docs.polymarket.com/polymarket-learn/FAQ/does-polymarket-have-an-api.md
+https://docs.polymarket.com/polymarket-learn/FAQ/embeds.md
+https://docs.polymarket.com/polymarket-learn/FAQ/geoblocking.md
+https://docs.polymarket.com/polymarket-learn/FAQ/how-to-export-private-key.md
+https://docs.polymarket.com/polymarket-learn/FAQ/is-my-money-safe.md
+https://docs.polymarket.com/polymarket-learn/FAQ/is-polymarket-the-house.md
+https://docs.polymarket.com/polymarket-learn/FAQ/polling.md
+https://docs.polymarket.com/polymarket-learn/FAQ/recover-missing-deposit.md
+https://docs.polymarket.com/polymarket-learn/FAQ/sell-early.md
+https://docs.polymarket.com/polymarket-learn/FAQ/support.md
+https://docs.polymarket.com/polymarket-learn/FAQ/wen-token.md
+https://docs.polymarket.com/polymarket-learn/FAQ/what-are-prediction-markets.md
+https://docs.polymarket.com/polymarket-learn/FAQ/why-do-i-need-crypto.md
+
+## Polymarket Learn - Deposits
+https://docs.polymarket.com/polymarket-learn/deposits/coinbase.md
+https://docs.polymarket.com/polymarket-learn/deposits/how-to-withdraw.md
+https://docs.polymarket.com/polymarket-learn/deposits/large-cross-chain-deposits.md
+https://docs.polymarket.com/polymarket-learn/deposits/moonpay.md
+https://docs.polymarket.com/polymarket-learn/deposits/supported-tokens.md
+https://docs.polymarket.com/polymarket-learn/deposits/usdc-on-eth.md
+
+## Polymarket Learn - Get Started
+https://docs.polymarket.com/polymarket-learn/get-started/how-to-deposit.md
+https://docs.polymarket.com/polymarket-learn/get-started/how-to-signup.md
+https://docs.polymarket.com/polymarket-learn/get-started/making-your-first-trade.md
+https://docs.polymarket.com/polymarket-learn/get-started/what-is-polymarket.md
+
+## Polymarket Learn - Markets
+https://docs.polymarket.com/polymarket-learn/markets/dispute.md
+https://docs.polymarket.com/polymarket-learn/markets/how-are-markets-clarified.md
+https://docs.polymarket.com/polymarket-learn/markets/how-are-markets-created.md
+https://docs.polymarket.com/polymarket-learn/markets/how-are-markets-resolved.md
+
+## Polymarket Learn - Trading
+https://docs.polymarket.com/polymarket-learn/trading/fees.md
+https://docs.polymarket.com/polymarket-learn/trading/holding-rewards.md
+https://docs.polymarket.com/polymarket-learn/trading/how-are-prices-calculated.md
+https://docs.polymarket.com/polymarket-learn/trading/limit-orders.md
+https://docs.polymarket.com/polymarket-learn/trading/liquidity-rewards.md
+https://docs.polymarket.com/polymarket-learn/trading/maker-rebates-program.md
+https://docs.polymarket.com/polymarket-learn/trading/market-orders.md
+https://docs.polymarket.com/polymarket-learn/trading/no-limits.md
+https://docs.polymarket.com/polymarket-learn/trading/using-the-orderbook.md
+
+## Missing from API Reference - Core
+https://docs.polymarket.com/api-reference/core/get-positions-for-a-market.md
+
+## Missing from Builders
+https://docs.polymarket.com/developers/builders/examples.md

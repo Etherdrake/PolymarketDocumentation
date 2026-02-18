@@ -6,7 +6,7 @@
 
 > Technical guide for handling taker fees and earning maker rebates on Polymarket
 
-Polymarket has enabled taker fees on **15-minute crypto markets**, **NCAAB (college basketball)**, and **Serie A** markets.
+Polymarket has enabled taker fees on **15-minute crypto markets**, **5-minute crypto markets**, **NCAAB (college basketball)**, and **Serie A** markets.
 These fees fund a Maker Rebates program that pays daily USDC rebates to liquidity providers.
 
 <Note>
@@ -112,21 +112,21 @@ fee = C × p × feeRate × (p × (1 - p))^exponent
 
 Where **C** = number of shares traded and **p** = price of the shares. The fee parameters differ by market type:
 
-| Parameter      | Sports (NCAAB, Serie A) | 15-Min Crypto |
-| -------------- | ----------------------- | ------------- |
-| Fee Rate       | 0.0175                  | 0.25          |
-| Exponent       | 1                       | 2             |
-| Maker Rebate % | 25%                     | 20%           |
+| Parameter      | Sports (NCAAB, Serie A) | 5-Min & 15-Min Crypto |
+| -------------- | ----------------------- | --------------------- |
+| Fee Rate       | 0.0175                  | 0.25                  |
+| Exponent       | 1                       | 2                     |
+| Maker Rebate % | 25%                     | 20%                   |
 
 Taker fees are calculated in USDC and vary based on the share price. However, fees are collected in shares on buy orders and USDC on sell orders.
 The effective rate **peaks at 50%** probability and decreases symmetrically toward the extremes.
 
-<img src="https://mintcdn.com/polymarket-292d1b1b/cYugaGfLiC5yQnD1/polymarket-learn/media/fee_image_review.png?fit=max&auto=format&n=cYugaGfLiC5yQnD1&q=85&s=302c97e82876eac5b1bdf962872d6316" alt="Fee Curves" data-og-width="1484" width="1484" data-og-height="882" height="882" data-path="polymarket-learn/media/fee_image_review.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/polymarket-292d1b1b/cYugaGfLiC5yQnD1/polymarket-learn/media/fee_image_review.png?w=280&fit=max&auto=format&n=cYugaGfLiC5yQnD1&q=85&s=5c5ea33f6718c77bc5501eec7d284c7d 280w, https://mintcdn.com/polymarket-292d1b1b/cYugaGfLiC5yQnD1/polymarket-learn/media/fee_image_review.png?w=560&fit=max&auto=format&n=cYugaGfLiC5yQnD1&q=85&s=11f68c179d0f5d8bb20303d3f1847d65 560w, https://mintcdn.com/polymarket-292d1b1b/cYugaGfLiC5yQnD1/polymarket-learn/media/fee_image_review.png?w=840&fit=max&auto=format&n=cYugaGfLiC5yQnD1&q=85&s=2c150cef5a9b1688ee542644bea4a8b5 840w, https://mintcdn.com/polymarket-292d1b1b/cYugaGfLiC5yQnD1/polymarket-learn/media/fee_image_review.png?w=1100&fit=max&auto=format&n=cYugaGfLiC5yQnD1&q=85&s=1a8df2065e4c3e2634c55cbf5eae23a4 1100w, https://mintcdn.com/polymarket-292d1b1b/cYugaGfLiC5yQnD1/polymarket-learn/media/fee_image_review.png?w=1650&fit=max&auto=format&n=cYugaGfLiC5yQnD1&q=85&s=c8c9a753e1c286ebdf03e3e395452cf1 1650w, https://mintcdn.com/polymarket-292d1b1b/cYugaGfLiC5yQnD1/polymarket-learn/media/fee_image_review.png?w=2500&fit=max&auto=format&n=cYugaGfLiC5yQnD1&q=85&s=51b816a9f19219f061e404f35a4d0e13 2500w" />
+<img src="https://mintcdn.com/polymarket-292d1b1b/12mKTb6PQ_jJnYbI/polymarket-learn/media/fee_image_review.png?fit=max&auto=format&n=12mKTb6PQ_jJnYbI&q=85&s=9e5b1d1a262fb6c787af5b6a0fa4d6c2" alt="Fee Curves" data-og-width="1484" width="1484" data-og-height="882" height="882" data-path="polymarket-learn/media/fee_image_review.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/polymarket-292d1b1b/12mKTb6PQ_jJnYbI/polymarket-learn/media/fee_image_review.png?w=280&fit=max&auto=format&n=12mKTb6PQ_jJnYbI&q=85&s=111b6dc97e2b301501c02e2df5e3df35 280w, https://mintcdn.com/polymarket-292d1b1b/12mKTb6PQ_jJnYbI/polymarket-learn/media/fee_image_review.png?w=560&fit=max&auto=format&n=12mKTb6PQ_jJnYbI&q=85&s=063f99ef8ec728e399a7cd0b27e704a0 560w, https://mintcdn.com/polymarket-292d1b1b/12mKTb6PQ_jJnYbI/polymarket-learn/media/fee_image_review.png?w=840&fit=max&auto=format&n=12mKTb6PQ_jJnYbI&q=85&s=c7d74e4ca10bd953f1f08a9851017f3c 840w, https://mintcdn.com/polymarket-292d1b1b/12mKTb6PQ_jJnYbI/polymarket-learn/media/fee_image_review.png?w=1100&fit=max&auto=format&n=12mKTb6PQ_jJnYbI&q=85&s=bc3dbf551ae32d6c4e7d85558831fb1f 1100w, https://mintcdn.com/polymarket-292d1b1b/12mKTb6PQ_jJnYbI/polymarket-learn/media/fee_image_review.png?w=1650&fit=max&auto=format&n=12mKTb6PQ_jJnYbI&q=85&s=d082a6e2029bc3f4797d758d689e2c37 1650w, https://mintcdn.com/polymarket-292d1b1b/12mKTb6PQ_jJnYbI/polymarket-learn/media/fee_image_review.png?w=2500&fit=max&auto=format&n=12mKTb6PQ_jJnYbI&q=85&s=417d0c9a66a64d31588d15c908cebf39 2500w" />
 
 ### Fee Table (100 shares)
 
 <Tabs>
-  <Tab title="15-Min Crypto">
+  <Tab title="5-Min & 15-Min Crypto">
     | Price  | Trade Value | Fee (USDC) | Effective Rate |
     | ------ | ----------- | ---------- | -------------- |
     | \$0.01 | \$1         | \$0.00     | 0.00%          |
@@ -208,6 +208,7 @@ Each market's rebate pool is funded by taker fees collected in that market. The 
 | Market Type             | Period        | Maker Rebate | Distribution Method |
 | ----------------------- | ------------- | ------------ | ------------------- |
 | 15-Min Crypto           | Jan 19, 2026+ | 20%          | Fee-curve weighted  |
+| 5-Min Crypto            | Feb 12, 2026+ | 20%          | Fee-curve weighted  |
 | Sports (NCAAB, Serie A) | Feb 18, 2026+ | 25%          | Fee-curve weighted  |
 
 The rebate percentage is at the sole discretion of Polymarket and may change over time.
@@ -219,6 +220,7 @@ The rebate percentage is at the sole discretion of Polymarket and may change ove
 The following market types have fees enabled:
 
 * **15-minute crypto markets**
+* **5-minute crypto markets**
 * **NCAAB (college basketball) markets** (starting February 18, 2026 for new markets)
 * **Serie A markets** (starting February 18, 2026 for new markets)
 
