@@ -2,69 +2,91 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Blockchain Data Resources
+# Contract Addresses
 
-> Access Polymarket on-chain activity for data & analytics
+> All Polymarket smart contract addresses on Polygon
 
-Polymarket data that lands on the blockchain, such as trades, balances, positions, and redeems, is available through various on-chain analytics platforms and blockchain data providers. Polymarket also provides its own APIs and WebSockets. See the [API Endpoints reference](/quickstart/reference/endpoints) for more information.
-
-The purpose of this page is to serve as a public good for Polymarket builders, researches, and analysts alike.
+All Polymarket contracts are deployed on **Polygon mainnet** (Chain ID: 137). This is the single source of truth for all contract addresses used across the platform.
 
 ***
 
-## Data
+## Core Trading Contracts
 
-### Goldsky
+| Contract                 | Address                                                                                                                    | Description                                                               |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| CTF Exchange             | [`0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E`](https://polygonscan.com/address/0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E) | Standard market order matching and settlement                             |
+| Neg Risk CTF Exchange    | [`0xC5d563A36AE78145C45a50134d48A1215220f80a`](https://polygonscan.com/address/0xC5d563A36AE78145C45a50134d48A1215220f80a) | Order matching for [neg risk](/advanced/neg-risk) (multi-outcome) markets |
+| Neg Risk Adapter         | [`0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296`](https://polygonscan.com/address/0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296) | Converts No tokens between outcomes in neg risk markets                   |
+| Conditional Tokens (CTF) | [`0x4D97DCd97eC945f40cF65F87097ACe5EA0476045`](https://polygonscan.com/address/0x4D97DCd97eC945f40cF65F87097ACe5EA0476045) | ERC1155 token storage — split, merge, and redeem operations               |
 
-[Goldsky](https://docs.goldsky.com/chains/polymarket) provides real-time streaming pipelines for Polymarket on-chain activity (i.e. trades, balances, positions, etc...) into your own database/data warehouse.
+***
 
-Goldsky also partnered with [ClickHouse](https://clickhouse.com) to create [CryptoHouse](https://crypto.clickhouse.com), where you can query Polymarket on-chain data using SQL.
+## Token Contracts
 
-### Dune
+| Contract              | Address                                                                                                                    | Description                                                   |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| USDC.e (Bridged USDC) | [`0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174`](https://polygonscan.com/address/0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174) | Collateral token used for all Polymarket trading (6 decimals) |
 
-[Dune](https://dune.com) is a blockchain analytics platform that has Polymarket on-chain activity (i.e. trades, balances, positions, etc...). Query Polymarket data using SQL, create custom dashboards, and more.
+***
 
-Here are a few simple queries to get started:
+## Wallet Factory Contracts
 
-| Query         | Description                                   | Link                                                |
-| ------------- | --------------------------------------------- | --------------------------------------------------- |
-| Volume        | Notional Volume and Maker & Taker USDC Volume | [View Dune Query](https://dune.com/queries/6545441) |
-| TVL           | USDC locked in Polymarket smart contracts     | [View Dune Query](https://dune.com/queries/6588784) |
-| Open Interest | Estimated market open interest, and over time | [View Dune Query](https://dune.com/queries/6555478) |
+| Contract                 | Address                                                                                                                    | Description           |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| Gnosis Safe Factory      | [`0xaacfeea03eb1561c4e67d661e40682bd20e3541b`](https://polygonscan.com/address/0xaacfeea03eb1561c4e67d661e40682bd20e3541b) | Deploys Safe wallets  |
+| Polymarket Proxy Factory | [`0xaB45c5A4B0c941a2F231C04C3f49182e1A254052`](https://polygonscan.com/address/0xaB45c5A4B0c941a2F231C04C3f49182e1A254052) | Deploys proxy wallets |
 
-### Allium
+***
 
-[Allium](https://docs.allium.so/historical-data/predictions) is a blockchain analytics platform that has Polymarket on-chain activity (i.e. trades, balances, positions, etc...). Query Polymarket data using SQL, create custom dashboards, and more.
+## Resolution Contracts
 
-\--
+| Contract              | Address                                                                                                                    | Description                                                |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| UMA Adapter           | [`0x6A9D222616C90FcA5754cd1333cFD9b7fb6a4F74`](https://polygonscan.com/address/0x6A9D222616C90FcA5754cd1333cFD9b7fb6a4F74) | Adapter connecting Polymarket to the UMA Optimistic Oracle |
+| UMA Optimistic Oracle | [`0xCB1822859cEF82Cd2Eb4E6276C7916e692995130`](https://polygonscan.com/address/0xCB1822859cEF82Cd2Eb4E6276C7916e692995130) | Handles market resolution proposals and disputes           |
 
-## Dashboards
+***
 
-Third-party blockchain analytics platforms that aggregate and visualize Polymarket data:
+## Liquidity
 
-<CardGroup cols={4}>
-  <Card title="Blockworks" img="https://pbs.twimg.com/profile_images/1651677302634483712/7s2FxV2K_400x400.jpg" href="https://blockworks.com/analytics/polymarket" />
+| Contract                    | Address                                                                                                                    | Description                                          |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Uniswap v3 USDC.e/USDC Pool | [`0xd36ec33c8bed5a9f7b6630855f1533455b98a418`](https://polygonscan.com/address/0xd36ec33c8bed5a9f7b6630855f1533455b98a418) | Used for USDC.e ↔ USDC conversion during withdrawals |
 
-  <Card title="Artemis" img="https://pbs.twimg.com/profile_images/1896982195723546624/2XeO9mPb_400x400.png" href="https://app.artemisanalytics.com/asset/polymarket?from=assets" />
+***
 
-  <Card title="Dune" img="https://pbs.twimg.com/profile_images/1986458079248986112/qq80s3hx_400x400.jpg" href="https://dune.com/discover/content/popular?q=polymarket&resource-type=dashboards" />
+## Source Code
 
-  <Card title="DeFiLlama" img="https://pbs.twimg.com/profile_images/1915756547705036800/rAeLzZqs_400x400.jpg" href="https://defillama.com/protocol/polymarket" />
+<CardGroup cols={2}>
+  <Card title="CTF Exchange" icon="github" href="https://github.com/Polymarket/ctf-exchange">
+    Order matching and settlement contracts
+  </Card>
 
-  <Card title="The Block" img="https://pbs.twimg.com/profile_images/1944749695525425152/9babG7Df_400x400.jpg" href="https://www.theblock.co/data/decentralized-finance/prediction-markets-and-betting" />
-
-  <Card title="Token Terminal" img="https://pbs.twimg.com/profile_images/1594678659222306817/SMum_RcQ_400x400.jpg" href="https://tokenterminal.com/explorer/projects/polymarket" />
-
-  <Card title="Allium" img="https://pbs.twimg.com/profile_images/1778926940407132160/UEwR3lHt_400x400.jpg" href="https://predictions.allium.so" />
+  <Card title="Conditional Tokens" icon="github" href="https://github.com/gnosis/conditional-tokens-contracts">
+    Gnosis Conditional Token Framework (ERC1155)
+  </Card>
 </CardGroup>
 
-### Community Dashboards
+***
 
-Community-created Dune dashboards of Polymarket on-chain analytics:
+## Usage in Code
 
-| Dashboard                                         | Created By                                      | Link                                                                         |
-| ------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------- |
-| Polymarket Overview                               | [@datadashboards](https://x.com/datadashboards) | [View Dashboard](https://dune.com/datadashboards/polymarket-overview)        |
-| Polymarket Volume, OI, Markets, Addresses and TVL | [@hildobby](https://x.com/hildobby)             | [View Dashboard](https://dune.com/hildobby/polymarket)                       |
-| Polymarket Historical Accuracy                    | [@alexmccullaaa](https://x.com/alexmccullaaa)   | [View Dashboard](https://dune.com/alexmccullough/how-accurate-is-polymarket) |
-| Polymarket Builders Dashboard                     | [@defioasis](https://x.com/defioasis)           | [View Dashboard](https://dune.com/gateresearch/pmbuilders)                   |
+<CodeGroup>
+  ```typescript TypeScript theme={null}
+  const ADDRESSES = {
+    USDC_E: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    CTF: "0x4D97DCd97eC945f40cF65F87097ACe5EA0476045",
+    CTF_EXCHANGE: "0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E",
+    NEG_RISK_CTF_EXCHANGE: "0xC5d563A36AE78145C45a50134d48A1215220f80a",
+  };
+  ```
+
+  ```python Python theme={null}
+  ADDRESSES = {
+      "USDC_E": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+      "CTF": "0x4D97DCd97eC945f40cF65F87097ACe5EA0476045",
+      "CTF_EXCHANGE": "0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E",
+      "NEG_RISK_CTF_EXCHANGE": "0xC5d563A36AE78145C45a50134d48A1215220f80a",
+  }
+  ```
+</CodeGroup>

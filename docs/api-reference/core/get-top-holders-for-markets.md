@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-reference/data-api-openapi.yaml get /holders
+````yaml api-spec/data-openapi.yaml get /holders
 openapi: 3.0.3
 info:
   title: Polymarket Data API

@@ -4,13 +4,11 @@
 
 # Get sports metadata information
 
-> Retrieves metadata for various sports including images, resolution sources, ordering preferences, tags, and series information. This endpoint provides comprehensive sport configuration data used throughout the platform.
-
 
 
 ## OpenAPI
 
-````yaml api-reference/gamma-openapi.json get /sports
+````yaml api-spec/gamma-openapi.yaml get /sports
 openapi: 3.0.3
 info:
   title: Markets API
@@ -45,11 +43,6 @@ paths:
       tags:
         - Sports
       summary: Get sports metadata information
-      description: >-
-        Retrieves metadata for various sports including images, resolution
-        sources, ordering preferences, tags, and series information. This
-        endpoint provides comprehensive sport configuration data used throughout
-        the platform.
       operationId: getSportsMetadata
       responses:
         '200':

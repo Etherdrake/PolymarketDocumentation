@@ -2,65 +2,214 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Overview
+# Sports WebSocket
 
-> Real-time sports results via WebSocket
+> Live sports scores and game state
 
-The Polymarket Sports WebSocket API provides real-time sports results updates. Clients connect to receive live match data including scores, periods, and game status as events happen.
+The Sports WebSocket provides real-time sports results updates, including scores, periods, and game status. No authentication required.
 
-**Endpoint:**
+## Endpoint
 
 ```
 wss://sports-api.polymarket.com/ws
 ```
 
-<Note>
-  No authentication is required. This is a public broadcast channel that streams updates for all active sports events.
-</Note>
+No subscription message required — connect and start receiving data for all active sports events.
 
-## How It Works
+## Heartbeat
 
-Once connected, clients automatically receive JSON messages whenever a sports event updates. There is no subscription message required—simply connect and start receiving data.
+The server sends `ping` every 5 seconds. Respond with `pong` within 10 seconds or the connection will close.
 
-***
+```javascript  theme={null}
+ws.onmessage = (event) => {
+  if (event.data === "ping") {
+    ws.send("pong");
+    return;
+  }
 
-## Connection Management
+  // Handle JSON messages...
+};
+```
 
-### Automatic Ping/Pong Heartbeat
+## Message Type
 
-The server sends PING messages at regular intervals. Clients **must** respond with PONG to maintain the connection.
+Each message is a JSON object with game state fields.
 
-| Parameter     | Default    | Description                                   |
-| ------------- | ---------- | --------------------------------------------- |
-| PING Interval | 5 seconds  | How often the server sends PING messages      |
-| PONG Timeout  | 10 seconds | How long the server waits for a PONG response |
+### sport\_result
 
-<Warning>
-  If your client doesn't respond to PING within 10 seconds, the connection will be closed automatically.
-</Warning>
+Emitted when:
 
-### Connection Health
+* A match goes live
+* The score changes
+* The period changes (e.g., halftime, overtime)
+* A match ends
+* Possession changes (NFL and CFB only)
 
-* Server sends `PING` → Client must respond with `PONG`
-* No response within timeout → Connection terminated
-* Clients should implement automatic reconnection with exponential backoff
+**NFL (in progress):**
 
-***
+```json  theme={null}
+{
+  "gameId": 19439,
+  "leagueAbbreviation": "nfl",
+  "slug": "nfl-lac-buf-2025-01-26",
+  "homeTeam": "LAC",
+  "awayTeam": "BUF",
+  "status": "InProgress",
+  "score": "3-16",
+  "period": "Q4",
+  "elapsed": "5:18",
+  "live": true,
+  "ended": false,
+  "turn": "lac"
+}
+```
 
-## Session Affinity
+**Esports — CS2 (finished):**
 
-The server uses cookie-based session affinity (`sports-results` cookie) to ensure clients maintain connection to the same backend instance. This is handled automatically by the browser.
+```json  theme={null}
+{
+  "gameId": 1317359,
+  "leagueAbbreviation": "cs2",
+  "slug": "cs2-arcred-the-glecs-2025-07-20",
+  "homeTeam": "ARCRED",
+  "awayTeam": "The glecs",
+  "status": "finished",
+  "score": "000-000|2-0|Bo3",
+  "period": "2/3",
+  "live": false,
+  "ended": true,
+  "finished_timestamp": "2025-07-20T18:30:00.000Z"
+}
+```
 
-***
+The `finished_timestamp` field is an ISO 8601 timestamp only present when `ended: true`.
 
-## Next Steps
+The `slug` field follows the format `{league}-{team1}-{team2}-{date}` (e.g., `nfl-buf-kc-2025-01-26`).
 
-<CardGroup cols={2}>
-  <Card title="Message Format" icon="brackets-curly" href="/developers/sports-websocket/message-format">
-    Understand the structure of sports update messages
-  </Card>
+## Period Values
 
-  <Card title="Quickstart" icon="code" href="/developers/sports-websocket/quickstart">
-    Implementation examples in JavaScript and TypeScript
-  </Card>
-</CardGroup>
+| Period                 | Description                             |
+| ---------------------- | --------------------------------------- |
+| `1H`                   | First half                              |
+| `2H`                   | Second half                             |
+| `1Q`, `2Q`, `3Q`, `4Q` | Quarters (NFL, NBA)                     |
+| `HT`                   | Halftime                                |
+| `FT`                   | Full time (match ended in regulation)   |
+| `FT OT`                | Full time with overtime                 |
+| `FT NR`                | Full time, no result (draw or canceled) |
+| `End 1`, `End 2`, ...  | End of inning (MLB)                     |
+| `1/3`, `2/3`, `3/3`    | Map number in Bo3 series (Esports)      |
+| `1/5`, `2/5`, ...      | Map number in Bo5 series (Esports)      |
+
+## Game Status Values
+
+Game status values vary by sport:
+
+### NFL
+
+| Status         | Description                  |
+| -------------- | ---------------------------- |
+| `Scheduled`    | Game not yet started         |
+| `InProgress`   | Game currently playing       |
+| `Final`        | Game completed in regulation |
+| `F/OT`         | Final after overtime         |
+| `Suspended`    | Game suspended               |
+| `Postponed`    | Game postponed               |
+| `Delayed`      | Game delayed                 |
+| `Canceled`     | Game canceled                |
+| `Forfeit`      | Game forfeited               |
+| `NotNecessary` | Scheduled, but not needed    |
+
+### NHL
+
+| Status         | Description                  |
+| -------------- | ---------------------------- |
+| `Scheduled`    | Game not yet started         |
+| `InProgress`   | Game currently playing       |
+| `Final`        | Game completed in regulation |
+| `F/OT`         | Final after overtime         |
+| `F/SO`         | Final after shootout         |
+| `Suspended`    | Game suspended               |
+| `Postponed`    | Game postponed               |
+| `Delayed`      | Game delayed                 |
+| `Canceled`     | Game canceled                |
+| `Forfeit`      | Game forfeited               |
+| `NotNecessary` | Scheduled, but not needed    |
+
+### MLB
+
+| Status         | Description               |
+| -------------- | ------------------------- |
+| `Scheduled`    | Game not yet started      |
+| `InProgress`   | Game currently playing    |
+| `Final`        | Game completed            |
+| `Suspended`    | Game suspended            |
+| `Delayed`      | Game delayed              |
+| `Postponed`    | Game postponed            |
+| `Canceled`     | Game canceled             |
+| `Forfeit`      | Game forfeited            |
+| `NotNecessary` | Scheduled, but not needed |
+
+### NBA / CBB
+
+| Status         | Description               |
+| -------------- | ------------------------- |
+| `Scheduled`    | Game not yet started      |
+| `InProgress`   | Game currently playing    |
+| `Final`        | Game completed            |
+| `F/OT`         | Final after overtime      |
+| `Suspended`    | Game suspended            |
+| `Postponed`    | Game postponed            |
+| `Delayed`      | Game delayed              |
+| `Canceled`     | Game canceled             |
+| `Forfeit`      | Game forfeited            |
+| `NotNecessary` | Scheduled, but not needed |
+
+### CFB
+
+| Status       | Description            |
+| ------------ | ---------------------- |
+| `Scheduled`  | Game not yet started   |
+| `InProgress` | Game currently playing |
+| `Final`      | Game completed         |
+| `F/OT`       | Final after overtime   |
+| `Suspended`  | Game suspended         |
+| `Postponed`  | Game postponed         |
+| `Delayed`    | Game delayed           |
+| `Canceled`   | Game canceled          |
+| `Forfeit`    | Game forfeited         |
+
+### Soccer
+
+| Status            | Description                          |
+| ----------------- | ------------------------------------ |
+| `Scheduled`       | Game not yet started                 |
+| `InProgress`      | Game currently playing               |
+| `Break`           | Halftime or other break              |
+| `Suspended`       | Game suspended                       |
+| `PenaltyShootout` | Penalty shootout in progress         |
+| `Final`           | Game completed                       |
+| `Awarded`         | Result awarded due to ruling/forfeit |
+| `Postponed`       | Game postponed                       |
+| `Canceled`        | Game canceled                        |
+
+### Esports
+
+| Status        | Description             |
+| ------------- | ----------------------- |
+| `not_started` | Match not yet started   |
+| `running`     | Match currently playing |
+| `finished`    | Match completed         |
+| `postponed`   | Match postponed         |
+| `canceled`    | Match canceled          |
+
+### Tennis
+
+| Status       | Description             |
+| ------------ | ----------------------- |
+| `scheduled`  | Match not yet started   |
+| `inprogress` | Match currently playing |
+| `suspended`  | Match suspended         |
+| `finished`   | Match completed         |
+| `postponed`  | Match postponed         |
+| `cancelled`  | Match canceled          |

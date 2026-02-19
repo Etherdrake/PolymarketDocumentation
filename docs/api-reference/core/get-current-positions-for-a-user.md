@@ -4,13 +4,11 @@
 
 # Get current positions for a user
 
-> Returns positions filtered by user and optional filters.
-
 
 
 ## OpenAPI
 
-````yaml api-reference/data-api-openapi.yaml get /positions
+````yaml api-spec/data-openapi.yaml get /positions
 openapi: 3.0.3
 info:
   title: Polymarket Data API
@@ -34,7 +32,6 @@ paths:
       tags:
         - Core
       summary: Get current positions for a user
-      description: Returns positions filtered by user and optional filters.
       parameters:
         - in: query
           name: user

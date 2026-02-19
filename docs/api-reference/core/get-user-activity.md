@@ -4,13 +4,11 @@
 
 # Get user activity
 
-> Returns on-chain activity for a user.
-
 
 
 ## OpenAPI
 
-````yaml api-reference/data-api-openapi.yaml get /activity
+````yaml api-spec/data-openapi.yaml get /activity
 openapi: 3.0.3
 info:
   title: Polymarket Data API
@@ -34,7 +32,6 @@ paths:
       tags:
         - Core
       summary: Get user activity
-      description: Returns on-chain activity for a user.
       parameters:
         - in: query
           name: limit

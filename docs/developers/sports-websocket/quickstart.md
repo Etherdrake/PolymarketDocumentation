@@ -2,11 +2,11 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Quickstart
+# Sports WebSocket
 
-> Connect to the Sports WebSocket and receive live updates
+> Live sports scores and game state
 
-Connect to the Sports WebSocket to receive real-time sports results. No authentication required—just connect and handle incoming messages.
+The Sports WebSocket provides real-time sports results updates, including scores, periods, and game status. No authentication required.
 
 ## Endpoint
 
@@ -14,244 +14,202 @@ Connect to the Sports WebSocket to receive real-time sports results. No authenti
 wss://sports-api.polymarket.com/ws
 ```
 
-***
+No subscription message required — connect and start receiving data for all active sports events.
 
-## JavaScript Example
+## Heartbeat
 
-<CodeGroup>
-  ```javascript JavaScript theme={null}
-  const ws = new WebSocket('wss://sports-api.polymarket.com/ws');
-
-  ws.onopen = () => {
-    console.log('Connected to Sports WebSocket');
-  };
-
-  ws.onmessage = (event) => {
-    // Respond to server PING
-    if (event.data === 'ping') {
-      ws.send('pong');
-      return;
-    }
-
-    // Parse and handle sports updates
-    const data = JSON.parse(event.data);
-    console.log('Update:', data.slug, data.score, data.period);
-  };
-
-  ws.onclose = () => {
-    console.log('Disconnected');
-    // Reconnect after 1 second
-    setTimeout(() => location.reload(), 1000);
-  };
-
-  ws.onerror = (error) => {
-    console.error('WebSocket error:', error);
-  };
-  ```
-
-  ```typescript React Hook theme={null}
-  import { useEffect, useRef, useState } from 'react';
-
-  interface SportsUpdate {
-    slug: string;
-    live: boolean;
-    ended: boolean;
-    score: string;
-    period: string;
-    elapsed: string;
-    last_update: string;
-    finished_timestamp?: string;
-    turn?: string;
-  }
-
-  export function useSportsWebSocket() {
-    const [updates, setUpdates] = useState<Map<string, SportsUpdate>>(new Map());
-    const wsRef = useRef<WebSocket | null>(null);
-
-    useEffect(() => {
-      const ws = new WebSocket('wss://sports-api.polymarket.com/ws');
-      wsRef.current = ws;
-
-      ws.onmessage = (event) => {
-        if (event.data === 'ping') {
-          ws.send('pong');
-          return;
-        }
-        const data: SportsUpdate = JSON.parse(event.data);
-        setUpdates(prev => new Map(prev).set(data.slug, data));
-      };
-
-      ws.onclose = () => setTimeout(() => location.reload(), 1000);
-
-      return () => ws.close();
-    }, []);
-
-    return Array.from(updates.values());
-  }
-  ```
-</CodeGroup>
-
-***
-
-## Critical: PING/PONG Handling
-
-The server sends PING messages every 5 seconds. Your client **must** respond with PONG to stay connected.
+The server sends `ping` every 5 seconds. Respond with `pong` within 10 seconds or the connection will close.
 
 ```javascript  theme={null}
-// CORRECT - Handle PING messages
 ws.onmessage = (event) => {
-  if (event.data === 'ping') {
-    ws.send('pong');  // Respond immediately
+  if (event.data === "ping") {
+    ws.send("pong");
     return;
   }
-  // Handle other messages...
-  const data = JSON.parse(event.data);
-  handleUpdate(data);
+
+  // Handle JSON messages...
 };
 ```
 
-```javascript  theme={null}
-// WRONG - Ignoring PING messages will disconnect you
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);  // Fails on "ping" string!
-  handleUpdate(data);
-};
-```
+## Message Type
 
-<Warning>
-  If you don't respond to PING within 10 seconds, your connection will be terminated.
-</Warning>
+Each message is a JSON object with game state fields.
 
-***
+### sport\_result
 
-## Connection State Management
+Emitted when:
 
-Always check connection state before sending:
+* A match goes live
+* The score changes
+* The period changes (e.g., halftime, overtime)
+* A match ends
+* Possession changes (NFL and CFB only)
 
-```javascript  theme={null}
-if (ws.readyState === WebSocket.OPEN) {
-  ws.send('pong');
-} else {
-  console.warn('WebSocket not connected');
+**NFL (in progress):**
+
+```json  theme={null}
+{
+  "gameId": 19439,
+  "leagueAbbreviation": "nfl",
+  "slug": "nfl-lac-buf-2025-01-26",
+  "homeTeam": "LAC",
+  "awayTeam": "BUF",
+  "status": "InProgress",
+  "score": "3-16",
+  "period": "Q4",
+  "elapsed": "5:18",
+  "live": true,
+  "ended": false,
+  "turn": "lac"
 }
 ```
 
-***
+**Esports — CS2 (finished):**
 
-## Browser Tab Visibility
-
-Connections may drop when browser tabs become inactive. Handle visibility changes:
-
-```javascript  theme={null}
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && ws.readyState !== WebSocket.OPEN) {
-    console.log('Tab became visible, reconnecting...');
-    connect();
-  }
-});
+```json  theme={null}
+{
+  "gameId": 1317359,
+  "leagueAbbreviation": "cs2",
+  "slug": "cs2-arcred-the-glecs-2025-07-20",
+  "homeTeam": "ARCRED",
+  "awayTeam": "The glecs",
+  "status": "finished",
+  "score": "000-000|2-0|Bo3",
+  "period": "2/3",
+  "live": false,
+  "ended": true,
+  "finished_timestamp": "2025-07-20T18:30:00.000Z"
+}
 ```
 
-***
+The `finished_timestamp` field is an ISO 8601 timestamp only present when `ended: true`.
 
-## Troubleshooting
+The `slug` field follows the format `{league}-{team1}-{team2}-{date}` (e.g., `nfl-buf-kc-2025-01-26`).
 
-<AccordionGroup>
-  <Accordion title="Connection drops after exactly 10 seconds">
-    Your PING/PONG handler isn't working correctly.
+## Period Values
 
-    **Check:**
+| Period                 | Description                             |
+| ---------------------- | --------------------------------------- |
+| `1H`                   | First half                              |
+| `2H`                   | Second half                             |
+| `1Q`, `2Q`, `3Q`, `4Q` | Quarters (NFL, NBA)                     |
+| `HT`                   | Halftime                                |
+| `FT`                   | Full time (match ended in regulation)   |
+| `FT OT`                | Full time with overtime                 |
+| `FT NR`                | Full time, no result (draw or canceled) |
+| `End 1`, `End 2`, ...  | End of inning (MLB)                     |
+| `1/3`, `2/3`, `3/3`    | Map number in Bo3 series (Esports)      |
+| `1/5`, `2/5`, ...      | Map number in Bo5 series (Esports)      |
 
-    * You're responding to `"ping"` string messages (not JSON)
-    * You're sending `"pong"` as a string response
-    * No errors are preventing the PONG from being sent
+## Game Status Values
 
-    ```javascript  theme={null}
-    // Debug PING/PONG handling
-    ws.onmessage = (event) => {
-      console.log('Received:', event.data);
-      if (event.data === 'ping') {
-        console.log('Sending PONG response');
-        ws.send('pong');
-        return;
-      }
-      // Handle JSON messages...
-    };
-    ```
-  </Accordion>
+Game status values vary by sport:
 
-  <Accordion title="Connection keeps dropping frequently">
-    This may be network instability or main thread blocking.
+### NFL
 
-    **Solutions:**
+| Status         | Description                  |
+| -------------- | ---------------------------- |
+| `Scheduled`    | Game not yet started         |
+| `InProgress`   | Game currently playing       |
+| `Final`        | Game completed in regulation |
+| `F/OT`         | Final after overtime         |
+| `Suspended`    | Game suspended               |
+| `Postponed`    | Game postponed               |
+| `Delayed`      | Game delayed                 |
+| `Canceled`     | Game canceled                |
+| `Forfeit`      | Game forfeited               |
+| `NotNecessary` | Scheduled, but not needed    |
 
-    * Implement exponential backoff for reconnection
-    * Ensure your message handler doesn't block the main thread
-    * Check network stability
+### NHL
 
-    ```javascript  theme={null}
-    handleReconnect() {
-      this.reconnectDelay = Math.min(this.reconnectDelay * 2, 30000);
-      setTimeout(() => this.connect(), this.reconnectDelay);
-    }
-    ```
-  </Accordion>
+| Status         | Description                  |
+| -------------- | ---------------------------- |
+| `Scheduled`    | Game not yet started         |
+| `InProgress`   | Game currently playing       |
+| `Final`        | Game completed in regulation |
+| `F/OT`         | Final after overtime         |
+| `F/SO`         | Final after shootout         |
+| `Suspended`    | Game suspended               |
+| `Postponed`    | Game postponed               |
+| `Delayed`      | Game delayed                 |
+| `Canceled`     | Game canceled                |
+| `Forfeit`      | Game forfeited               |
+| `NotNecessary` | Scheduled, but not needed    |
 
-  <Accordion title="Messages not updating UI">
-    Ensure you're updating state correctly based on the `slug` identifier.
+### MLB
 
-    ```javascript  theme={null}
-    // Use slug as unique key
-    setSportsData(prev => {
-      const index = prev.findIndex(item => item.slug === data.slug);
-      if (index >= 0) {
-        const updated = [...prev];
-        updated[index] = data;
-        return updated;
-      }
-      return [...prev, data];
-    });
-    ```
-  </Accordion>
+| Status         | Description               |
+| -------------- | ------------------------- |
+| `Scheduled`    | Game not yet started      |
+| `InProgress`   | Game currently playing    |
+| `Final`        | Game completed            |
+| `Suspended`    | Game suspended            |
+| `Delayed`      | Game delayed              |
+| `Postponed`    | Game postponed            |
+| `Canceled`     | Game canceled             |
+| `Forfeit`      | Game forfeited            |
+| `NotNecessary` | Scheduled, but not needed |
 
-  <Accordion title="Memory leaks with multiple connections">
-    Clean up properly when disconnecting:
+### NBA / CBB
 
-    ```javascript  theme={null}
-    const cleanup = () => {
-      if (reconnectTimeout) {
-        clearTimeout(reconnectTimeout);
-      }
-      if (ws) {
-        ws.close();
-        ws = null;
-      }
-    };
+| Status         | Description               |
+| -------------- | ------------------------- |
+| `Scheduled`    | Game not yet started      |
+| `InProgress`   | Game currently playing    |
+| `Final`        | Game completed            |
+| `F/OT`         | Final after overtime      |
+| `Suspended`    | Game suspended            |
+| `Postponed`    | Game postponed            |
+| `Delayed`      | Game delayed              |
+| `Canceled`     | Game canceled             |
+| `Forfeit`      | Game forfeited            |
+| `NotNecessary` | Scheduled, but not needed |
 
-    // React: cleanup in useEffect return
-    // Vanilla: call on page unload
-    window.addEventListener('beforeunload', cleanup);
-    ```
-  </Accordion>
-</AccordionGroup>
+### CFB
 
-***
+| Status       | Description            |
+| ------------ | ---------------------- |
+| `Scheduled`  | Game not yet started   |
+| `InProgress` | Game currently playing |
+| `Final`      | Game completed         |
+| `F/OT`       | Final after overtime   |
+| `Suspended`  | Game suspended         |
+| `Postponed`  | Game postponed         |
+| `Delayed`    | Game delayed           |
+| `Canceled`   | Game canceled          |
+| `Forfeit`    | Game forfeited         |
 
-## Debugging Tips
+### Soccer
 
-Enable verbose logging to diagnose connection issues:
+| Status            | Description                          |
+| ----------------- | ------------------------------------ |
+| `Scheduled`       | Game not yet started                 |
+| `InProgress`      | Game currently playing               |
+| `Break`           | Halftime or other break              |
+| `Suspended`       | Game suspended                       |
+| `PenaltyShootout` | Penalty shootout in progress         |
+| `Final`           | Game completed                       |
+| `Awarded`         | Result awarded due to ruling/forfeit |
+| `Postponed`       | Game postponed                       |
+| `Canceled`        | Game canceled                        |
 
-```javascript  theme={null}
-ws.onopen = () => console.log('[connected]');
-ws.onclose = (e) => console.log('[closed]', e.code, e.reason);
-ws.onerror = (e) => console.error('[error]', e);
-ws.onmessage = (e) => console.log('[message]', e.data);
-```
+### Esports
 
-Monitor connection state:
+| Status        | Description             |
+| ------------- | ----------------------- |
+| `not_started` | Match not yet started   |
+| `running`     | Match currently playing |
+| `finished`    | Match completed         |
+| `postponed`   | Match postponed         |
+| `canceled`    | Match canceled          |
 
-```javascript  theme={null}
-setInterval(() => {
-  const states = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
-  console.log('WebSocket state:', states[ws.readyState]);
-}, 5000);
-```
+### Tennis
+
+| Status       | Description             |
+| ------------ | ----------------------- |
+| `scheduled`  | Match not yet started   |
+| `inprogress` | Match currently playing |
+| `suspended`  | Match suspended         |
+| `finished`   | Match completed         |
+| `postponed`  | Match postponed         |
+| `cancelled`  | Match canceled          |

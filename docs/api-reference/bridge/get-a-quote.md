@@ -4,34 +4,16 @@
 
 # Get a quote
 
-> Get an estimated quote for a deposit or withdrawal, including output amounts, checkout time, and a detailed fee breakdown.
-
-**Use Cases:**
-- Preview fees and estimated output before executing a deposit or withdrawal
-- Compare costs across different token/chain combinations
-- Get the `quoteId` to reference this specific quote
-
-**Notes:**
-- Quotes are estimates and actual amounts may vary slightly due to market conditions
-- See `/supported-assets` for a list of all supported chains and tokens
-
-
 
 
 ## OpenAPI
 
-````yaml api-reference/bridge-api-openapi.yaml post /quote
+````yaml api-spec/bridge-openapi.yaml post /quote
 openapi: 3.0.3
 info:
   title: Polymarket Bridge API
   version: 1.0.0
-  description: >
-    HTTP API for Polymarket bridge and swap operations. 
-
-
-    Polymarket uses USDC.e (Bridged USDC) on Polygon as collateral for all
-    trading activities. This API enables users to bridge assets from various
-    chains and swap them to USDC.e on Polygon for seamless trading.
+  description: HTTP API for Polymarket bridge and swap operations.
 servers:
   - url: https://bridge.polymarket.com
     description: Polymarket Bridge API
@@ -45,27 +27,6 @@ paths:
       tags:
         - Bridge
       summary: Get a quote
-      description: >
-        Get an estimated quote for a deposit or withdrawal, including output
-        amounts, checkout time, and a detailed fee breakdown.
-
-
-        **Use Cases:**
-
-        - Preview fees and estimated output before executing a deposit or
-        withdrawal
-
-        - Compare costs across different token/chain combinations
-
-        - Get the `quoteId` to reference this specific quote
-
-
-        **Notes:**
-
-        - Quotes are estimates and actual amounts may vary slightly due to
-        market conditions
-
-        - See `/supported-assets` for a list of all supported chains and tokens
       requestBody:
         required: true
         content:

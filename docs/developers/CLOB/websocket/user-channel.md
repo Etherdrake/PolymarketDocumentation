@@ -4,54 +4,50 @@
 
 # User Channel
 
-Authenticated channel for updates related to user activities (orders, trades), filtered for authenticated user by apikey.
+> Authenticated order and trade updates
 
-**SUBSCRIBE**
+Authenticated channel for updates related to your orders and trades, filtered by API key.
 
-`<wss-channel> user`
+## Endpoint
 
-## Trade Message
+```
+wss://ws-subscriptions-clob.polymarket.com/ws/user
+```
+
+## Authentication
+
+Include API credentials in your subscription message:
+
+```json  theme={null}
+{
+  "auth": {
+    "apiKey": "your-api-key",
+    "secret": "your-api-secret",
+    "passphrase": "your-passphrase"
+  },
+  "markets": ["0x1234...condition_id"],
+  "type": "user"
+}
+```
+
+<Warning>
+  Never expose your API credentials in client-side code. Use the user channel
+  only from server environments.
+</Warning>
+
+## Message Types
+
+Each message includes a `type` field identifying the event.
+
+### trade
 
 Emitted when:
 
-* when a market order is matched ("MATCHED")
-* when a limit order for the user is included in a trade ("MATCHED")
-* subsequent status changes for trade ("MINED", "CONFIRMED", "RETRYING", "FAILED")
+* A market order is matched (`MATCHED`)
+* A limit order for the user is included in a trade (`MATCHED`)
+* Subsequent status changes for the trade (`MINED`, `CONFIRMED`, `RETRYING`, `FAILED`)
 
-### Structure
-
-| Name             | Type          | Description                                 |
-| ---------------- | ------------- | ------------------------------------------- |
-| asset\_id        | string        | asset id (token ID) of order (market order) |
-| event\_type      | string        | "trade"                                     |
-| id               | string        | trade id                                    |
-| last\_update     | string        | time of last update to trade                |
-| maker\_orders    | MakerOrder\[] | array of maker order details                |
-| market           | string        | market identifier (condition ID)            |
-| matchtime        | string        | time trade was matched                      |
-| outcome          | string        | outcome                                     |
-| owner            | string        | api key of event owner                      |
-| price            | string        | price                                       |
-| side             | string        | BUY/SELL                                    |
-| size             | string        | size                                        |
-| status           | string        | trade status                                |
-| taker\_order\_id | string        | id of taker order                           |
-| timestamp        | string        | time of event                               |
-| trade\_owner     | string        | api key of trade owner                      |
-| type             | string        | "TRADE"                                     |
-
-Where a `MakerOrder` object is of the form:
-
-| Name            | Type   | Description                            |
-| --------------- | ------ | -------------------------------------- |
-| asset\_id       | string | asset of the maker order               |
-| matched\_amount | string | amount of maker order matched in trade |
-| order\_id       | string | maker order ID                         |
-| outcome         | string | outcome                                |
-| owner           | string | owner of maker order                   |
-| price           | string | price of maker order                   |
-
-```json Response theme={null}
+```json  theme={null}
 {
   "asset_id": "52114319501245915516055106046884209969926127482827954674443846427813813222426",
   "event_type": "trade",
@@ -82,34 +78,33 @@ Where a `MakerOrder` object is of the form:
 }
 ```
 
-## Order Message
+#### Trade Statuses
+
+```
+MATCHED → MINED → CONFIRMED
+    ↓        ↑
+RETRYING ───┘
+    ↓
+  FAILED
+```
+
+| Status      | Terminal | Description                                                                                     |
+| ----------- | -------- | ----------------------------------------------------------------------------------------------- |
+| `MATCHED`   | No       | Trade has been matched and sent to the executor service by the operator                         |
+| `MINED`     | No       | Trade observed to be mined into the chain, no finality threshold established                    |
+| `CONFIRMED` | Yes      | Trade has achieved strong probabilistic finality and was successful                             |
+| `RETRYING`  | No       | Trade transaction has failed (revert or reorg) and is being retried/resubmitted by the operator |
+| `FAILED`    | Yes      | Trade has failed and is not being retried                                                       |
+
+### order
 
 Emitted when:
 
-* When an order is placed (PLACEMENT)
-* When an order is updated (some of it is matched) (UPDATE)
-* When an order is canceled (CANCELLATION)
+* An order is placed (`PLACEMENT`)
+* An order is updated — some of it is matched (`UPDATE`)
+* An order is cancelled (`CANCELLATION`)
 
-### Structure
-
-| Name              | Type      | Description                                                         |
-| ----------------- | --------- | ------------------------------------------------------------------- |
-| asset\_id         | string    | asset ID (token ID) of order                                        |
-| associate\_trades | string\[] | array of ids referencing trades that the order has been included in |
-| event\_type       | string    | "order"                                                             |
-| id                | string    | order id                                                            |
-| market            | string    | condition ID of market                                              |
-| order\_owner      | string    | owner of order                                                      |
-| original\_size    | string    | original order size                                                 |
-| outcome           | string    | outcome                                                             |
-| owner             | string    | owner of orders                                                     |
-| price             | string    | price of order                                                      |
-| side              | string    | BUY/SELL                                                            |
-| size\_matched     | string    | size of order that has been matched                                 |
-| timestamp         | string    | time of event                                                       |
-| type              | string    | PLACEMENT/UPDATE/CANCELLATION                                       |
-
-```json Response theme={null}
+```json  theme={null}
 {
   "asset_id": "52114319501245915516055106046884209969926127482827954674443846427813813222426",
   "associate_trades": null,

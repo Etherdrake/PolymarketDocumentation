@@ -4,13 +4,11 @@
 
 # Get aggregated builder leaderboard
 
-> Returns aggregated builder rankings with one entry per builder showing total for the specified time period. Supports pagination.
-
 
 
 ## OpenAPI
 
-````yaml api-reference/data-api-openapi.yaml get /v1/builders/leaderboard
+````yaml api-spec/data-openapi.yaml get /v1/builders/leaderboard
 openapi: 3.0.3
 info:
   title: Polymarket Data API
@@ -34,9 +32,6 @@ paths:
       tags:
         - Builders
       summary: Get aggregated builder leaderboard
-      description: >-
-        Returns aggregated builder rankings with one entry per builder showing
-        total for the specified time period. Supports pagination.
       parameters:
         - in: query
           name: timePeriod

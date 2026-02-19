@@ -2,95 +2,199 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Get Trades
+# Overview
 
-<Tip> This endpoint requires a L2 Header. </Tip>
+> Trading on the Polymarket CLOB
 
-Get trades for the authenticated user based on the provided filters.
+Polymarket's CLOB (Central Limit Order Book) is a hybrid-decentralized trading system — offchain order matching with onchain settlement via the [Exchange contract](https://github.com/Polymarket/ctf-exchange/tree/main/src) ([audited by Chainsecurity](https://github.com/Polymarket/ctf-exchange/blob/main/audit/ChainSecurity_Polymarket_Exchange_audit.pdf)). All trading is non-custodial. Orders are [EIP-712](https://eips.ethereum.org/EIPS/eip-712) signed messages, and matched trades settle atomically on Polygon. The operator cannot set prices or execute unauthorized trades — users can always cancel orders onchain independently.
 
-**HTTP REQUEST**
+We recommend using the open-source SDK clients, which handle order signing, authentication, and submission:
 
-`GET /<clob-endpoint>/data/trades`
+<CardGroup cols={2}>
+  <Card title="TypeScript Client" icon="github" href="https://github.com/Polymarket/clob-client">
+    <p className="font-mono text-[0.8rem]">
+      npm install @polymarket/clob-client
+    </p>
+  </Card>
 
-### Request Parameters
+  <Card title="Python Client" icon="github" href="https://github.com/Polymarket/py-clob-client">
+    <p className="font-mono text-[0.8rem]">pip install py-clob-client</p>
+  </Card>
+</CardGroup>
 
-| Name   | Required | Type   | Description                                                                                         |
-| ------ | -------- | ------ | --------------------------------------------------------------------------------------------------- |
-| id     | no       | string | id of trade to fetch                                                                                |
-| taker  | no       | string | address to get trades for where it is included as a taker                                           |
-| maker  | no       | string | address to get trades for where it is included as a maker                                           |
-| market | no       | string | market for which to get the trades (condition ID)                                                   |
-| before | no       | string | unix timestamp representing the cutoff up to which trades that happened before then can be included |
-| after  | no       | string | unix timestamp representing the cutoff for which trades that happened after can be included         |
+<Info>
+  You can also use the REST API directly, but you'll need to manage [EIP-712
+  order
+  signing](https://github.com/Polymarket/clob-client/blob/main/src/signing/eip712.ts)
+  and [HMAC authentication
+  headers](https://github.com/Polymarket/clob-client/blob/main/src/signing/hmac.ts)
+  yourself. See [REST API Headers](#rest-api-headers) below.
+</Info>
 
-### Response Format
+***
 
-| Name | Type     | Description                                 |
-| ---- | -------- | ------------------------------------------- |
-| null | Trade\[] | list of trades filtered by query parameters |
+## Authentication
 
-A `Trade` object is of the form:
+The CLOB uses two levels of authentication:
 
-| Name              | Type          | Description                                                                  |
-| ----------------- | ------------- | ---------------------------------------------------------------------------- |
-| id                | string        | trade id                                                                     |
-| taker\_order\_id  | string        | hash of taker order (market order) that catalyzed the trade                  |
-| market            | string        | market id (condition id)                                                     |
-| asset\_id         | string        | asset id (token id) of taker order (market order)                            |
-| side              | string        | buy or sell                                                                  |
-| size              | string        | size                                                                         |
-| fee\_rate\_bps    | string        | the fees paid for the taker order expressed in basic points                  |
-| price             | string        | limit price of taker order                                                   |
-| status            | string        | trade status (see above)                                                     |
-| match\_time       | string        | time at which the trade was matched                                          |
-| last\_update      | string        | timestamp of last status update                                              |
-| outcome           | string        | human readable outcome of the trade                                          |
-| maker\_address    | string        | funder address of the taker of the trade                                     |
-| owner             | string        | api key of taker of the trade                                                |
-| transaction\_hash | string        | hash of the transaction where the trade was executed                         |
-| bucket\_index     | integer       | index of bucket for trade in case trade is executed in multiple transactions |
-| maker\_orders     | MakerOrder\[] | list of the maker trades the taker trade was filled against                  |
-| type              | string        | side of the trade: TAKER or MAKER                                            |
+| Level  | Method                          | Purpose                                   |
+| ------ | ------------------------------- | ----------------------------------------- |
+| **L1** | EIP-712 signature (private key) | Create or derive API credentials          |
+| **L2** | HMAC-SHA256 (API credentials)   | Place orders, cancel orders, query trades |
 
-A `MakerOrder` object is of the form:
+You use your private key once to derive **L2 credentials** (API key, secret, passphrase), which authenticate all subsequent trading requests.
 
-| Name            | Type   | Description                                                 |
-| --------------- | ------ | ----------------------------------------------------------- |
-| order\_id       | string | id of maker order                                           |
-| maker\_address  | string | maker address of the order                                  |
-| owner           | string | api key of the owner of the order                           |
-| matched\_amount | string | size of maker order consumed with this trade                |
-| fee\_rate\_bps  | string | the fees paid for the taker order expressed in basic points |
-| price           | string | price of maker order                                        |
-| asset\_id       | string | token/asset id                                              |
-| outcome         | string | human readable outcome of the maker order                   |
-| side            | string | the side of the maker order. Can be `buy` or `sell`         |
+<CodeGroup>
+  ```typescript TypeScript theme={null}
+  import { ClobClient } from "@polymarket/clob-client";
+  import { Wallet } from "ethers"; // v5.8.0
 
-<RequestExample>
+  const signer = new Wallet(process.env.PRIVATE_KEY);
+
+  // Derive L2 API credentials
+  const tempClient = new ClobClient("https://clob.polymarket.com", 137, signer);
+  const apiCreds = await tempClient.createOrDeriveApiKey();
+  ```
+
   ```python Python theme={null}
-  from py_clob_client.clob_types import TradeParams
+  from py_clob_client.client import ClobClient
+  import os
 
-  resp = client.get_trades(
-      TradeParams(
-          maker_address=client.get_address(),
-          market="0xbd31dc8a20211944f6b70f31557f1001557b59905b7738480ca09bd4532f84af",
-      ),
+  private_key = os.getenv("PRIVATE_KEY")
+
+  # Derive L2 API credentials
+  temp_client = ClobClient("https://clob.polymarket.com", key=private_key, chain_id=137)
+  api_creds = temp_client.create_or_derive_api_creds()
+  ```
+</CodeGroup>
+
+***
+
+## Signature Types
+
+When initializing the trading client, you must specify your wallet's **signature type** and **funder address**:
+
+| Wallet Type      | ID  | When to Use                                                                                                                                  | Funder Address            |
+| ---------------- | --- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| **EOA**          | `0` | Standalone wallet — you pay your own gas (POL for gas)                                                                                       | Your EOA wallet address   |
+| **POLY\_PROXY**  | `1` | Polymarket account via Magic Link (email/Google login). Requires [exported private key](https://polymarket.com/settings) from Polymarket.com | Your proxy wallet address |
+| **GNOSIS\_SAFE** | `2` | Polymarket account via browser wallet (MetaMask, Rabby) or embedded wallet (Privy, Turnkey). Most common type                                | Your proxy wallet address |
+
+<Note>
+  If you have a Polymarket.com account, your funds are in a proxy wallet visible
+  in the profile dropdown. Use type `1` or `2`. Type `0` is for standalone EOA
+  wallets only.
+</Note>
+
+### Initialize the Trading Client
+
+<CodeGroup>
+  ```typescript TypeScript theme={null}
+  const client = new ClobClient(
+    "https://clob.polymarket.com",
+    137,
+    signer,
+    apiCreds,
+    2, // GNOSIS_SAFE
+    "0x...", // Your proxy wallet address
+  );
+  ```
+
+  ```python Python theme={null}
+  client = ClobClient(
+      "https://clob.polymarket.com",
+      key=private_key,
+      chain_id=137,
+      creds=api_creds,
+      signature_type=2,  # GNOSIS_SAFE
+      funder="0x..."  # Your proxy wallet address
   )
-  print(resp)
-  print("Done!")
   ```
+</CodeGroup>
 
-  ```typescript Typescript theme={null}
-  async function main() {
-    const trades = await clobClient.getTrades({
-      market:
-        "0xbd31dc8a20211944f6b70f31557f1001557b59905b7738480ca09bd4532f84af",
-      maker_address: await wallet.getAddress(),
-    });
-    console.log(`trades: `);
-    console.log(trades);
-  }
+***
 
-  main();
-  ```
-</RequestExample>
+## REST API Headers
+
+If you're using the REST API directly (without the SDK), you need to attach authentication headers to each request.
+
+**L1 Headers** — for creating or deriving API credentials:
+
+| Header           | Description         |
+| ---------------- | ------------------- |
+| `POLY_ADDRESS`   | Your wallet address |
+| `POLY_SIGNATURE` | EIP-712 signature   |
+| `POLY_TIMESTAMP` | Unix timestamp      |
+| `POLY_NONCE`     | Request nonce       |
+
+**L2 Headers** — for all trading operations (orders, cancellations, queries):
+
+| Header            | Description                          |
+| ----------------- | ------------------------------------ |
+| `POLY_ADDRESS`    | Your wallet address                  |
+| `POLY_SIGNATURE`  | HMAC-SHA256 signature of the request |
+| `POLY_TIMESTAMP`  | Unix timestamp                       |
+| `POLY_API_KEY`    | Your API key                         |
+| `POLY_PASSPHRASE` | Your API passphrase                  |
+
+<Note>
+  Even with L2 authentication, methods that create orders still require the
+  user's private key for EIP-712 order payload signing. L2 credentials
+  authenticate the request, but the order itself must be signed by the key.
+</Note>
+
+***
+
+## Client Methods
+
+<CardGroup cols={2}>
+  <Card title="Public Methods" icon="globe" href="/trading/clients/public">
+    Market data, orderbooks, prices, and spreads — no auth required.
+  </Card>
+
+  <Card title="L1 Methods" icon="key" href="/trading/clients/l1">
+    Sign orders and derive API credentials with your private key.
+  </Card>
+
+  <Card title="L2 Methods" icon="lock" href="/trading/clients/l2">
+    Place orders, cancel orders, query trades, and manage notifications.
+  </Card>
+
+  <Card title="Builder Methods" icon="hammer" href="/trading/clients/builder">
+    Track attributed trades and manage builder credentials.
+  </Card>
+</CardGroup>
+
+***
+
+## What's in This Section
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="bolt" href="/trading/quickstart">
+    Place your first order end-to-end
+  </Card>
+
+  <Card title="Orderbook" icon="chart-bar" href="/trading/orderbook">
+    Reading the orderbook, prices, spreads, and midpoints
+  </Card>
+
+  <Card title="Orders" icon="list-check" href="/trading/orders/create">
+    Order types, tick sizes, creating, cancelling, and querying orders
+  </Card>
+
+  <Card title="Fees" icon="receipt" href="/trading/fees">
+    Fee structure, fee-enabled markets, and maker rebates
+  </Card>
+
+  <Card title="Gasless Transactions" icon="gas-pump" href="/trading/gasless">
+    Execute onchain operations without paying gas
+  </Card>
+
+  <Card title="CTF Tokens" icon="coins" href="/trading/ctf/overview">
+    Split, merge, and redeem outcome tokens
+  </Card>
+
+  <Card title="Bridge" icon="bridge" href="/trading/bridge/deposit">
+    Deposit and withdraw funds across chains
+  </Card>
+</CardGroup>

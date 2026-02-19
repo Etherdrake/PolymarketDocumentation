@@ -4,13 +4,11 @@
 
 # Get closed positions for a user
 
-> Fetches closed positions for a user(address)
-
 
 
 ## OpenAPI
 
-````yaml api-reference/data-api-openapi.yaml get /closed-positions
+````yaml api-spec/data-openapi.yaml get /closed-positions
 openapi: 3.0.3
 info:
   title: Polymarket Data API
@@ -34,7 +32,6 @@ paths:
       tags:
         - Core
       summary: Get closed positions for a user
-      description: Fetches closed positions for a user(address)
       parameters:
         - in: query
           name: user

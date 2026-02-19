@@ -4,13 +4,11 @@
 
 # Get trader leaderboard rankings
 
-> Returns trader leaderboard rankings filtered by category, time period, and ordering.
-
 
 
 ## OpenAPI
 
-````yaml api-reference/data-api-openapi.yaml get /v1/leaderboard
+````yaml api-spec/data-openapi.yaml get /v1/leaderboard
 openapi: 3.0.3
 info:
   title: Polymarket Data API
@@ -34,9 +32,6 @@ paths:
       tags:
         - Core
       summary: Get trader leaderboard rankings
-      description: >-
-        Returns trader leaderboard rankings filtered by category, time period,
-        and ordering.
       parameters:
         - in: query
           name: category

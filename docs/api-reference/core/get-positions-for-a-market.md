@@ -4,14 +4,11 @@
 
 # Get positions for a market
 
-> Returns positions for a given market (condition_id), grouped by outcome token, with profile data, PnL breakdown, and current pricing.
-
-
 
 
 ## OpenAPI
 
-````yaml api-reference/data-api-openapi.yaml get /v1/market-positions
+````yaml api-spec/data-openapi.yaml get /v1/market-positions
 openapi: 3.0.3
 info:
   title: Polymarket Data API
@@ -35,9 +32,6 @@ paths:
       tags:
         - Core
       summary: Get positions for a market
-      description: >
-        Returns positions for a given market (condition_id), grouped by outcome
-        token, with profile data, PnL breakdown, and current pricing.
       parameters:
         - in: query
           name: market

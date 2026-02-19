@@ -4,35 +4,16 @@
 
 # Create deposit addresses
 
-> Generate unique deposit addresses for depositing assets to your Polymarket wallet.
-
-**How it works:**
-1. Submit your Polymarket wallet address
-2. Receive deposit addresses for each blockchain type (EVM, Solana, Bitcoin)
-3. Send assets from any supported chain to the appropriate deposit address
-4. Assets are automatically bridged and swapped to USDC.e on Polygon
-5. USDC.e is credited to your Polymarket wallet for trading
-
-**Supported Assets:**
-Use `/supported-assets` to see all available chains and tokens you can deposit from.
-
-
 
 
 ## OpenAPI
 
-````yaml api-reference/bridge-api-openapi.yaml post /deposit
+````yaml api-spec/bridge-openapi.yaml post /deposit
 openapi: 3.0.3
 info:
   title: Polymarket Bridge API
   version: 1.0.0
-  description: >
-    HTTP API for Polymarket bridge and swap operations. 
-
-
-    Polymarket uses USDC.e (Bridged USDC) on Polygon as collateral for all
-    trading activities. This API enables users to bridge assets from various
-    chains and swap them to USDC.e on Polygon for seamless trading.
+  description: HTTP API for Polymarket bridge and swap operations.
 servers:
   - url: https://bridge.polymarket.com
     description: Polymarket Bridge API
@@ -46,30 +27,6 @@ paths:
       tags:
         - Bridge
       summary: Create deposit addresses
-      description: >
-        Generate unique deposit addresses for depositing assets to your
-        Polymarket wallet.
-
-
-        **How it works:**
-
-        1. Submit your Polymarket wallet address
-
-        2. Receive deposit addresses for each blockchain type (EVM, Solana,
-        Bitcoin)
-
-        3. Send assets from any supported chain to the appropriate deposit
-        address
-
-        4. Assets are automatically bridged and swapped to USDC.e on Polygon
-
-        5. USDC.e is credited to your Polymarket wallet for trading
-
-
-        **Supported Assets:**
-
-        Use `/supported-assets` to see all available chains and tokens you can
-        deposit from.
       requestBody:
         required: true
         content:

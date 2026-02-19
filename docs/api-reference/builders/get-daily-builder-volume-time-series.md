@@ -4,13 +4,11 @@
 
 # Get daily builder volume time-series
 
-> Returns daily time-series volume data with multiple entries per builder (one per day), each including a `dt` timestamp. No pagination.
-
 
 
 ## OpenAPI
 
-````yaml api-reference/data-api-openapi.yaml get /v1/builders/volume
+````yaml api-spec/data-openapi.yaml get /v1/builders/volume
 openapi: 3.0.3
 info:
   title: Polymarket Data API
@@ -34,9 +32,6 @@ paths:
       tags:
         - Builders
       summary: Get daily builder volume time-series
-      description: >-
-        Returns daily time-series volume data with multiple entries per builder
-        (one per day), each including a `dt` timestamp. No pagination.
       parameters:
         - in: query
           name: timePeriod

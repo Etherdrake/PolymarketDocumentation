@@ -3,6 +3,7 @@
 These URLs will be scraped and organized into the repository.
 
 ## Quickstart
+https://docs.polymarket.com/quickstart.md
 https://docs.polymarket.com/quickstart/overview.md
 https://docs.polymarket.com/quickstart/fetching-data.md
 https://docs.polymarket.com/quickstart/first-order.md
@@ -11,23 +12,31 @@ https://docs.polymarket.com/quickstart/introduction/rate-limits.md
 https://docs.polymarket.com/quickstart/reference/endpoints.md
 
 ## Market Makers
+https://docs.polymarket.com/market-makers/overview.md
+https://docs.polymarket.com/market-makers/getting-started.md
+https://docs.polymarket.com/market-makers/trading.md
+https://docs.polymarket.com/market-makers/liquidity-rewards.md
+https://docs.polymarket.com/market-makers/maker-rebates.md
+https://docs.polymarket.com/market-makers/inventory.md
 https://docs.polymarket.com/developers/market-makers/introduction.md
 https://docs.polymarket.com/developers/market-makers/setup.md
-https://docs.polymarket.com/developers/market-makers/trading.md
-https://docs.polymarket.com/developers/market-makers/liquidity-rewards.md
-https://docs.polymarket.com/developers/market-makers/maker-rebates-program.md
 https://docs.polymarket.com/developers/market-makers/data-feeds.md
-https://docs.polymarket.com/developers/market-makers/inventory.md
 
 ## Polymarket Builders Program
+https://docs.polymarket.com/builders/overview.md
+https://docs.polymarket.com/builders/tiers.md
+https://docs.polymarket.com/builders/api-keys.md
 https://docs.polymarket.com/developers/builders/builder-intro.md
 https://docs.polymarket.com/developers/builders/builder-tiers.md
 https://docs.polymarket.com/developers/builders/builder-profile.md
 https://docs.polymarket.com/developers/builders/order-attribution.md
 https://docs.polymarket.com/developers/builders/relayer-client.md
 https://docs.polymarket.com/developers/builders/blockchain-data-resources.md
+https://docs.polymarket.com/developers/builders/examples.md
 
 ## Central Limit Order Book (CLOB)
+https://docs.polymarket.com/trading/overview.md
+https://docs.polymarket.com/trading/quickstart.md
 https://docs.polymarket.com/developers/CLOB/introduction.md
 https://docs.polymarket.com/developers/CLOB/status.md
 https://docs.polymarket.com/developers/CLOB/quickstart.md
@@ -39,11 +48,40 @@ https://docs.polymarket.com/developers/CLOB/clients/methods-l1.md
 https://docs.polymarket.com/developers/CLOB/clients/methods-l2.md
 https://docs.polymarket.com/developers/CLOB/clients/methods-builder.md
 
+## API Reference - Market Data
+https://docs.polymarket.com/api-reference/introduction.md
+https://docs.polymarket.com/api-reference/authentication.md
+https://docs.polymarket.com/api-reference/rate-limits.md
+https://docs.polymarket.com/api-reference/geoblock.md
+https://docs.polymarket.com/api-reference/clients-sdks.md
+
+## API Reference - Market Data (Data API)
+https://docs.polymarket.com/market-data/overview.md
+https://docs.polymarket.com/market-data/fetching-markets.md
+https://docs.polymarket.com/api-reference/market-data/get-order-book.md
+https://docs.polymarket.com/api-reference/market-data/get-order-books-request-body.md
+https://docs.polymarket.com/api-reference/market-data/get-market-price.md
+https://docs.polymarket.com/api-reference/market-data/get-market-prices-query-parameters.md
+https://docs.polymarket.com/api-reference/market-data/get-market-prices-request-body.md
+https://docs.polymarket.com/api-reference/market-data/get-midpoint-price.md
+https://docs.polymarket.com/api-reference/market-data/get-midpoint-prices-query-parameters.md
+https://docs.polymarket.com/api-reference/market-data/get-midpoint-prices-request-body.md
+https://docs.polymarket.com/api-reference/market-data/get-spread.md
+https://docs.polymarket.com/api-reference/market-data/get-spreads.md
+https://docs.polymarket.com/api-reference/market-data/get-last-trade-price.md
+https://docs.polymarket.com/api-reference/market-data/get-last-trade-prices-query-parameters.md
+https://docs.polymarket.com/api-reference/market-data/get-last-trade-prices-request-body.md
+https://docs.polymarket.com/api-reference/market-data/get-fee-rate.md
+https://docs.polymarket.com/api-reference/market-data/get-fee-rate-by-path-parameter.md
+https://docs.polymarket.com/api-reference/market-data/get-tick-size.md
+https://docs.polymarket.com/api-reference/market-data/get-tick-size-by-path-parameter.md
+https://docs.polymarket.com/api-reference/data/get-server-time.md
+
 ## API Reference - Orderbook
 https://docs.polymarket.com/api-reference/orderbook/get-order-book-summary.md
 https://docs.polymarket.com/api-reference/orderbook/get-multiple-order-books-summaries-by-request.md
 
-## API Reference - Pricing
+## API Reference - Pricing (Legacy)
 https://docs.polymarket.com/api-reference/pricing/get-market-price.md
 https://docs.polymarket.com/api-reference/pricing/get-multiple-market-prices.md
 https://docs.polymarket.com/api-reference/pricing/get-multiple-market-prices-by-request.md
@@ -52,6 +90,20 @@ https://docs.polymarket.com/api-reference/pricing/get-price-history-for-a-traded
 
 ## API Reference - Spreads
 https://docs.polymarket.com/api-reference/spreads/get-bid-ask-spreads.md
+
+## API Reference - Trade (CLOB)
+https://docs.polymarket.com/api-reference/trade/post-a-new-order.md
+https://docs.polymarket.com/api-reference/trade/post-multiple-orders.md
+https://docs.polymarket.com/api-reference/trade/get-single-order-by-id.md
+https://docs.polymarket.com/api-reference/trade/get-user-orders.md
+https://docs.polymarket.com/api-reference/trade/get-trades.md
+https://docs.polymarket.com/api-reference/trade/cancel-single-order.md
+https://docs.polymarket.com/api-reference/trade/cancel-multiple-orders.md
+https://docs.polymarket.com/api-reference/trade/cancel-all-orders.md
+https://docs.polymarket.com/api-reference/trade/cancel-orders-for-a-market.md
+https://docs.polymarket.com/api-reference/trade/get-order-scoring-status.md
+https://docs.polymarket.com/api-reference/trade/send-heartbeat.md
+https://docs.polymarket.com/api-reference/trade/get-builder-trades.md
 
 ## Historical Timeseries Data
 https://docs.polymarket.com/developers/CLOB/timeseries.md
@@ -65,24 +117,35 @@ https://docs.polymarket.com/developers/CLOB/orders/get-active-order.md
 https://docs.polymarket.com/developers/CLOB/orders/check-scoring.md
 https://docs.polymarket.com/developers/CLOB/orders/cancel-orders.md
 https://docs.polymarket.com/developers/CLOB/orders/onchain-order-info.md
+https://docs.polymarket.com/trading/orders/overview.md
+https://docs.polymarket.com/trading/orders/create.md
+https://docs.polymarket.com/trading/orders/cancel.md
+https://docs.polymarket.com/trading/orders/attribution.md
 
 ## Trades
 https://docs.polymarket.com/developers/CLOB/trades/trades-overview.md
 https://docs.polymarket.com/developers/CLOB/trades/trades.md
 
 ## Websocket
+https://docs.polymarket.com/market-data/websocket/overview.md
+https://docs.polymarket.com/market-data/websocket/market-channel.md
 https://docs.polymarket.com/developers/CLOB/websocket/wss-overview.md
 https://docs.polymarket.com/quickstart/websocket/WSS-Quickstart.md
 https://docs.polymarket.com/developers/CLOB/websocket/wss-auth.md
 https://docs.polymarket.com/developers/CLOB/websocket/user-channel.md
 https://docs.polymarket.com/developers/CLOB/websocket/market-channel.md
+https://docs.polymarket.com/api-reference/wss/market.md
+https://docs.polymarket.com/api-reference/wss/user.md
 
 ## Sports Websocket
 https://docs.polymarket.com/developers/sports-websocket/overview.md
 https://docs.polymarket.com/developers/sports-websocket/message-format.md
 https://docs.polymarket.com/developers/sports-websocket/quickstart.md
+https://docs.polymarket.com/market-data/websocket/sports.md
+https://docs.polymarket.com/api-reference/wss/sports.md
 
 ## Real Time Data Stream
+https://docs.polymarket.com/market-data/websocket/rtds.md
 https://docs.polymarket.com/developers/RTDS/RTDS-overview.md
 https://docs.polymarket.com/developers/RTDS/RTDS-crypto-prices.md
 https://docs.polymarket.com/developers/RTDS/RTDS-comments.md
@@ -120,6 +183,10 @@ https://docs.polymarket.com/api-reference/markets/list-markets.md
 https://docs.polymarket.com/api-reference/markets/get-market-by-id.md
 https://docs.polymarket.com/api-reference/markets/get-market-tags-by-id.md
 https://docs.polymarket.com/api-reference/markets/get-market-by-slug.md
+https://docs.polymarket.com/api-reference/markets/get-prices-history.md
+https://docs.polymarket.com/api-reference/markets/get-sampling-markets.md
+https://docs.polymarket.com/api-reference/markets/get-simplified-markets.md
+https://docs.polymarket.com/api-reference/markets/get-sampling-simplified-markets.md
 
 ## API Reference - Series
 https://docs.polymarket.com/api-reference/series/list-series.md
@@ -153,12 +220,14 @@ https://docs.polymarket.com/api-reference/core/get-top-holders-for-markets.md
 https://docs.polymarket.com/api-reference/core/get-total-value-of-a-users-positions.md
 https://docs.polymarket.com/api-reference/core/get-closed-positions-for-a-user.md
 https://docs.polymarket.com/api-reference/core/get-trader-leaderboard-rankings.md
+https://docs.polymarket.com/api-reference/core/get-positions-for-a-market.md
 
 ## API Reference - Builders
 https://docs.polymarket.com/api-reference/builders/get-aggregated-builder-leaderboard.md
 https://docs.polymarket.com/api-reference/builders/get-daily-builder-volume-time-series.md
 
 ## Bridge & Swap - Overview
+https://docs.polymarket.com/trading/bridge/overview.md
 https://docs.polymarket.com/developers/misc-endpoints/bridge-overview.md
 
 ## API Reference - Bridge
@@ -167,14 +236,24 @@ https://docs.polymarket.com/api-reference/bridge/get-a-quote.md
 https://docs.polymarket.com/api-reference/bridge/create-deposit-addresses.md
 https://docs.polymarket.com/api-reference/bridge/create-withdrawal-addresses.md
 https://docs.polymarket.com/api-reference/bridge/get-transaction-status.md
+https://docs.polymarket.com/trading/bridge/deposit.md
+https://docs.polymarket.com/trading/bridge/quote.md
+https://docs.polymarket.com/trading/bridge/status.md
+https://docs.polymarket.com/trading/bridge/supported-assets.md
+https://docs.polymarket.com/trading/bridge/withdraw.md
 
 ## Subgraph
+https://docs.polymarket.com/market-data/subgraph.md
 https://docs.polymarket.com/developers/subgraph/overview.md
 
 ## Resolution
 https://docs.polymarket.com/developers/resolution/UMA.md
 
 ## Conditional Token Frameworks (CTF)
+https://docs.polymarket.com/trading/ctf/overview.md
+https://docs.polymarket.com/trading/ctf/split.md
+https://docs.polymarket.com/trading/ctf/merge.md
+https://docs.polymarket.com/trading/ctf/redeem.md
 https://docs.polymarket.com/developers/CTF/overview.md
 https://docs.polymarket.com/developers/CTF/split.md
 https://docs.polymarket.com/developers/CTF/merge.md
@@ -185,6 +264,7 @@ https://docs.polymarket.com/developers/CTF/deployment-resources.md
 https://docs.polymarket.com/developers/proxy-wallet.md
 
 ## Negative Risk
+https://docs.polymarket.com/advanced/neg-risk.md
 https://docs.polymarket.com/developers/neg-risk/overview.md
 
 ## Changelog
@@ -236,8 +316,26 @@ https://docs.polymarket.com/polymarket-learn/trading/market-orders.md
 https://docs.polymarket.com/polymarket-learn/trading/no-limits.md
 https://docs.polymarket.com/polymarket-learn/trading/using-the-orderbook.md
 
-## Missing from API Reference - Core
-https://docs.polymarket.com/api-reference/core/get-positions-for-a-market.md
+## Polymarket 101
+https://docs.polymarket.com/polymarket-101.md
 
-## Missing from Builders
-https://docs.polymarket.com/developers/builders/examples.md
+## Concepts
+https://docs.polymarket.com/concepts/markets-events.md
+https://docs.polymarket.com/concepts/order-lifecycle.md
+https://docs.polymarket.com/concepts/positions-tokens.md
+https://docs.polymarket.com/concepts/prices-orderbook.md
+https://docs.polymarket.com/concepts/resolution.md
+
+## Trading
+https://docs.polymarket.com/trading/fees.md
+https://docs.polymarket.com/trading/gasless.md
+https://docs.polymarket.com/trading/orderbook.md
+https://docs.polymarket.com/trading/clients/public.md
+https://docs.polymarket.com/trading/clients/l1.md
+https://docs.polymarket.com/trading/clients/l2.md
+https://docs.polymarket.com/trading/clients/builder.md
+
+## Index & Resources
+https://docs.polymarket.com/index.md
+https://docs.polymarket.com/resources/contract-addresses.md
+https://docs.polymarket.com/resources/error-codes.md

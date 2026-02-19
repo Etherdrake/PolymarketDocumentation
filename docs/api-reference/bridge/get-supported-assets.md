@@ -4,31 +4,16 @@
 
 # Get supported assets
 
-> Retrieve all supported chains and tokens for deposits and withdrawals.
-
-**USDC.e on Polygon:**
-Polymarket uses USDC.e (Bridged USDC from Ethereum) on Polygon as the native collateral for all markets. When you deposit assets from other chains, they are automatically bridged and swapped to USDC.e on Polygon. When you withdraw, your USDC.e is bridged and swapped to your desired token on the destination chain.
-
-**Minimum Amounts:**
-Each asset has a `minCheckoutUsd` field indicating the minimum amount required in USD. Make sure your deposit or withdrawal meets this minimum to avoid transaction failures.
-
-
 
 
 ## OpenAPI
 
-````yaml api-reference/bridge-api-openapi.yaml get /supported-assets
+````yaml api-spec/bridge-openapi.yaml get /supported-assets
 openapi: 3.0.3
 info:
   title: Polymarket Bridge API
   version: 1.0.0
-  description: >
-    HTTP API for Polymarket bridge and swap operations. 
-
-
-    Polymarket uses USDC.e (Bridged USDC) on Polygon as collateral for all
-    trading activities. This API enables users to bridge assets from various
-    chains and swap them to USDC.e on Polygon for seamless trading.
+  description: HTTP API for Polymarket bridge and swap operations.
 servers:
   - url: https://bridge.polymarket.com
     description: Polymarket Bridge API
@@ -42,24 +27,6 @@ paths:
       tags:
         - Bridge
       summary: Get supported assets
-      description: >
-        Retrieve all supported chains and tokens for deposits and withdrawals.
-
-
-        **USDC.e on Polygon:**
-
-        Polymarket uses USDC.e (Bridged USDC from Ethereum) on Polygon as the
-        native collateral for all markets. When you deposit assets from other
-        chains, they are automatically bridged and swapped to USDC.e on Polygon.
-        When you withdraw, your USDC.e is bridged and swapped to your desired
-        token on the destination chain.
-
-
-        **Minimum Amounts:**
-
-        Each asset has a `minCheckoutUsd` field indicating the minimum amount
-        required in USD. Make sure your deposit or withdrawal meets this minimum
-        to avoid transaction failures.
       responses:
         '200':
           description: Successfully retrieved supported assets

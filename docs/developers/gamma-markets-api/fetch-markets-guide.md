@@ -2,76 +2,80 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# How to Fetch Markets
+# Fetching Markets
 
-<Tip>Both the getEvents and getMarkets are paginated. See [pagination section](#pagination) for details.</Tip>
-This guide covers the three recommended approaches for fetching market data from the Gamma API, each optimized for different use cases.
+> Three strategies for discovering and querying markets
 
-## Overview
+<Tip>
+  Both the events and markets endpoints are paginated. See
+  [pagination](#pagination) for details.
+</Tip>
 
-There are three main strategies for retrieving market data:
+There are three main strategies for retrieving market data, each optimized for different use cases:
 
-1. **By Slug** - Best for fetching specific individual markets or events
-2. **By Tags** - Ideal for filtering markets by category or sport
-3. **Via Events Endpoint** - Most efficient for retrieving all active markets
+1. **By Slug** — Best for fetching specific individual markets or events
+2. **By Tags** — Ideal for filtering markets by category or sport
+3. **Via Events Endpoint** — Most efficient for retrieving all active markets
 
 ***
 
-## 1. Fetch by Slug
+## Fetch by Slug
 
-**Use Case:** When you need to retrieve a specific market or event that you already know about.
+**Use case:** When you need to retrieve a specific market or event that you already know about.
 
 Individual markets and events are best fetched using their unique slug identifier. The slug can be found directly in the Polymarket frontend URL.
 
 ### How to Extract the Slug
 
-From any Polymarket URL, the slug is the path segment after `/event/` or `/market/`:
+From any Polymarket URL, the slug is the path segment after `/event/`:
 
 ```
-https://polymarket.com/event/fed-decision-in-october?tid=1758818660485
-                            ↑
-                  Slug: fed-decision-in-october
+https://polymarket.com/event/fed-decision-in-october
+                                ↑
+                      Slug: fed-decision-in-october
 ```
-
-### API Endpoints
-
-**For Events:** [GET /events/slug/{slug}](/api-reference/events/list-events)
-
-**For Markets:** [GET /markets/slug/{slug}](/api-reference/markets/list-markets)
 
 ### Examples
 
 ```bash  theme={null}
+# Fetch an event by slug (query parameter)
+curl "https://gamma-api.polymarket.com/events?slug=fed-decision-in-october"
+
+# Or use the path endpoint
 curl "https://gamma-api.polymarket.com/events/slug/fed-decision-in-october"
+```
+
+```bash  theme={null}
+# Fetch a market by slug (query parameter)
+curl "https://gamma-api.polymarket.com/markets?slug=fed-decision-in-october"
+
+# Or use the path endpoint
+curl "https://gamma-api.polymarket.com/markets/slug/fed-decision-in-october"
 ```
 
 ***
 
-## 2. Fetch by Tags
+## Fetch by Tags
 
-**Use Case:** When you want to filter markets by category, sport, or topic.
+**Use case:** When you want to filter markets by category, sport, or topic.
 
-Tags provide a powerful way to categorize and filter markets. You can discover available tags and then use them to filter your market requests.
+Tags provide a way to categorize and filter markets. You can discover available tags and then use them to filter your requests.
 
 ### Discover Available Tags
 
-**General Tags:** [GET /tags](/api-reference/tags/list-tags)
+**General tags:** `GET /tags` (Gamma API)
 
-**Sports Tags & Metadata:** [GET /sports](/api-reference/sports/get-sports-metadata-information)
+**Sports tags and metadata:** `GET /sports` (Gamma API)
 
-The `/sports` endpoint returns comprehensive metadata for sports including tag IDs, images, resolution sources, and series information.
+The `/sports` endpoint returns metadata for sports including tag IDs, images, resolution sources, and series information.
 
-### Using Tags in Market Requests
+### Filter by Tag
 
-Once you have tag IDs, you can use them with the `tag_id` parameter in both markets and events endpoints.
-
-**Markets with Tags:** [GET /markets](/api-reference/markets/list-markets)
-
-**Events with Tags:** [GET /events](/api-reference/events/list-events)
+Once you have tag IDs, use the `tag_id` parameter in both events and markets endpoints:
 
 ```bash  theme={null}
-curl "https://gamma-api.polymarket.com/events?tag_id=100381&limit=1&closed=false"
-
+# Fetch events for a specific tag
+curl "https://gamma-api.polymarket.com/events?tag_id=100381&limit=10&active=true&closed=false"
 ```
 
 ### Additional Tag Filtering
@@ -81,80 +85,76 @@ You can also:
 * Use `related_tags=true` to include related tag markets
 * Exclude specific tags with `exclude_tag_id`
 
+```bash  theme={null}
+# Include related tags
+curl "https://gamma-api.polymarket.com/events?tag_id=100381&related_tags=true&active=true&closed=false"
+```
+
 ***
 
-## 3. Fetch All Active Markets
+## Fetch All Active Markets
 
-**Use Case:** When you need to retrieve all available active markets, typically for broader analysis or market discovery.
+**Use case:** When you need to retrieve all available active markets, typically for broader analysis or market discovery.
 
-The most efficient approach is to use the `/events` endpoint and work backwards, as events contain their associated markets.
+The most efficient approach is to use the events endpoint with `active=true&closed=false`, as events contain their associated markets.
 
-**Events Endpoint:** [GET /events](/api-reference/events/list-events)
-
-**Markets Endpoint:** [GET /markets](/api-reference/markets/list-markets)
+```bash  theme={null}
+curl "https://gamma-api.polymarket.com/events?active=true&closed=false&limit=100"
+```
 
 ### Key Parameters
 
-* `order=id` - Order by event ID
-* `ascending=false` - Get newest events first
-* `closed=false` - Only active markets
-* `limit` - Control response size
-* `offset` - For pagination
-
-### Examples
+| Parameter   | Description                                                                                                      |
+| ----------- | ---------------------------------------------------------------------------------------------------------------- |
+| `order`     | Field to order by (`volume_24hr`, `volume`, `liquidity`, `start_date`, `end_date`, `competitive`, `closed_time`) |
+| `ascending` | Sort direction (`true` for ascending, `false` for descending). Default: `false`                                  |
+| `active`    | Filter by active status (`true` for live tradable events)                                                        |
+| `closed`    | Filter by closed status                                                                                          |
+| `limit`     | Results per page                                                                                                 |
+| `offset`    | Number of results to skip for pagination                                                                         |
 
 ```bash  theme={null}
-curl "https://gamma-api.polymarket.com/events?order=id&ascending=false&closed=false&limit=100"
+# Get the highest volume active events
+curl "https://gamma-api.polymarket.com/events?active=true&closed=false&order=volume_24hr&ascending=false&limit=100"
 ```
 
-This approach gives you all active markets ordered from newest to oldest, allowing you to systematically process all available trading opportunities.
+***
 
-### Pagination
+## Pagination
 
-For large datasets, use pagination with `limit` and `offset` parameters:
-
-* `limit=50` - Return 50 results per page
-* `offset=0` - Start from the beginning (increment by limit for subsequent pages)
-
-**Pagination Examples:**
+All list endpoints return paginated responses with `limit` and `offset` parameters:
 
 ```bash  theme={null}
-# Page 1: First 50 results (offset=0)
-curl "https://gamma-api.polymarket.com/events?order=id&ascending=false&closed=false&limit=50&offset=0"
-```
+# Page 1: First 50 results
+curl "https://gamma-api.polymarket.com/events?active=true&closed=false&limit=50&offset=0"
 
-```bash  theme={null}
-# Page 2: Next 50 results (offset=50)
-curl "https://gamma-api.polymarket.com/events?order=id&ascending=false&closed=false&limit=50&offset=50"
-```
+# Page 2: Next 50 results
+curl "https://gamma-api.polymarket.com/events?active=true&closed=false&limit=50&offset=50"
 
-```bash  theme={null}
-# Page 3: Next 50 results (offset=100)
-curl "https://gamma-api.polymarket.com/events?order=id&ascending=false&closed=false&limit=50&offset=100"
-```
-
-```bash  theme={null}
-# Paginating through markets with tag filtering
-curl "https://gamma-api.polymarket.com/markets?tag_id=100381&closed=false&limit=25&offset=0"
-```
-
-```bash  theme={null}
-# Next page of markets with tag filtering
-curl "https://gamma-api.polymarket.com/markets?tag_id=100381&closed=false&limit=25&offset=25"
+# Page 3: Next 50 results
+curl "https://gamma-api.polymarket.com/events?active=true&closed=false&limit=50&offset=100"
 ```
 
 ***
 
 ## Best Practices
 
-1. **For Individual Markets:** Always use the slug method for best performance
-2. **For Category Browsing:** Use tag filtering to reduce API calls
-3. **For Complete Market Discovery:** Use the events endpoint with pagination
-4. **Always Include `closed=false`:** Unless you specifically need historical data
-5. **Implement Rate Limiting:** Respect API limits for production applications
+1. **For individual markets:** Use the slug method for direct lookups
+2. **For category browsing:** Use tag filtering to reduce API calls
+3. **For complete market discovery:** Use the events endpoint with pagination
+4. **Always include `active=true&closed=false`** unless you specifically need historical data
+5. **Use the events endpoint** and work backwards — events contain their associated markets, reducing the number of API calls needed
 
-## Related Endpoints
+***
 
-* [Get Markets](/developers/gamma-markets-api/get-markets) - Full markets endpoint documentation
-* [Get Events](/developers/gamma-markets-api/get-events) - Full events endpoint documentation
-* [Search Markets](/developers/gamma-markets-api/get-public-search) - Search functionality
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="code" href="/api-reference/introduction">
+    Full endpoint documentation with parameters and response schemas.
+  </Card>
+
+  <Card title="Subgraph" icon="share-nodes" href="/market-data/subgraph">
+    Query onchain data directly from the Polymarket subgraph.
+  </Card>
+</CardGroup>

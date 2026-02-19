@@ -4,43 +4,60 @@
 
 # Authentication
 
-> Understanding authentication using Polymarket's CLOB
+> How to authenticate requests to the CLOB API
 
-The CLOB uses two levels of authentication: **L1 (Private Key)** and **L2 (API Key)**.
-Either can be accomplished using the CLOB client or REST API. Authentication is not
-required to access client public methods and public endpoints.
+The CLOB API uses two levels of authentication: **L1 (Private Key)** and **L2 (API Key)**. Either can be accomplished using the CLOB client or REST API.
 
-## Authentication Levels
+## Public vs Authenticated
 
-<CardGroup cols={2}>
-  <Card title="L1 Authentication" icon="key" href="#l1-authentication">
-    Use the private key of the user’s account to sign messages
+<CardGroup cols={1}>
+  <Card title="Public (No Auth)" icon="unlock">
+    The **Gamma API**, **Data API**, and CLOB read endpoints (orderbook, prices, spreads) require no authentication.
   </Card>
 
-  <Card title="L2 Authentication" icon="lock" href="#l2-authentication">
-    Use API credentials (key, secret, passphrase) to authenticate requests to the CLOB
+  <Card title="Authenticated (CLOB)" icon="lock">
+    CLOB trading endpoints (placing orders, cancellations, heartbeat) require all 5 `POLY_*` L2 HTTP headers.
   </Card>
 </CardGroup>
 
 ***
 
-## L1 Authentication
+## Two-Level Authentication Model
 
-### What is L1?
+The CLOB uses two levels of authentication: L1 (Private Key) and L2 (API Key). Either can be accomplished using the CLOB client or REST API
 
-L1 authentication uses the wallet's private key to sign an EIP-712 message used in the
-request header. It proves ownership and control over the private key. The private key
-stays in control of the user and all trading activity remains non-custodial.
+### L1 Authentication (Private Key)
 
-### What This Enables
+L1 authentication uses the wallet's private key to sign an EIP-712 message used in the request header. It proves ownership and control over the private key. The private key stays in control of the user and all trading activity remains non-custodial.
 
-Access to L1 methods that create or derive L2 authentication headers.
+**Used for:**
 
-* Create user API credentials
-* Derive existing user API credentials
-* Sign/create user's orders locally
+* Creating API credentials
+* Deriving existing API credentials
+* Signing and creating user's orders locally
 
-### CLOB Client
+### L2 Authentication (API Credentials)
+
+L2 uses API credentials (apiKey, secret, passphrase) generated from L1 authentication. These are used solely to authenticate requests made to the CLOB API. Requests are signed using HMAC-SHA256.
+
+**Used for:**
+
+* Cancel or get user's open orders
+* Check user's balances and allowances
+* Post user's signed orders
+
+<Info>
+  Even with L2 authentication headers, methods that create user orders still
+  require the user to sign the order payload.
+</Info>
+
+***
+
+## Getting API Credentials
+
+Before making authenticated requests, you need to obtain API credentials using L1 authentication.
+
+### Using the SDK (Recommended)
 
 <Tabs>
   <Tab title="TypeScript">
@@ -48,26 +65,21 @@ Access to L1 methods that create or derive L2 authentication headers.
     import { ClobClient } from "@polymarket/clob-client";
     import { Wallet } from "ethers"; // v5.8.0
 
-    const HOST = "https://clob.polymarket.com";
-    const CHAIN_ID = 137; // Polygon mainnet
-    const signer = new Wallet(process.env.PRIVATE_KEY);
-
     const client = new ClobClient(
-      HOST,
-      CHAIN_ID,
-      signer // Signer enables L1 methods
+      "https://clob.polymarket.com",
+      137, // Polygon mainnet
+      new Wallet(process.env.PRIVATE_KEY)
     );
 
-    // Gets API key, or else creates
-    const apiCreds = await client.createOrDeriveApiKey();
+    // Creates new credentials or derives existing ones
+    const credentials = await client.createOrDeriveApiKey();
 
-    /*
-    apiCreds = {
-      "apiKey": "550e8400-e29b-41d4-a716-446655440000",
-      "secret": "base64EncodedSecretString",
-      "passphrase": "randomPassphraseString"
-    }
-    */
+    console.log(credentials);
+    // {
+    //   apiKey: "550e8400-e29b-41d4-a716-446655440000",
+    //   secret: "base64EncodedSecretString",
+    //   passphrase: "randomPassphraseString"
+    // }
     ```
   </Tab>
 
@@ -76,20 +88,17 @@ Access to L1 methods that create or derive L2 authentication headers.
     from py_clob_client.client import ClobClient
     import os
 
-    host = "https://clob.polymarket.com"
-    chain_id = 137 # Polygon mainnet
-    private_key = os.getenv("PRIVATE_KEY")
-
     client = ClobClient(
-        host=host,
-        chain_id=chaind_id,
-        key=private_key  # Signer enables L1 methods
+        host="https://clob.polymarket.com",
+        chain_id=137,  # Polygon mainnet
+        key=os.getenv("PRIVATE_KEY")
     )
 
-    # Gets API key, or else creates
-    api_creds = await client.create_or_derive_api_key()
+    # Creates new credentials or derives existing ones
+    credentials = client.create_or_derive_api_creds()
 
-    # api_creds = {
+    print(credentials)
+    # {
     #     "apiKey": "550e8400-e29b-41d4-a716-446655440000",
     #     "secret": "base64EncodedSecretString",
     #     "passphrase": "randomPassphraseString"
@@ -103,29 +112,36 @@ Access to L1 methods that create or derive L2 authentication headers.
   variables or secure key management systems.
 </Warning>
 
-***
+### Using the REST API
 
-### REST API
+While we highly recommend using our provided clients to handle signing and authentication, the following is for developers who choose NOT to use our [Python](https://github.com/Polymarket/py-clob-client) or [TypeScript](https://github.com/Polymarket/clob-client) clients.
 
-While we highly recommend using our provided clients to handle signing
-and authentication, the following is for developers who choose NOT to
-use our [Python](https://github.com/Polymarket/py-clob-client) or
-[TypeScript](https://github.com/Polymarket/clob-client) clients.
+**Create API Credentials**
 
-When making direct REST API calls with L1 authentication, include these headers:
+```bash  theme={null}
+POST https://clob.polymarket.com/auth/api-key
+```
 
-| Header           | Required? | Description            |
-| ---------------- | --------- | ---------------------- |
-| `POLY_ADDRESS`   | yes       | Polygon signer address |
-| `POLY_SIGNATURE` | yes       | CLOB EIP 712 signature |
-| `POLY_TIMESTAMP` | yes       | Current UNIX timestamp |
-| `POLY_NONCE`     | yes       | Nonce. Default 0       |
+**Derive API Credentials**
 
-The `POLY_SIGNATURE` is generated by signing the following EIP-712 struct.
+```bash  theme={null}
+GET https://clob.polymarket.com/auth/derive-api-key
+```
+
+Required L1 headers:
+
+| Header           | Description            |
+| ---------------- | ---------------------- |
+| `POLY_ADDRESS`   | Polygon signer address |
+| `POLY_SIGNATURE` | CLOB EIP-712 signature |
+| `POLY_TIMESTAMP` | Current UNIX timestamp |
+| `POLY_NONCE`     | Nonce (default: 0)     |
+
+The `POLY_SIGNATURE` is generated by signing the following EIP-712 struct:
 
 <Accordion title="EIP-712 Signing Example">
   <CodeGroup>
-    ```typescript Typescript theme={null}
+    ```typescript TypeScript theme={null}
     const domain = {
       name: "ClobAuthDomain",
       version: "1",
@@ -174,7 +190,7 @@ The `POLY_SIGNATURE` is generated by signing the following EIP-712 struct.
         "message": "This message attests that I control the given wallet",
     }
 
-    sig = await signer._signTypedData(domain, types, value) 
+    sig = signer.sign_typed_data(domain, types, value)
     ```
   </CodeGroup>
 </Accordion>
@@ -184,25 +200,7 @@ Reference implementations:
 * [TypeScript](https://github.com/Polymarket/clob-client/blob/main/src/signing/eip712.ts)
 * [Python](https://github.com/Polymarket/py-clob-client/blob/main/py_clob_client/signing/eip712.py)
 
-***
-
-**Create API Credentials**
-
-Create new API credentials for user.
-
-```bash  theme={null}
-POST {clob-endpoint}/auth/api-key
-```
-
-**Derive API Credentials**
-
-Derive API credentials for user.
-
-```bash  theme={null}
-GET {clob-endpoint}/auth/derive-api-key
-```
-
-**Response**
+Response:
 
 ```json  theme={null}
 {
@@ -216,25 +214,21 @@ GET {clob-endpoint}/auth/derive-api-key
 
 ***
 
-## L2 Authentication
+## L2 Authentication Headers
 
-### What is L2?
+All trading endpoints require these 5 headers:
 
-The next level of authentication is called L2, and it consists of the
-user's API credentials (apiKey, secret, passphrase) generated from L1
-authentication. These are used solely to authenticate requests made to
-the CLOB API. Requests are signed using HMAC-SHA256.
+| Header            | Description                   |
+| ----------------- | ----------------------------- |
+| `POLY_ADDRESS`    | Polygon signer address        |
+| `POLY_SIGNATURE`  | HMAC signature for request    |
+| `POLY_TIMESTAMP`  | Current UNIX timestamp        |
+| `POLY_API_KEY`    | User's API `apiKey` value     |
+| `POLY_PASSPHRASE` | User's API `passphrase` value |
 
-### What This Enables
+The `POLY_SIGNATURE` for L2 is an HMAC-SHA256 signature created using the user's API credentials `secret` value. Reference implementations can be found in the [TypeScript](https://github.com/Polymarket/clob-client/blob/main/src/signing/hmac.ts) and [Python](https://github.com/Polymarket/py-clob-client/blob/main/py_clob_client/signing/hmac.py) clients.
 
-Access to L2 methods such as posting signed/created orders, viewing open
-orders, cancelling open orders, getting trades
-
-* Cancel or get user's open orders
-* Check user's balances and allowances
-* Post user's signed orders
-
-### CLOB Client
+### CLOB Client (L2)
 
 <Tabs>
   <Tab title="TypeScript">
@@ -242,20 +236,16 @@ orders, cancelling open orders, getting trades
     import { ClobClient } from "@polymarket/clob-client";
     import { Wallet } from "ethers"; // v5.8.0
 
-    const HOST = "https://clob.polymarket.com";
-    const CHAIN_ID = 137; // Polygon mainnet
-    const signer = new Wallet(process.env.PRIVATE_KEY);
-
     const client = new ClobClient(
-      HOST,
-      CHAIN_ID,
-      signer,
+      "https://clob.polymarket.com",
+      137,
+      new Wallet(process.env.PRIVATE_KEY),
       apiCreds, // Generated from L1 auth, API credentials enable L2 methods
       1, // signatureType explained below
-      FUNDER // funder explained below
+      funderAddress // funder explained below
     );
 
-    // Now you can trade!*
+    // Now you can trade!
     const order = await client.createAndPostOrder(
       { tokenID: "123456", price: 0.65, size: 100, side: "BUY" },
       { tickSize: "0.01", negRisk: false }
@@ -268,10 +258,6 @@ orders, cancelling open orders, getting trades
     from py_clob_client.client import ClobClient
     import os
 
-    host = "https://clob.polymarket.com"
-    chain_id = 137 # Polygon mainnet
-    private_key = os.getenv("PRIVATE_KEY")
-
     client = ClobClient(
         host="https://clob.polymarket.com",
         chain_id=137,
@@ -281,8 +267,8 @@ orders, cancelling open orders, getting trades
         funder=os.getenv("FUNDER_ADDRESS") # funder explained below
     )
 
-    # Now you can trade!*
-    order = await client.create_and_post_order(
+    # Now you can trade!
+    order = client.create_and_post_order(
         {"token_id": "123456", "price": 0.65, "size": 100, "side": "BUY"},
         {"tick_size": "0.01", "neg_risk": False}
     )
@@ -291,31 +277,9 @@ orders, cancelling open orders, getting trades
 </Tabs>
 
 <Info>
-  Even with L2 authentication headers, methods that create user orders still require the user to sign the order payload.
+  Even with L2 authentication headers, methods that create user orders still
+  require the user to sign the order payload.
 </Info>
-
-***
-
-### REST API
-
-While we highly recommend using our provided clients to handle signing
-and authentication, the following is for developers who choose NOT to
-use our [Python](https://github.com/Polymarket/py-clob-client) or
-[TypeScript](https://github.com/Polymarket/clob-client) clients.
-
-When making direct REST API calls with L2 authentication, include these headers:
-
-| Header            | Required? | Description                   |
-| ----------------- | --------- | ----------------------------- |
-| `POLY_ADDRESS`    | yes       | Polygon signer address        |
-| `POLY_SIGNATURE`  | yes       | HMAC signature for request    |
-| `POLY_TIMESTAMP`  | yes       | Current UNIX timestamp        |
-| `POLY_API_KEY`    | yes       | User's API `apiKey` value     |
-| `POLY_PASSPHRASE` | yes       | User's API `passphrase` value |
-
-The `POLY_SIGNATURE` for L2 is an HMAC-SHA256 signature created using the user's API credentials `secret` value.
-Reference implementations can be found in the [Typescript](https://github.com/Polymarket/clob-client/blob/main/src/signing/hmac.ts)
-and [Python](https://github.com/Polymarket/py-clob-client/blob/main/py_clob_client/signing/hmac.py) clients.
 
 ***
 
@@ -325,15 +289,35 @@ When initializing the L2 client, you must specify your wallet **signatureType** 
 
 | Signature Type | Value | Description                                                                                                                                                                                  |
 | -------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| EOA            | 0     | Standard Ethereum wallet (MetaMask). Funder is the EOA address and will need POL to pay gas on transactions.                                                                                 |
-| POLY\_PROXY    | 1     | A custom proxy wallet only used with users who logged in via Magic Link email/Google. Using this requires the user to have exported their PK from Polymarket.com and imported into your app. |
-| GNOSIS\_SAFE   | 2     | Gnosis Safe multisig proxy wallet (most common). Use this for any new or returning user who does not fit the other 2 types.                                                                  |
+| EOA            | `0`   | Standard Ethereum wallet (MetaMask). Funder is the EOA address and will need POL to pay gas on transactions.                                                                                 |
+| POLY\_PROXY    | `1`   | A custom proxy wallet only used with users who logged in via Magic Link email/Google. Using this requires the user to have exported their PK from Polymarket.com and imported into your app. |
+| GNOSIS\_SAFE   | `2`   | Gnosis Safe multisig proxy wallet (most common). Use this for any new or returning user who does not fit the other 2 types.                                                                  |
 
 <Tip>
-  The wallet addresses displayed to the user on Polymarket.com is the proxy wallet and should be used as the funder.
-  These can be deterministically derived or you can deploy them on behalf of the user.
-  These proxy wallets are automatically deployed for the user on their first login to Polymarket.com.
+  The wallet address displayed to the user on Polymarket.com is the proxy wallet
+  and should be used as the funder. These can be deterministically derived or
+  you can deploy them on behalf of the user. These proxy wallets are
+  automatically deployed for the user on their first login to Polymarket.com.
 </Tip>
+
+***
+
+## Security Best Practices
+
+<AccordionGroup>
+  <Accordion title="Never expose private keys">
+    Store private keys in environment variables or secure key management systems. Never commit them to version control.
+
+    ```bash  theme={null}
+    # .env (never commit this file)
+    PRIVATE_KEY=0x...
+    ```
+  </Accordion>
+
+  <Accordion title="Implement request signing on the server">
+    Never expose your API secret in client-side code. All authenticated requests should originate from your backend.
+  </Accordion>
+</AccordionGroup>
 
 ***
 
@@ -343,7 +327,7 @@ When initializing the L2 client, you must specify your wallet **signatureType** 
   <Accordion title="Error: INVALID_SIGNATURE">
     Your wallet's private key is incorrect or improperly formatted.
 
-    **Solution:**
+    **Solutions:**
 
     * Verify your private key is a valid hex string (starts with "0x")
     * Ensure you're using the correct key for the intended address
@@ -353,7 +337,7 @@ When initializing the L2 client, you must specify your wallet **signatureType** 
   <Accordion title="Error: NONCE_ALREADY_USED">
     The nonce you provided has already been used to create an API key.
 
-    **Solution:**
+    **Solutions:**
 
     * Use `deriveApiKey()` with the same nonce to retrieve existing credentials
     * Or use a different nonce with `createApiKey()`
@@ -365,13 +349,6 @@ When initializing the L2 client, you must specify your wallet **signatureType** 
     **Solution:** Check your Polymarket profile address at [polymarket.com/settings](https://polymarket.com/settings).
 
     If it does not exist or user has never logged into Polymarket.com, deploy it first before creating L2 authentication.
-  </Accordion>
-
-  <Accordion title="Lost API credentials but have nonce">
-    ```typescript  theme={null}
-    // Use deriveApiKey with the original nonce
-    const recovered = await client.deriveApiKey(originalNonce);
-    ```
   </Accordion>
 
   <Accordion title="Lost both credentials and nonce">
@@ -387,22 +364,14 @@ When initializing the L2 client, you must specify your wallet **signatureType** 
 
 ***
 
-## See Client Methods
+## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="Public Methods" icon="globe" href="/developers/CLOB/clients/methods-public">
-    Access market data, orderbooks, and prices.
+  <Card title="Place Your First Order" icon="plus" href="/trading/quickstart">
+    Learn how to create and submit orders.
   </Card>
 
-  <Card title="L1 Methods" icon="key" href="/developers/CLOB/clients/methods-l1">
-    Private key authentication to create or derive API keys (L2 headers).
-  </Card>
-
-  <Card title="L2 Methods" icon="lock" href="/developers/CLOB/clients/methods-l2">
-    Manage and close orders. Creating orders requires signer.
-  </Card>
-
-  <Card title="Builder Program Methods" icon="hammer" href="/developers/CLOB/clients/methods-builder">
-    Builder-specific operations for those in the Builders Program.
+  <Card title="Geographic Restrictions" icon="globe" href="/api-reference/geoblock">
+    Check trading availability by region.
   </Card>
 </CardGroup>

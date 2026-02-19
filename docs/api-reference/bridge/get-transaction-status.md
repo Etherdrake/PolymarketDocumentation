@@ -4,41 +4,16 @@
 
 # Get transaction status
 
-> Get the transaction status for all deposits and withdrawals associated with a given address.
-
-**Usage:**
-- Use the deposit address returned from the `/deposit` or `/withdraw` endpoint (EVM, SVM, or BTC address)
-- Poll this endpoint to track the progress of your deposits and withdrawals
-
-**Status Values:**
-- `DEPOSIT_DETECTED`: Funds detected but not yet processing
-- `PROCESSING`: Transaction is being routed and swapped
-- `ORIGIN_TX_CONFIRMED`: Origin transaction has been confirmed on source chain
-- `SUBMITTED`: Transaction has been submitted to destination chain
-- `COMPLETED`: Transaction completed successfully
-- `FAILED`: Transaction encountered an error and did not complete
-
-**Notes:**
-- Transactions typically complete within a few minutes, but may take longer depending on network conditions
-- An empty transactions array means no transactions have been made to this address yet
-
-
 
 
 ## OpenAPI
 
-````yaml api-reference/bridge-api-openapi.yaml get /status/{address}
+````yaml api-spec/bridge-openapi.yaml get /status/{address}
 openapi: 3.0.3
 info:
   title: Polymarket Bridge API
   version: 1.0.0
-  description: >
-    HTTP API for Polymarket bridge and swap operations. 
-
-
-    Polymarket uses USDC.e (Bridged USDC) on Polygon as collateral for all
-    trading activities. This API enables users to bridge assets from various
-    chains and swap them to USDC.e on Polygon for seamless trading.
+  description: HTTP API for Polymarket bridge and swap operations.
 servers:
   - url: https://bridge.polymarket.com
     description: Polymarket Bridge API
@@ -52,43 +27,6 @@ paths:
       tags:
         - Bridge
       summary: Get transaction status
-      description: >
-        Get the transaction status for all deposits and withdrawals associated
-        with a given address.
-
-
-        **Usage:**
-
-        - Use the deposit address returned from the `/deposit` or `/withdraw`
-        endpoint (EVM, SVM, or BTC address)
-
-        - Poll this endpoint to track the progress of your deposits and
-        withdrawals
-
-
-        **Status Values:**
-
-        - `DEPOSIT_DETECTED`: Funds detected but not yet processing
-
-        - `PROCESSING`: Transaction is being routed and swapped
-
-        - `ORIGIN_TX_CONFIRMED`: Origin transaction has been confirmed on source
-        chain
-
-        - `SUBMITTED`: Transaction has been submitted to destination chain
-
-        - `COMPLETED`: Transaction completed successfully
-
-        - `FAILED`: Transaction encountered an error and did not complete
-
-
-        **Notes:**
-
-        - Transactions typically complete within a few minutes, but may take
-        longer depending on network conditions
-
-        - An empty transactions array means no transactions have been made to
-        this address yet
       parameters:
         - name: address
           in: path

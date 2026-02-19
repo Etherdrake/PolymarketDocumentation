@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-reference/data-api-openapi.yaml get /trades
+````yaml api-spec/data-openapi.yaml get /trades
 openapi: 3.0.3
 info:
   title: Polymarket Data API

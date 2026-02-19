@@ -4,13 +4,11 @@
 
 # Get valid sports market types
 
-> Get a list of all valid sports market types available on the platform. Use these values when filtering markets by the sportsMarketTypes parameter.
-
 
 
 ## OpenAPI
 
-````yaml api-reference/gamma-openapi.json get /sports/market-types
+````yaml api-spec/gamma-openapi.yaml get /sports/market-types
 openapi: 3.0.3
 info:
   title: Markets API
@@ -45,10 +43,6 @@ paths:
       tags:
         - Sports
       summary: Get valid sports market types
-      description: >-
-        Get a list of all valid sports market types available on the platform.
-        Use these values when filtering markets by the sportsMarketTypes
-        parameter.
       operationId: getSportsMarketTypes
       responses:
         '200':

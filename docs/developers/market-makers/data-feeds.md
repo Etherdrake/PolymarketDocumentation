@@ -2,165 +2,159 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Data Feeds
+# Fetching Markets
 
-> Real-time and historical data sources for market makers
+> Three strategies for discovering and querying markets
 
-## Overview
+<Tip>
+  Both the events and markets endpoints are paginated. See
+  [pagination](#pagination) for details.
+</Tip>
 
-Market makers need fast, reliable data to price markets and manage inventory. Polymarket provides several data feeds at different latency and detail levels.
+There are three main strategies for retrieving market data, each optimized for different use cases:
 
-| Feed      | Latency    | Use Case                  | Access |
-| --------- | ---------- | ------------------------- | ------ |
-| WebSocket | \~100ms    | Standard MM operations    | Public |
-| Gamma API | \~1s       | Market metadata, indexing | Public |
-| Onchain   | Block time | Settlement, resolution    | Public |
+1. **By Slug** — Best for fetching specific individual markets or events
+2. **By Tags** — Ideal for filtering markets by category or sport
+3. **Via Events Endpoint** — Most efficient for retrieving all active markets
 
-## WebSocket Feeds
+***
 
-The WebSocket API provides real-time market data with low latency. This is sufficient for most market making strategies.
+## Fetch by Slug
 
-### Connecting
+**Use case:** When you need to retrieve a specific market or event that you already know about.
 
-```typescript  theme={null}
-const ws = new WebSocket("wss://ws-subscriptions-clob.polymarket.com/ws/market");
+Individual markets and events are best fetched using their unique slug identifier. The slug can be found directly in the Polymarket frontend URL.
 
-ws.onopen = () => {
-  // Subscribe to orderbook updates
-  ws.send(JSON.stringify({
-    type: "market",
-    assets_ids: [tokenId]
-  }));
-};
+### How to Extract the Slug
 
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  // Handle orderbook update
-};
+From any Polymarket URL, the slug is the path segment after `/event/`:
+
+```
+https://polymarket.com/event/fed-decision-in-october
+                                ↑
+                      Slug: fed-decision-in-october
 ```
 
-### Available Channels
+### Examples
 
-| Channel  | Message Types                              | Documentation                                               |
-| -------- | ------------------------------------------ | ----------------------------------------------------------- |
-| `market` | `book`, `price_change`, `last_trade_price` | [Market Channel](/developers/CLOB/websocket/market-channel) |
-| `user`   | Order fills, cancellations                 | [User Channel](/developers/CLOB/websocket/user-channel)     |
+```bash  theme={null}
+# Fetch an event by slug (query parameter)
+curl "https://gamma-api.polymarket.com/events?slug=fed-decision-in-october"
 
-### User Channel (Authenticated)
-
-Monitor your order activity in real-time:
-
-```typescript  theme={null}
-// Requires authentication
-const userWs = new WebSocket("wss://ws-subscriptions-clob.polymarket.com/ws/user");
-
-userWs.onopen = () => {
-  userWs.send(JSON.stringify({
-    type: "user",
-    auth: {
-      apiKey: "your-api-key",
-      secret: "your-secret",
-      passphrase: "your-passphrase"
-    },
-    markets: [conditionId] // Optional: filter to specific markets
-  }));
-};
-
-userWs.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  // Handle order fills, cancellations, etc.
-};
+# Or use the path endpoint
+curl "https://gamma-api.polymarket.com/events/slug/fed-decision-in-october"
 ```
 
-See [WebSocket Authentication](/developers/CLOB/websocket/wss-auth) for auth details.
+```bash  theme={null}
+# Fetch a market by slug (query parameter)
+curl "https://gamma-api.polymarket.com/markets?slug=fed-decision-in-october"
 
-### Best Practices
-
-1. **Reconnection logic** - Implement automatic reconnection with exponential backoff
-2. **Heartbeats** - Respond to ping messages to maintain connection
-3. **Local orderbook** - Maintain a local copy and apply incremental updates
-4. **Sequence numbers** - Track sequence to detect missed messages
-
-See [WebSocket Overview](/developers/CLOB/websocket/wss-overview) for complete documentation.
-
-## Gamma API
-
-The Gamma API provides market metadata and indexing. Use it for:
-
-* Market titles, slugs, categories
-* Event/condition mapping
-* Volume and liquidity data
-* Outcome token metadata
-
-### Get Markets
-
-```typescript  theme={null}
-const response = await fetch(
-  "https://gamma-api.polymarket.com/markets?active=true"
-);
-const markets = await response.json();
+# Or use the path endpoint
+curl "https://gamma-api.polymarket.com/markets/slug/fed-decision-in-october"
 ```
 
-### Get Events
+***
 
-```typescript  theme={null}
-const response = await fetch(
-  "https://gamma-api.polymarket.com/events?slug=us-presidential-election"
-);
-const event = await response.json();
+## Fetch by Tags
+
+**Use case:** When you want to filter markets by category, sport, or topic.
+
+Tags provide a way to categorize and filter markets. You can discover available tags and then use them to filter your requests.
+
+### Discover Available Tags
+
+**General tags:** `GET /tags` (Gamma API)
+
+**Sports tags and metadata:** `GET /sports` (Gamma API)
+
+The `/sports` endpoint returns metadata for sports including tag IDs, images, resolution sources, and series information.
+
+### Filter by Tag
+
+Once you have tag IDs, use the `tag_id` parameter in both events and markets endpoints:
+
+```bash  theme={null}
+# Fetch events for a specific tag
+curl "https://gamma-api.polymarket.com/events?tag_id=100381&limit=10&active=true&closed=false"
 ```
 
-### Key Fields for MMs
+### Additional Tag Filtering
 
-| Field           | Description              |
-| --------------- | ------------------------ |
-| `conditionId`   | Unique market identifier |
-| `clobTokenIds`  | Outcome token IDs        |
-| `outcomes`      | Outcome names            |
-| `outcomePrices` | Current outcome prices   |
-| `volume`        | Trading volume           |
-| `liquidity`     | Current liquidity        |
+You can also:
 
-See [Gamma API Overview](/developers/gamma-markets-api/overview) for complete documentation.
+* Use `related_tags=true` to include related tag markets
+* Exclude specific tags with `exclude_tag_id`
 
-## Onchain Data
+```bash  theme={null}
+# Include related tags
+curl "https://gamma-api.polymarket.com/events?tag_id=100381&related_tags=true&active=true&closed=false"
+```
 
-For settlement, resolution, and position tracking, market makers may query onchain data directly.
+***
 
-### Data Sources
+## Fetch All Active Markets
 
-| Data                 | Source              | Use Case                     |
-| -------------------- | ------------------- | ---------------------------- |
-| Token balances       | ERC1155 `balanceOf` | Position tracking            |
-| Resolution           | UMA Oracle events   | Pre-resolution risk modeling |
-| Condition resolution | CTF contract        | Post-resolution redemption   |
+**Use case:** When you need to retrieve all available active markets, typically for broader analysis or market discovery.
 
-### RPC Providers
+The most efficient approach is to use the events endpoint with `active=true&closed=false`, as events contain their associated markets.
 
-Common providers for Polygon:
+```bash  theme={null}
+curl "https://gamma-api.polymarket.com/events?active=true&closed=false&limit=100"
+```
 
-* Alchemy
-* QuickNode
-* Infura
+### Key Parameters
 
-### UMA Oracle
+| Parameter   | Description                                                                                                      |
+| ----------- | ---------------------------------------------------------------------------------------------------------------- |
+| `order`     | Field to order by (`volume_24hr`, `volume`, `liquidity`, `start_date`, `end_date`, `competitive`, `closed_time`) |
+| `ascending` | Sort direction (`true` for ascending, `false` for descending). Default: `false`                                  |
+| `active`    | Filter by active status (`true` for live tradable events)                                                        |
+| `closed`    | Filter by closed status                                                                                          |
+| `limit`     | Results per page                                                                                                 |
+| `offset`    | Number of results to skip for pagination                                                                         |
 
-Markets are resolved via UMA's Optimistic Oracle. Monitor resolution events for risk management.
+```bash  theme={null}
+# Get the highest volume active events
+curl "https://gamma-api.polymarket.com/events?active=true&closed=false&order=volume_24hr&ascending=false&limit=100"
+```
 
-See [Resolution](/developers/resolution/UMA) for details on the resolution process.
+***
 
-## Related Documentation
+## Pagination
 
-<CardGroup cols={3}>
-  <Card title="WebSocket Overview" icon="plug" href="/developers/CLOB/websocket/wss-overview">
-    Complete WebSocket documentation
+All list endpoints return paginated responses with `limit` and `offset` parameters:
+
+```bash  theme={null}
+# Page 1: First 50 results
+curl "https://gamma-api.polymarket.com/events?active=true&closed=false&limit=50&offset=0"
+
+# Page 2: Next 50 results
+curl "https://gamma-api.polymarket.com/events?active=true&closed=false&limit=50&offset=50"
+
+# Page 3: Next 50 results
+curl "https://gamma-api.polymarket.com/events?active=true&closed=false&limit=50&offset=100"
+```
+
+***
+
+## Best Practices
+
+1. **For individual markets:** Use the slug method for direct lookups
+2. **For category browsing:** Use tag filtering to reduce API calls
+3. **For complete market discovery:** Use the events endpoint with pagination
+4. **Always include `active=true&closed=false`** unless you specifically need historical data
+5. **Use the events endpoint** and work backwards — events contain their associated markets, reducing the number of API calls needed
+
+***
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="code" href="/api-reference/introduction">
+    Full endpoint documentation with parameters and response schemas.
   </Card>
 
-  <Card title="Gamma API" icon="database" href="/developers/gamma-markets-api/overview">
-    Market metadata and indexing
-  </Card>
-
-  <Card title="Resolution" icon="gavel" href="/developers/resolution/UMA">
-    UMA Oracle resolution process
+  <Card title="Subgraph" icon="share-nodes" href="/market-data/subgraph">
+    Query onchain data directly from the Polymarket subgraph.
   </Card>
 </CardGroup>

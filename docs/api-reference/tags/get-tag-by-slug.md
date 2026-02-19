@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-reference/gamma-openapi.json get /tags/slug/{slug}
+````yaml api-spec/gamma-openapi.yaml get /tags/slug/{slug}
 openapi: 3.0.3
 info:
   title: Markets API

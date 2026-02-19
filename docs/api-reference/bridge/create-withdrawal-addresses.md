@@ -4,39 +4,16 @@
 
 # Create withdrawal addresses
 
-> Generate unique deposit addresses for withdrawing USDC.e from your Polymarket wallet to any supported chain and token.
-
-<Card>
-**⚠️ Important:** Do not pre-generate withdrawal addresses. Only generate them when you are ready to execute the withdrawal. Each address is configured for a specific destination.
-</Card>
-
-**How it works:**
-1. Specify your Polymarket wallet address, destination chain, token, and recipient address
-2. Receive deposit addresses for each blockchain type (EVM, Solana, Bitcoin)
-3. Send USDC.e from your Polymarket wallet to the appropriate deposit address
-4. Funds are automatically bridged and swapped to your desired token
-5. Funds arrive at your destination wallet
-
-**Supported Destinations:**
-Use `/supported-assets` to see all available chains and tokens you can withdraw to.
-
-
 
 
 ## OpenAPI
 
-````yaml api-reference/bridge-api-openapi.yaml post /withdraw
+````yaml api-spec/bridge-openapi.yaml post /withdraw
 openapi: 3.0.3
 info:
   title: Polymarket Bridge API
   version: 1.0.0
-  description: >
-    HTTP API for Polymarket bridge and swap operations. 
-
-
-    Polymarket uses USDC.e (Bridged USDC) on Polygon as collateral for all
-    trading activities. This API enables users to bridge assets from various
-    chains and swap them to USDC.e on Polygon for seamless trading.
+  description: HTTP API for Polymarket bridge and swap operations.
 servers:
   - url: https://bridge.polymarket.com
     description: Polymarket Bridge API
@@ -50,40 +27,6 @@ paths:
       tags:
         - Bridge
       summary: Create withdrawal addresses
-      description: >
-        Generate unique deposit addresses for withdrawing USDC.e from your
-        Polymarket wallet to any supported chain and token.
-
-
-        <Card>
-
-        **⚠️ Important:** Do not pre-generate withdrawal addresses. Only
-        generate them when you are ready to execute the withdrawal. Each address
-        is configured for a specific destination.
-
-        </Card>
-
-
-        **How it works:**
-
-        1. Specify your Polymarket wallet address, destination chain, token, and
-        recipient address
-
-        2. Receive deposit addresses for each blockchain type (EVM, Solana,
-        Bitcoin)
-
-        3. Send USDC.e from your Polymarket wallet to the appropriate deposit
-        address
-
-        4. Funds are automatically bridged and swapped to your desired token
-
-        5. Funds arrive at your destination wallet
-
-
-        **Supported Destinations:**
-
-        Use `/supported-assets` to see all available chains and tokens you can
-        withdraw to.
       requestBody:
         required: true
         content:
