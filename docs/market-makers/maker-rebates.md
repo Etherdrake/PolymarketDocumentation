@@ -6,20 +6,13 @@
 
 > Earn daily USDC rebates by providing liquidity on Polymarket
 
-Polymarket has enabled taker fees on **15-minute crypto markets**, **5-minute crypto markets**, **NCAAB (college basketball)**, and **Serie A** markets. These fees fund a **Maker Rebates** program that pays daily USDC rebates to liquidity providers.
+Polymarket has enabled taker fees across multiple market categories. These fees fund a **Maker Rebates** program that pays daily USDC rebates to liquidity providers.
 
 ***
 
-## Why Maker Rebates?
+## Why Maker Rebates
 
-Sports markets benefit from the same dynamics as crypto markets. When liquidity is deeper:
-
-* Spreads tend to be tighter
-* Price impact is lower
-* Fills are more reliable
-* Markets are more resilient during volatility
-
-Maker Rebates incentivize **consistent, competitive quoting** so everyone gets a better trading experience.
+Deeper liquidity means tighter spreads, lower price impact, more reliable fills, and greater resilience during volatility. Maker Rebates incentivize **consistent, competitive quoting** so everyone gets a better trading experience.
 
 ***
 
@@ -42,16 +35,24 @@ Rebates are paid daily in USDC, directly to your wallet.
 
 Maker Rebates are funded by taker fees collected in eligible markets. A percentage of these fees are redistributed to makers who keep the markets liquid. The rebate percentage differs by market type.
 
-| Market Type             | Period        | Maker Rebate | Distribution Method |
-| ----------------------- | ------------- | ------------ | ------------------- |
-| 15-Min Crypto           | Jan 19, 2026+ | 20%          | Fee-curve weighted  |
-| 5-Min Crypto            | Feb 12, 2026+ | 20%          | Fee-curve weighted  |
-| Sports (NCAAB, Serie A) | Feb 18, 2026+ | 25%          | Fee-curve weighted  |
+| Category        | Maker Rebate | Distribution Method |
+| --------------- | ------------ | ------------------- |
+| Crypto          | 20%          | Fee-curve weighted  |
+| Sports          | 25%          | Fee-curve weighted  |
+| Finance         | 50%          | Fee-curve weighted  |
+| Politics        | 25%          | Fee-curve weighted  |
+| Economics       | 25%          | Fee-curve weighted  |
+| Culture         | 25%          | Fee-curve weighted  |
+| Weather         | 25%          | Fee-curve weighted  |
+| Other / General | 25%          | Fee-curve weighted  |
+| Mentions        | 25%          | Fee-curve weighted  |
+| Tech            | 25%          | Fee-curve weighted  |
+| Geopolitics     | —            | Fee-free            |
 
 <Note>
-  Polymarket collects taker fees in eligible markets (15-minute crypto, 5-minute
-  crypto, NCAAB, and Serie A). The rebate percentage is at the sole discretion
-  of Polymarket and may change over time.
+  Polymarket collects taker fees in eligible markets across all fee-enabled categories.
+  The rebate percentage is at the sole discretion of Polymarket
+  and may change over time.
 </Note>
 
 ***
@@ -68,10 +69,19 @@ fee_equivalent = C × p × feeRate × (p × (1 - p))^exponent
 
 Where **C** = number of shares traded and **p** = price of the shares. The fee parameters differ by market type:
 
-| Parameter | Sports (NCAAB, Serie A) | 5-Min & 15-Min Crypto |
-| --------- | ----------------------- | --------------------- |
-| Fee Rate  | 0.0175                  | 0.25                  |
-| Exponent  | 1                       | 2                     |
+| Category        | Fee Rate | Exponent |
+| --------------- | -------- | -------- |
+| Crypto          | 0.072    | 1        |
+| Sports          | 0.03     | 1        |
+| Finance         | 0.04     | 1        |
+| Politics        | 0.04     | 1        |
+| Economics       | 0.03     | 0.5      |
+| Culture         | 0.05     | 1        |
+| Weather         | 0.025    | 0.5      |
+| Other / General | 0.2      | 2        |
+| Mentions        | 0.25     | 2        |
+| Tech            | 0.04     | 1        |
+| Geopolitics     | 0        | —        |
 
 Your daily rebate:
 
@@ -93,65 +103,9 @@ Taker fees are calculated in USDC and vary based on the share price. However, fe
   </div>
 </Frame>
 
-### Fee Table (100 shares)
+### Fee Tables (100 Shares)
 
-<Tabs>
-  <Tab title="5-Min & 15-Min Crypto">
-    | Price  | Trade Value | Fee (USDC) | Effective Rate |
-    | ------ | ----------- | ---------- | -------------- |
-    | \$0.01 | \$1         | \$0.00     | 0.00%          |
-    | \$0.05 | \$5         | \$0.003    | 0.06%          |
-    | \$0.10 | \$10        | \$0.02     | 0.20%          |
-    | \$0.15 | \$15        | \$0.06     | 0.41%          |
-    | \$0.20 | \$20        | \$0.13     | 0.64%          |
-    | \$0.25 | \$25        | \$0.22     | 0.88%          |
-    | \$0.30 | \$30        | \$0.33     | 1.10%          |
-    | \$0.35 | \$35        | \$0.45     | 1.29%          |
-    | \$0.40 | \$40        | \$0.58     | 1.44%          |
-    | \$0.45 | \$45        | \$0.69     | 1.53%          |
-    | \$0.50 | \$50        | \$0.78     | **1.56%**      |
-    | \$0.55 | \$55        | \$0.84     | 1.53%          |
-    | \$0.60 | \$60        | \$0.86     | 1.44%          |
-    | \$0.65 | \$65        | \$0.84     | 1.29%          |
-    | \$0.70 | \$70        | \$0.77     | 1.10%          |
-    | \$0.75 | \$75        | \$0.66     | 0.88%          |
-    | \$0.80 | \$80        | \$0.51     | 0.64%          |
-    | \$0.85 | \$85        | \$0.35     | 0.41%          |
-    | \$0.90 | \$90        | \$0.18     | 0.20%          |
-    | \$0.95 | \$95        | \$0.05     | 0.06%          |
-    | \$0.99 | \$99        | \$0.00     | 0.00%          |
-
-    The maximum effective fee rate is **1.56%** at 50% probability. Fees decrease symmetrically toward both extremes.
-  </Tab>
-
-  <Tab title="Sports (NCAAB, Serie A)">
-    | Price  | Trade Value | Fee (USDC) | Effective Rate |
-    | ------ | ----------- | ---------- | -------------- |
-    | \$0.01 | \$1         | \$0.00     | 0.02%          |
-    | \$0.05 | \$5         | \$0.00     | 0.08%          |
-    | \$0.10 | \$10        | \$0.02     | 0.16%          |
-    | \$0.15 | \$15        | \$0.03     | 0.22%          |
-    | \$0.20 | \$20        | \$0.06     | 0.28%          |
-    | \$0.25 | \$25        | \$0.08     | 0.33%          |
-    | \$0.30 | \$30        | \$0.11     | 0.37%          |
-    | \$0.35 | \$35        | \$0.14     | 0.40%          |
-    | \$0.40 | \$40        | \$0.17     | 0.42%          |
-    | \$0.45 | \$45        | \$0.19     | 0.43%          |
-    | \$0.50 | \$50        | \$0.22     | **0.44%**      |
-    | \$0.55 | \$55        | \$0.24     | 0.43%          |
-    | \$0.60 | \$60        | \$0.25     | 0.42%          |
-    | \$0.65 | \$65        | \$0.26     | 0.40%          |
-    | \$0.70 | \$70        | \$0.26     | 0.37%          |
-    | \$0.75 | \$75        | \$0.25     | 0.33%          |
-    | \$0.80 | \$80        | \$0.22     | 0.28%          |
-    | \$0.85 | \$85        | \$0.19     | 0.22%          |
-    | \$0.90 | \$90        | \$0.14     | 0.16%          |
-    | \$0.95 | \$95        | \$0.08     | 0.08%          |
-    | \$0.99 | \$99        | \$0.02     | 0.02%          |
-
-    The maximum effective fee rate is **0.44%** at 50% probability. Fees decrease symmetrically toward both extremes.
-  </Tab>
-</Tabs>
+For detailed fee tables for each market category, see the [Fees](/trading/fees) page.
 
 ### Fee Precision
 
@@ -159,48 +113,43 @@ Fees are rounded to 4 decimal places. The smallest fee charged is 0.0001 USDC. A
 
 ***
 
-## Which Markets Are Eligible?
+## Which Markets Are Eligible
 
-The following market types have taker fees enabled and are eligible for maker rebates:
+The following market categories have taker fees enabled and are eligible for maker rebates: Crypto, Sports, Finance, Politics, Economics, Culture, Weather, Tech, Mentions, and Other / General.
 
-* **15-minute crypto markets**
-* **5-minute crypto markets**
-* **NCAAB (college basketball) markets** (starting February 18, 2026 for new markets)
-* **Serie A markets** (starting February 18, 2026 for new markets)
-
-All other markets remain fee-free.
+<Note>
+  Fees apply only to markets deployed on or after the activation date. Pre-existing markets are unaffected. Markets with fees enabled have `feesEnabled` set to `true` on the market object.
+</Note>
 
 ***
 
 ## FAQ
 
 <AccordionGroup>
-  <Accordion title="How do I qualify for maker rebates?">
+  <Accordion title="How do I qualify for maker rebates">
     Place orders that add liquidity to the book and get filled (i.e., your
     liquidity is taken by another trader).
   </Accordion>
 
-  <Accordion title="When are rebates paid?">Daily, in USDC.</Accordion>
+  <Accordion title="When are rebates paid">Daily, in USDC.</Accordion>
 
-  <Accordion title="How are rebates calculated?">
+  <Accordion title="How are rebates calculated">
     Rebates are proportional to your share of executed maker liquidity in each
     eligible market. Totals are calculated per market, so you only compete with
     other makers in the same market.
   </Accordion>
 
-  <Accordion title="Where does the rebate pool come from?">
+  <Accordion title="Where does the rebate pool come from">
     Taker fees collected in eligible markets are allocated to the maker rebate
     pool and distributed daily.
   </Accordion>
 
-  <Accordion title="Which markets have fees enabled?">
-    15-minute crypto markets, 5-minute crypto markets, and starting February 18,
-    2026, NCAAB and Serie A markets.
+  <Accordion title="Which markets have fees enabled">
+    Crypto, Sports, Finance, Politics, Economics, Culture, Weather, Tech, Mentions, and Other / General markets. Fees only apply to markets deployed on or after the activation date.
   </Accordion>
 
-  <Accordion title="Is Polymarket charging fees on all markets?">
-    No. Fees apply only to 15-minute crypto, 5-minute crypto, NCAAB, and Serie A
-    markets. All other markets remain fee-free.
+  <Accordion title="Is Polymarket charging fees on all markets">
+    Fees apply to markets in fee-enabled categories. Markets with fees enabled have `feesEnabled` set to `true` on the market object.
   </Accordion>
 </AccordionGroup>
 
@@ -217,3 +166,6 @@ All other markets remain fee-free.
     Start placing orders on Polymarket.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).
