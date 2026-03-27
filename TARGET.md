@@ -63,7 +63,7 @@ https://docs.polymarket.com/api-reference/market-data/get-order-books-request-bo
 https://docs.polymarket.com/api-reference/market-data/get-market-price.md
 https://docs.polymarket.com/api-reference/market-data/get-market-prices-query-parameters.md
 https://docs.polymarket.com/api-reference/market-data/get-market-prices-request-body.md
-https://docs.polymarket.com/api-reference/market-data/get-midpoint-price.md
+https://docs.polymarket.com/api-reference/data/get-midpoint-price.md
 https://docs.polymarket.com/api-reference/market-data/get-midpoint-prices-query-parameters.md
 https://docs.polymarket.com/api-reference/market-data/get-midpoint-prices-request-body.md
 https://docs.polymarket.com/api-reference/market-data/get-spread.md
@@ -339,3 +339,31 @@ https://docs.polymarket.com/trading/clients/builder.md
 https://docs.polymarket.com/index.md
 https://docs.polymarket.com/resources/contract-addresses.md
 https://docs.polymarket.com/resources/error-codes.md
+
+## NEW - API Reference - Rebates (2026-03-27)
+https://docs.polymarket.com/api-reference/rebates/get-current-rebated-fees-for-a-maker.md
+
+## NEW - API Reference - Relayer
+https://docs.polymarket.com/api-reference/relayer-api-keys/get-all-relayer-api-keys.md
+https://docs.polymarket.com/api-reference/relayer/check-if-a-safe-is-deployed.md
+https://docs.polymarket.com/api-reference/relayer/get-a-transaction-by-id.md
+https://docs.polymarket.com/api-reference/relayer/get-current-nonce-for-a-user.md
+https://docs.polymarket.com/api-reference/relayer/get-recent-transactions-for-a-user.md
+https://docs.polymarket.com/api-reference/relayer/get-relayer-address-and-nonce.md
+https://docs.polymarket.com/api-reference/relayer/submit-a-transaction.md
+
+## NEW - API Reference - Rewards
+https://docs.polymarket.com/api-reference/rewards/get-current-active-rewards-configurations.md
+https://docs.polymarket.com/api-reference/rewards/get-earnings-for-user-by-date.md
+https://docs.polymarket.com/api-reference/rewards/get-multiple-markets-with-rewards.md
+https://docs.polymarket.com/api-reference/rewards/get-raw-rewards-for-a-specific-market.md
+https://docs.polymarket.com/api-reference/rewards/get-reward-percentages-for-user.md
+https://docs.polymarket.com/api-reference/rewards/get-total-earnings-for-user-by-date.md
+https://docs.polymarket.com/api-reference/rewards/get-user-earnings-and-markets-configuration.md
+
+## NEW - Resources
+https://docs.polymarket.com/resources/blockchain-data.md
+https://docs.polymarket.com/resources/referral-program.md
+
+## NEW - Trading
+https://docs.polymarket.com/trading/matching-engine.md
