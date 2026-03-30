@@ -158,3 +158,6 @@ curl "https://gamma-api.polymarket.com/events?active=true&closed=false&limit=50&
     Query onchain data directly from the Polymarket subgraph.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

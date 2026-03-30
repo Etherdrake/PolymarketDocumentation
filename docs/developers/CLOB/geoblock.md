@@ -71,6 +71,7 @@ The following countries are restricted from placing orders on Polymarket. Countr
 | LY           | Libya                                | Blocked    |
 | MM           | Myanmar                              | Blocked    |
 | NI           | Nicaragua                            | Blocked    |
+| NL           | Netherlands                          | Blocked    |
 | PL           | Poland                               | Close-only |
 | RU           | Russia                               | Blocked    |
 | SG           | Singapore                            | Close-only |
@@ -162,11 +163,26 @@ The geoblocking system includes:
         print("Trading available")
     ```
   </Tab>
+
+  <Tab title="Rust">
+    ```rust  theme={null}
+    use polymarket_client_sdk::clob::Client;
+
+    let client = Client::default();
+    let geo = client.check_geoblock().await?;
+
+    if geo.blocked {
+        println!("Trading not available in {}", geo.country);
+    } else {
+        println!("Trading available");
+    }
+    ```
+  </Tab>
 </Tabs>
 
 ***
 
-## Why These Restrictions?
+## Why These Restrictions
 
 Geographic restrictions are implemented to ensure compliance with:
 
@@ -191,3 +207,6 @@ If you believe you are incorrectly restricted or have questions about geographic
     Start placing orders (from eligible regions).
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

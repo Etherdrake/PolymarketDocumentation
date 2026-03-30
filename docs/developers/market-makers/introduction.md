@@ -50,7 +50,7 @@ Market makers are essential to Polymarket's ecosystem — they provide liquidity
 
 ***
 
-## What's in This Section
+## What Is in This Section
 
 <CardGroup cols={2}>
   <Card title="Getting Started" icon="gear" href="/market-makers/getting-started">
@@ -81,3 +81,6 @@ Market makers are essential to Polymarket's ecosystem — they provide liquidity
 ## Support
 
 For market maker onboarding and support, contact [support@polymarket.com](mailto:support@polymarket.com).
+
+
+Built with [Mintlify](https://mintlify.com).

@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/data-openapi.yaml get /positions
+````yaml /api-spec/data-openapi.yaml get /positions
 openapi: 3.0.3
 info:
   title: Polymarket Data API
@@ -219,3 +219,5 @@ components:
         - error
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

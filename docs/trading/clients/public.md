@@ -46,7 +46,7 @@ Public methods require the client to initialize with the host URL and Polygon ch
 
 ***
 
-### getOk()
+### getOk
 
 Health check endpoint to verify the CLOB service is operational.
 
@@ -60,7 +60,7 @@ async getOk(): Promise<any>
 
 ***
 
-### getMarket()
+### getMarket
 
 Get details for a single market by condition ID.
 
@@ -186,7 +186,7 @@ async getMarket(conditionId: string): Promise<Market>
 
 ***
 
-### getMarkets()
+### getMarkets
 
 Get details for multiple markets paginated.
 
@@ -208,7 +208,7 @@ async getMarkets(): Promise<PaginationPayload>
 
 ***
 
-### getSimplifiedMarkets()
+### getSimplifiedMarkets
 
 Get simplified market data paginated for faster loading.
 
@@ -230,7 +230,7 @@ async getSimplifiedMarkets(): Promise<PaginationPayload>
 
 ***
 
-### getSamplingMarkets()
+### getSamplingMarkets
 
 Get markets eligible for sampling/liquidity rewards.
 
@@ -240,7 +240,7 @@ async getSamplingMarkets(): Promise<PaginationPayload>
 
 ***
 
-### getSamplingSimplifiedMarkets()
+### getSamplingSimplifiedMarkets
 
 Get simplified market data for markets eligible for sampling/liquidity rewards.
 
@@ -254,7 +254,7 @@ async getSamplingSimplifiedMarkets(): Promise<PaginationPayload>
 
 ***
 
-### calculateMarketPrice()
+### calculateMarketPrice
 
 Calculate the estimated price for a market order of a given size.
 
@@ -289,7 +289,7 @@ async calculateMarketPrice(
 
 ***
 
-### getOrderBook()
+### getOrderBook
 
 Get the order book for a specific token ID.
 
@@ -335,7 +335,7 @@ async getOrderBook(tokenID: string): Promise<OrderBookSummary>
 
 ***
 
-### getOrderBooks()
+### getOrderBooks
 
 Get order books for multiple token IDs.
 
@@ -357,7 +357,7 @@ async getOrderBooks(params: BookParams[]): Promise<OrderBookSummary[]>
 
 ***
 
-### getPrice()
+### getPrice
 
 Get the current best price for buying or selling a token ID.
 
@@ -374,7 +374,7 @@ async getPrice(
 
 ***
 
-### getPrices()
+### getPrices
 
 Get the current best prices for multiple token IDs.
 
@@ -388,7 +388,7 @@ async getPrices(params: BookParams[]): Promise<PricesResponse>
 
 ***
 
-### getMidpoint()
+### getMidpoint
 
 Get the midpoint price (average of best bid and best ask) for a token ID.
 
@@ -402,7 +402,7 @@ async getMidpoint(tokenID: string): Promise<any>
 
 ***
 
-### getMidpoints()
+### getMidpoints
 
 Get the midpoint prices for multiple token IDs.
 
@@ -416,7 +416,7 @@ async getMidpoints(params: BookParams[]): Promise<any>
 
 ***
 
-### getSpread()
+### getSpread
 
 Get the spread (difference between best ask and best bid) for a token ID.
 
@@ -430,7 +430,7 @@ async getSpread(tokenID: string): Promise<SpreadResponse>
 
 ***
 
-### getSpreads()
+### getSpreads
 
 Get the spreads for multiple token IDs.
 
@@ -444,7 +444,7 @@ async getSpreads(params: BookParams[]): Promise<SpreadsResponse>
 
 ***
 
-### getPricesHistory()
+### getPricesHistory
 
 Get historical price data for a token.
 
@@ -486,7 +486,7 @@ async getPricesHistory(params: PriceHistoryFilterParams): Promise<MarketPrice[]>
 
 ***
 
-### getLastTradePrice()
+### getLastTradePrice
 
 Get the price of the most recent trade for a token.
 
@@ -504,7 +504,7 @@ async getLastTradePrice(tokenID: string): Promise<LastTradePrice>
 
 ***
 
-### getLastTradesPrices()
+### getLastTradesPrices
 
 Get the most recent trade prices for multiple tokens.
 
@@ -526,7 +526,7 @@ async getLastTradesPrices(params: BookParams[]): Promise<LastTradePriceWithToken
 
 ***
 
-### getMarketTradesEvents()
+### getMarketTradesEvents
 
 Get recent trade events for a market.
 
@@ -584,7 +584,7 @@ async getMarketTradesEvents(conditionID: string): Promise<MarketTradeEvent[]>
 
 ***
 
-### getFeeRateBps()
+### getFeeRateBps
 
 Get the fee rate in basis points for a token.
 
@@ -598,7 +598,7 @@ async getFeeRateBps(tokenID: string): Promise<number>
 
 ***
 
-### getTickSize()
+### getTickSize
 
 Get the tick size (minimum price increment) for a market.
 
@@ -612,7 +612,7 @@ async getTickSize(tokenID: string): Promise<TickSize>
 
 ***
 
-### getNegRisk()
+### getNegRisk
 
 Check if a market uses negative risk (binary complementary tokens).
 
@@ -626,9 +626,9 @@ async getNegRisk(tokenID: string): Promise<boolean>
 
 ***
 
-## Time & Server Info
+## Time and Server Info
 
-### getServerTime()
+### getServerTime
 
 Get the current server timestamp.
 
@@ -661,3 +661,6 @@ async getServerTime(): Promise<number>
     Real-time market data streaming.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

@@ -12,7 +12,7 @@ Returns default values of "0.5" for price and empty string for side if no trades
 
 ## OpenAPI
 
-````yaml api-spec/clob-openapi.yaml get /last-trade-price
+````yaml /api-spec/clob-openapi.yaml get /last-trade-price
 openapi: 3.1.0
 info:
   title: Polymarket CLOB API
@@ -38,6 +38,8 @@ tags:
     description: User notification endpoints
   - name: Rewards
     description: Rewards and earnings endpoints
+  - name: Rebates
+    description: Maker rebate endpoints
 paths:
   /last-trade-price:
     get:
@@ -110,3 +112,5 @@ components:
           description: Error message
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

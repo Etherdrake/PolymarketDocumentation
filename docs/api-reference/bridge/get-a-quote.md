@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/bridge-openapi.yaml post /quote
+````yaml /api-spec/bridge-openapi.yaml post /quote
 openapi: 3.0.3
 info:
   title: Polymarket Bridge API
@@ -222,3 +222,5 @@ components:
           example: 0
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

@@ -67,3 +67,6 @@ The operation is atomic — if any step fails, the entire transaction reverts.
     Place orders using your newly split tokens
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

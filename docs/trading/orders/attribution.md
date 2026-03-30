@@ -33,7 +33,7 @@ Each builder receives API credentials from their [Builder Profile](https://polym
 
 ***
 
-## Remote Signing (Recommended)
+## Remote Signing
 
 Remote signing keeps your builder credentials secure on a server you control. The user's client sends order details to your server, which adds the builder headers before forwarding to the CLOB.
 
@@ -165,6 +165,27 @@ Point the CLOB client to your signing server:
   # Orders automatically include builder headers
   response = client.create_and_post_order(...)
   ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::auth::builder::Config as BuilderConfig;
+  use polymarket_client_sdk::clob::types::SignatureType;
+
+  // First, authenticate as a normal user
+  let client = Client::new("https://clob.polymarket.com", Config::default())?
+      .authentication_builder(&signer)
+      .signature_type(SignatureType::GnosisSafe)
+      .authenticate()
+      .await?;
+
+  // Then promote to builder with remote signing
+  let builder_config = BuilderConfig::remote(
+      "https://your-server.com/sign",
+      Some("optional-auth-token".to_owned()),
+  )?;
+  let client = client.promote_to_builder(builder_config).await?;
+
+  // Orders automatically include builder headers
+  ```
 </CodeGroup>
 
 ***
@@ -235,6 +256,21 @@ Sign orders locally when you control the entire order placement flow (e.g., your
   # Orders automatically include builder headers
   response = client.create_and_post_order(...)
   ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::auth::{Credentials, builder::Config as BuilderConfig};
+
+  let builder_creds = Credentials::new(
+      std::env::var("POLY_BUILDER_API_KEY")?.parse()?,
+      std::env::var("POLY_BUILDER_SECRET")?,
+      std::env::var("POLY_BUILDER_PASSPHRASE")?,
+  );
+
+  let builder_config = BuilderConfig::local(builder_creds);
+  let client = client.promote_to_builder(builder_config).await?;
+
+  // Orders automatically include builder headers
+  ```
 </CodeGroup>
 
 ***
@@ -281,6 +317,18 @@ Query trades attributed to your builder account to verify attribution is working
       market="0xbd31dc8a..."
   )
   ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::request::TradesRequest;
+
+  let trades = client.builder_trades(&TradesRequest::default(), None).await?;
+
+  // Filtered by market
+  let request = TradesRequest::builder()
+      .market("0xbd31dc8a...".parse()?)
+      .build();
+  let market_trades = client.builder_trades(&request, None).await?;
+  ```
 </CodeGroup>
 
 Each `BuilderTrade` includes: `id`, `market`, `assetId`, `side`, `size`, `price`, `status`, `outcome`, `owner`, `maker`, `transactionHash`, `matchTime`, `fee`, and `feeUsdc`.
@@ -296,6 +344,10 @@ If your credentials are compromised, revoke them immediately:
 
   ```python Python theme={null}
   client.revoke_builder_api_key()
+  ```
+
+  ```rust Rust theme={null}
+  client.revoke_builder_api_key().await?;
   ```
 </CodeGroup>
 
@@ -337,3 +389,6 @@ After revoking, generate new credentials from your [Builder Profile](https://pol
     Build, sign, and submit orders
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

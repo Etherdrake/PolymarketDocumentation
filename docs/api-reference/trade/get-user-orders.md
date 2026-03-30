@@ -5,13 +5,14 @@
 # Get user orders
 
 > Retrieves open orders for the authenticated user. Returns paginated results.
+Builder-authenticated clients can also use this endpoint to retrieve orders attributed to their builder account.
 
 
 
 
 ## OpenAPI
 
-````yaml api-spec/clob-openapi.yaml get /orders
+````yaml /api-spec/clob-openapi.yaml get /orders
 openapi: 3.1.0
 info:
   title: Polymarket CLOB API
@@ -37,6 +38,8 @@ tags:
     description: User notification endpoints
   - name: Rewards
     description: Rewards and earnings endpoints
+  - name: Rebates
+    description: Maker rebate endpoints
 paths:
   /orders:
     get:
@@ -46,6 +49,9 @@ paths:
       description: >
         Retrieves open orders for the authenticated user. Returns paginated
         results.
+
+        Builder-authenticated clients can also use this endpoint to retrieve
+        orders attributed to their builder account.
       operationId: getOrders
       parameters:
         - name: id
@@ -154,6 +160,10 @@ paths:
           polySignature: []
           polyPassphrase: []
           polyTimestamp: []
+        - polyBuilderApiKey: []
+          polyBuilderPassphrase: []
+          polyBuilderSignature: []
+          polyBuilderTimestamp: []
 components:
   schemas:
     OrdersResponse:
@@ -311,5 +321,27 @@ components:
       in: header
       name: POLY_TIMESTAMP
       description: Unix timestamp of the request
+    polyBuilderApiKey:
+      type: apiKey
+      in: header
+      name: POLY_BUILDER_API_KEY
+      description: Builder API key for authentication
+    polyBuilderPassphrase:
+      type: apiKey
+      in: header
+      name: POLY_BUILDER_PASSPHRASE
+      description: Passphrase for builder authentication
+    polyBuilderSignature:
+      type: apiKey
+      in: header
+      name: POLY_BUILDER_SIGNATURE
+      description: HMAC signature for builder authentication
+    polyBuilderTimestamp:
+      type: apiKey
+      in: header
+      name: POLY_BUILDER_TIMESTAMP
+      description: Unix timestamp for builder authentication
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/clob-openapi.yaml get /simplified-markets
+````yaml /api-spec/clob-openapi.yaml get /simplified-markets
 openapi: 3.1.0
 info:
   title: Polymarket CLOB API
@@ -34,6 +34,8 @@ tags:
     description: User notification endpoints
   - name: Rewards
     description: Rewards and earnings endpoints
+  - name: Rebates
+    description: Maker rebate endpoints
 paths:
   /simplified-markets:
     get:
@@ -126,3 +128,5 @@ components:
           type: boolean
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

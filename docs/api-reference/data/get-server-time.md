@@ -12,7 +12,7 @@ This can be used to synchronize client time with server time.
 
 ## OpenAPI
 
-````yaml api-spec/clob-openapi.yaml get /time
+````yaml /api-spec/clob-openapi.yaml get /time
 openapi: 3.1.0
 info:
   title: Polymarket CLOB API
@@ -38,6 +38,8 @@ tags:
     description: User notification endpoints
   - name: Rewards
     description: Rewards and earnings endpoints
+  - name: Rebates
+    description: Maker rebate endpoints
 paths:
   /time:
     get:
@@ -77,3 +79,5 @@ components:
           description: Error message
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

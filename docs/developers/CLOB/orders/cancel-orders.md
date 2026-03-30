@@ -25,6 +25,12 @@ All cancel endpoints require [L2 authentication](/trading/overview#authenticatio
   # {"canceled": ["0xb816482a..."], "not_canceled": {}}
   ```
 
+  ```rust Rust theme={null}
+  let resp = client.cancel_order("0xb816482a...").await?;
+  println!("{:?}", resp);
+  // CancelOrdersResponse { canceled: ["0xb816482a..."], not_canceled: {} }
+  ```
+
   ```bash REST theme={null}
   curl -X DELETE "https://clob.polymarket.com/order" \
     -H "Content-Type: application/json" \
@@ -53,6 +59,10 @@ All cancel endpoints require [L2 authentication](/trading/overview#authenticatio
   ])
   ```
 
+  ```rust Rust theme={null}
+  let resp = client.cancel_orders(&["0xb816482a...", "0xc927593b..."]).await?;
+  ```
+
   ```bash REST theme={null}
   curl -X DELETE "https://clob.polymarket.com/orders" \
     -H "Content-Type: application/json" \
@@ -78,6 +88,10 @@ Cancel every open order across all markets:
 
   ```python Python theme={null}
   resp = client.cancel_all()
+  ```
+
+  ```rust Rust theme={null}
+  let resp = client.cancel_all_orders().await?;
   ```
 
   ```bash REST theme={null}
@@ -109,6 +123,16 @@ Cancel all orders for a specific market, optionally filtered to a single token. 
       market="0xbd31dc8a...",
       asset_id="52114319501245...",  # optional
   )
+  ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::request::CancelMarketOrderRequest;
+
+  let request = CancelMarketOrderRequest::builder()
+      .market("0xbd31dc8a...".parse()?)
+      .asset_id("52114319501245...".parse()?)
+      .build();
+  let resp = client.cancel_market_orders(&request).await?;
   ```
 
   ```bash REST theme={null}
@@ -149,6 +173,11 @@ This is a fallback mechanism — API cancellation is instant while onchain cance
   order = client.get_order("0xb816482a...")
   print(order["status"], order["size_matched"])
   ```
+
+  ```rust Rust theme={null}
+  let order = client.order("0xb816482a...").await?;
+  println!("{:?} {}", order.status, order.size_matched);
+  ```
 </CodeGroup>
 
 ### Get Open Orders
@@ -181,6 +210,19 @@ Retrieve all open orders, optionally filtered by market or token:
   market_orders = client.get_orders(
       OpenOrderParams(market="0xbd31dc8a...")
   )
+  ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::request::OrdersRequest;
+
+  // All open orders
+  let orders = client.orders(&OrdersRequest::default(), None).await?;
+
+  // Filtered by market
+  let request = OrdersRequest::builder()
+      .market("0xbd31dc8a...".parse()?)
+      .build();
+  let market_orders = client.orders(&request, None).await?;
   ```
 </CodeGroup>
 
@@ -238,11 +280,24 @@ When an order is matched, it creates a trade. Trades progress through these stat
       TradeParams(market="0xbd31dc8a...")
   )
   ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::request::TradesRequest;
+
+  // All trades
+  let trades = client.trades(&TradesRequest::default(), None).await?;
+
+  // Filtered by market
+  let request = TradesRequest::builder()
+      .market("0xbd31dc8a...".parse()?)
+      .build();
+  let market_trades = client.trades(&request, None).await?;
+  ```
 </CodeGroup>
 
 Additional filter parameters: `id`, `maker_address`, `asset_id`, `before`, `after`.
 
-For large result sets, use the paginated variant:
+The Rust SDK uses cursor-based pagination via the `next_cursor` parameter:
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
@@ -252,6 +307,15 @@ For large result sets, use the paginated variant:
 
   ```python Python theme={null}
   page = client.get_trades_paginated(TradeParams(market="0xbd31dc8a..."))
+  ```
+
+  ```rust Rust theme={null}
+  // First page
+  let page = client.trades(&request, None).await?;
+  println!("{} trades, cursor: {}", page.data.len(), page.next_cursor);
+
+  // Next page
+  let page2 = client.trades(&request, Some(page.next_cursor)).await?;
   ```
 </CodeGroup>
 
@@ -312,6 +376,14 @@ Check if your resting orders are eligible for [maker rebates](/market-makers/mak
       OrdersScoringParams(orderIds=["0x...", "0x..."])
   )
   ```
+
+  ```rust Rust theme={null}
+  // Single order
+  let scoring = client.is_order_scoring("0x...").await?;
+
+  // Multiple orders
+  let batch = client.are_orders_scoring(&["0x...", "0x..."]).await?;
+  ```
 </CodeGroup>
 
 ***
@@ -327,3 +399,6 @@ Check if your resting orders are eligible for [maker rebates](/market-makers/mak
     Understand fee structures and maker rebates
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

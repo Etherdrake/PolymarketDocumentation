@@ -37,11 +37,11 @@ Before you can start market making, you need to complete these one-time setup st
   </Step>
 
   <Step title="Deploy a Wallet">
-    ### EOA (Externally Owned Account)
+    ### EOA
 
     Standard Ethereum wallet. You pay for all onchain transactions (approvals, splits, merges, trade execution).
 
-    ### Safe Wallet (Recommended)
+    ### Safe Wallet
 
     Gnosis Safe-based wallet deployed via Polymarket's relayer. Benefits:
 
@@ -97,7 +97,7 @@ Before you can start market making, you need to complete these one-time setup st
     | CTF (outcome tokens) | CTF Exchange          | Trade outcome tokens             |
     | CTF (outcome tokens) | Neg Risk CTF Exchange | Trade neg-risk market tokens     |
 
-    ### Contract Addresses (Polygon Mainnet)
+    ### Contract Addresses
 
     ```typescript  theme={null}
     const ADDRESSES = {
@@ -189,27 +189,22 @@ Before you can start market making, you need to complete these one-time setup st
       temp_client = ClobClient("https://clob.polymarket.com", key=private_key, chain_id=137)
       credentials = temp_client.create_or_derive_api_creds()
       ```
-    </CodeGroup>
 
-    Once you have credentials, initialize the client for authenticated operations:
+      ```rust Rust theme={null}
+      use std::str::FromStr;
+      use polymarket_client_sdk::POLYGON;
+      use polymarket_client_sdk::auth::{LocalSigner, Signer};
+      use polymarket_client_sdk::clob::{Client, Config};
 
-    <CodeGroup>
-      ```typescript TypeScript theme={null}
-      const tradingClient = new ClobClient(
-        "https://clob.polymarket.com",
-        137,
-        wallet,
-        credentials,
-      );
-      ```
+      let private_key = std::env::var("POLYMARKET_PRIVATE_KEY")?;
+      let signer = LocalSigner::from_str(&private_key)?
+          .with_chain_id(Some(POLYGON));
 
-      ```python Python theme={null}
-      client = ClobClient(
-          "https://clob.polymarket.com",
-          key=private_key,
-          chain_id=137,
-          creds=credentials,
-      )
+      // The Rust SDK derives credentials and initializes in one step
+      let client = Client::new("https://clob.polymarket.com", Config::default())?
+          .authentication_builder(&signer)
+          .authenticate()
+          .await?;
       ```
     </CodeGroup>
 
@@ -230,3 +225,6 @@ Before you can start market making, you need to complete these one-time setup st
     Connect to real-time market data
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

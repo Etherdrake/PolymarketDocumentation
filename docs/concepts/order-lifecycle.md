@@ -9,9 +9,9 @@
 Every trade on Polymarket follows a specific lifecycle. Orders are created offchain, matched by an operator, and settled onchain through smart contracts. This hybrid approach combines the speed of centralized matching with the security of blockchain settlement.
 
 <Frame>
-  <img src="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/order-lifecycle.png?fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=4db07008193421bfe359afe44b5f604e" alt="" className="dark:hidden" data-og-width="2336" width="2336" data-og-height="952" height="952" data-path="images/core-concepts/order-lifecycle.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/order-lifecycle.png?w=280&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=7269f450774ef5d4886455043ade1d83 280w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/order-lifecycle.png?w=560&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=e5329a354884b11c94c2ce1ffc89c1d4 560w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/order-lifecycle.png?w=840&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=2e31c345d92dcce72a824361c1522ab5 840w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/order-lifecycle.png?w=1100&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=8dead82080254f84858526c62c5b003b 1100w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/order-lifecycle.png?w=1650&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=557ef2f860a87dc7c3e47a66707a34ad 1650w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/order-lifecycle.png?w=2500&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=f69b7cd9fb0ccb6e4a058b187d51eb24 2500w" />
+  <img src="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/order-lifecycle.png?fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=4db07008193421bfe359afe44b5f604e" alt="" className="dark:hidden" width="2336" height="952" data-path="images/core-concepts/order-lifecycle.png" />
 
-  <img src="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/order-lifecycle.png?fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=5a0f3eba2f20c44471bae05c0670de4a" alt="" className="hidden dark:block" data-og-width="2336" width="2336" data-og-height="952" height="952" data-path="images/dark/core-concepts/order-lifecycle.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/order-lifecycle.png?w=280&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=6c7265f6dfed87cb901bde64686ce13e 280w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/order-lifecycle.png?w=560&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=bbf111f3efe60e15b9022c313befaf0e 560w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/order-lifecycle.png?w=840&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=9e81f0b099ce605683d7c0fcca2d2006 840w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/order-lifecycle.png?w=1100&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=98ffaa7a741369b9b5fa9aefcc851e37 1100w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/order-lifecycle.png?w=1650&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=96126a395420dbe087ac104ca0fbc773 1650w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/order-lifecycle.png?w=2500&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=e6f9c36ce23716a00a6563bf428d3aa8 2500w" />
+  <img src="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/order-lifecycle.png?fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=5a0f3eba2f20c44471bae05c0670de4a" alt="" className="hidden dark:block" width="2336" height="952" data-path="images/dark/core-concepts/order-lifecycle.png" />
 </Frame>
 
 ## How Orders Work
@@ -39,7 +39,7 @@ Orders are **EIP712-signed messages**. When you place an order, you sign a struc
 Post-only orders will only rest on the book. If a post-only order would match immediately (cross the spread), it's rejected instead of executed. This guarantees you're always the maker, never the taker.
 
 <Steps>
-  <Step title="Create & Sign">
+  <Step title="Create and Sign">
     Your client creates an order object containing:
 
     * Token ID (which outcome you're trading)
@@ -155,3 +155,6 @@ Before placing orders, ensure:
     Start placing orders with our step-by-step guide.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

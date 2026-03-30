@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/bridge-openapi.yaml get /status/{address}
+````yaml /api-spec/bridge-openapi.yaml get /status/{address}
 openapi: 3.0.3
 info:
   title: Polymarket Bridge API
@@ -148,3 +148,5 @@ components:
           example: 1757531217339
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

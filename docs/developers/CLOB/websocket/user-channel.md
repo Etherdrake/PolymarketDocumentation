@@ -122,3 +122,6 @@ Emitted when:
   "type": "PLACEMENT"
 }
 ```
+
+
+Built with [Mintlify](https://mintlify.com).

@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/gamma-openapi.yaml get /sports/market-types
+````yaml /api-spec/gamma-openapi.yaml get /sports/market-types
 openapi: 3.0.3
 info:
   title: Markets API
@@ -63,3 +63,5 @@ components:
             type: string
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

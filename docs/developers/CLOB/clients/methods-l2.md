@@ -71,7 +71,7 @@ L2 methods require the client to initialize with a signer, signature type, API c
 
 ***
 
-### createAndPostOrder()
+### createAndPostOrder
 
 Convenience method that creates, signs, and posts a limit order in a single call. Use when you want to buy or sell at a specific price.
 
@@ -157,7 +157,7 @@ async createAndPostOrder(
 
 ***
 
-### createAndPostMarketOrder()
+### createAndPostMarketOrder
 
 Convenience method that creates, signs, and posts a market order in a single call. Use when you want to buy or sell at the current market price.
 
@@ -235,7 +235,7 @@ async createAndPostMarketOrder(
 
 ***
 
-### postOrder()
+### postOrder
 
 Posts a pre-signed order to the CLOB. Use with [`createOrder()`](/trading/clients/l1#createorder) or [`createMarketOrder()`](/trading/clients/l1#createmarketorder) from L1 methods.
 
@@ -249,7 +249,7 @@ async postOrder(
 
 ***
 
-### postOrders()
+### postOrders
 
 Posts up to 15 pre-signed orders in a single batch.
 
@@ -275,7 +275,7 @@ async postOrders(
 
 ***
 
-### cancelOrder()
+### cancelOrder
 
 Cancels a single open order.
 
@@ -295,7 +295,7 @@ async cancelOrder(orderID: string): Promise<CancelOrdersResponse>
 
 ***
 
-### cancelOrders()
+### cancelOrders
 
 Cancels multiple orders in a single batch.
 
@@ -305,7 +305,7 @@ async cancelOrders(orderIDs: string[]): Promise<CancelOrdersResponse>
 
 ***
 
-### cancelAll()
+### cancelAll
 
 Cancels all open orders.
 
@@ -315,7 +315,7 @@ async cancelAll(): Promise<CancelOrdersResponse>
 
 ***
 
-### cancelMarketOrders()
+### cancelMarketOrders
 
 Cancels all open orders for a specific market.
 
@@ -341,7 +341,7 @@ async cancelMarketOrders(
 
 ***
 
-### getOrder()
+### getOrder
 
 Get details for a specific order by ID.
 
@@ -413,7 +413,7 @@ async getOrder(orderID: string): Promise<OpenOrder>
 
 ***
 
-### getOpenOrders()
+### getOpenOrders
 
 Get all your open orders.
 
@@ -440,7 +440,7 @@ async getOpenOrders(
 
 ***
 
-### getTrades()
+### getTrades
 
 Get your trade history (filled orders).
 
@@ -589,7 +589,7 @@ async getTrades(
 
 ***
 
-### getTradesPaginated()
+### getTradesPaginated
 
 Get trade history with pagination for large result sets.
 
@@ -619,7 +619,7 @@ async getTradesPaginated(
 
 ***
 
-### getBalanceAllowance()
+### getBalanceAllowance
 
 Get your balance and allowance for specific tokens.
 
@@ -651,7 +651,7 @@ async getBalanceAllowance(
 
 ***
 
-### updateBalanceAllowance()
+### updateBalanceAllowance
 
 Updates the cached balance and allowance for specific tokens.
 
@@ -667,7 +667,7 @@ async updateBalanceAllowance(
 
 ***
 
-### getApiKeys()
+### getApiKeys
 
 Get all API keys associated with your account.
 
@@ -683,7 +683,7 @@ async getApiKeys(): Promise<ApiKeysResponse>
 
 ***
 
-### deleteApiKey()
+### deleteApiKey
 
 Deletes (revokes) the currently authenticated API key.
 
@@ -697,7 +697,7 @@ async deleteApiKey(): Promise<any>
 
 ***
 
-### getNotifications()
+### getNotifications
 
 Retrieves all event notifications for the authenticated user. Records are automatically removed after 48 hours.
 
@@ -735,7 +735,7 @@ async getNotifications(): Promise<Notification[]>
 
 ***
 
-### dropNotifications()
+### dropNotifications
 
 Mark notifications as read/dismissed.
 
@@ -770,3 +770,6 @@ async dropNotifications(params?: DropNotificationParams): Promise<void>
     Real-time market data streaming.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

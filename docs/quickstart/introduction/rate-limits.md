@@ -124,3 +124,6 @@ Trading endpoints have both **burst** limits (short spikes allowed) and **sustai
     Official TypeScript, Python, and Rust libraries.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

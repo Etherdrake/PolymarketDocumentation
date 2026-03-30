@@ -4,7 +4,7 @@
 
 # Builder Methods
 
-> These methods require builder API credentials and are only relevant for Builders Program order attribution.
+> Methods for querying orders and trades using builder API credentials.
 
 ## Client Initialization
 
@@ -122,7 +122,70 @@ Builder methods require the client to initialize with a separate builder config 
 
 ***
 
-### getBuilderTrades()
+### getOrder
+
+Get details for a specific order by ID using builder authentication. When called from a builder-configured client, the request authenticates with builder headers and returns orders attributed to the builder.
+
+```typescript Signature theme={null}
+async getOrder(orderID: string): Promise<OpenOrder>
+```
+
+<Info>
+  When a `BuilderConfig` is present, the client automatically sends builder headers. If builder auth is unavailable, it falls back to standard L2 headers.
+</Info>
+
+<CodeGroup>
+  ```typescript TypeScript theme={null}
+  const order = await clobClient.getOrder("0xb816482a...");
+  console.log(order);
+  ```
+
+  ```python Python theme={null}
+  order = clob_client.get_order("0xb816482a...")
+  print(order)
+  ```
+</CodeGroup>
+
+***
+
+### getOpenOrders
+
+Get all open orders attributed to the builder. When called from a builder-configured client, returns orders placed through the builder rather than orders owned by the authenticated user.
+
+```typescript Signature theme={null}
+async getOpenOrders(
+  params?: OpenOrderParams,
+  only_first_page?: boolean,
+): Promise<OpenOrder[]>
+```
+
+**Params**
+
+<ResponseField name="id" type="string">
+  Optional. Filter by order ID.
+</ResponseField>
+
+<ResponseField name="market" type="string">
+  Optional. Filter by market condition ID.
+</ResponseField>
+
+<ResponseField name="asset_id" type="string">
+  Optional. Filter by token ID.
+</ResponseField>
+
+```typescript TypeScript theme={null}
+// All open orders for this builder
+const orders = await clobClient.getOpenOrders();
+
+// Filtered by market
+const marketOrders = await clobClient.getOpenOrders({
+  market: "0xbd31dc8a...",
+});
+```
+
+***
+
+### getBuilderTrades
 
 Retrieves all trades attributed to your builder account. Use this to track which trades were routed through your platform.
 
@@ -272,7 +335,7 @@ async getBuilderTrades(
 
 ***
 
-### revokeBuilderApiKey()
+### revokeBuilderApiKey
 
 Revokes the builder API key used to authenticate the current request. After revocation, the key can no longer be used for builder-authenticated requests.
 
@@ -305,3 +368,6 @@ async revokeBuilderApiKey(): Promise<any>
     Execute onchain operations without paying gas.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

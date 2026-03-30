@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/data-openapi.yaml get /v1/market-positions
+````yaml /api-spec/data-openapi.yaml get /v1/market-positions
 openapi: 3.0.3
 info:
   title: Polymarket Data API
@@ -191,3 +191,5 @@ components:
           type: integer
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

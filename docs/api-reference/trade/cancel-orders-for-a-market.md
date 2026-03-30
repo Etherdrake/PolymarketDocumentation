@@ -12,7 +12,7 @@ Works even in cancel-only mode.
 
 ## OpenAPI
 
-````yaml api-spec/clob-openapi.yaml delete /cancel-market-orders
+````yaml /api-spec/clob-openapi.yaml delete /cancel-market-orders
 openapi: 3.1.0
 info:
   title: Polymarket CLOB API
@@ -38,6 +38,8 @@ tags:
     description: User notification endpoints
   - name: Rewards
     description: Rewards and earnings endpoints
+  - name: Rebates
+    description: Maker rebate endpoints
 paths:
   /cancel-market-orders:
     delete:
@@ -201,3 +203,5 @@ components:
       description: Unix timestamp of the request
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

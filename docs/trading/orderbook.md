@@ -21,6 +21,12 @@ The orderbook is a public endpoint — no authentication required. You can read 
   client = ClobClient("https://clob.polymarket.com", chain_id=137)
   ```
 
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::Client;
+
+  let client = Client::default(); // https://clob.polymarket.com
+  ```
+
   ```bash REST theme={null}
   # Base URL for all orderbook endpoints
   https://clob.polymarket.com
@@ -48,6 +54,18 @@ Fetch the full orderbook for a token, including all resting bid and ask levels:
   print("Best bid:", book["bids"][0])
   print("Best ask:", book["asks"][0])
   print("Tick size:", book["tick_size"])
+  ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::request::OrderBookSummaryRequest;
+
+  let token_id = "TOKEN_ID".parse()?;
+  let request = OrderBookSummaryRequest::builder().token_id(token_id).build();
+  let book = client.order_book(&request).await?;
+
+  println!("Best bid: {:?}", book.bids[0]);
+  println!("Best ask: {:?}", book.asks[0]);
+  println!("Tick size: {:?}", book.tick_size);
   ```
 
   ```bash REST theme={null}
@@ -111,6 +129,20 @@ Get the best available price for buying or selling a token:
   print("Best bid:", sell_price["price"])
   ```
 
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::{Side, request::PriceRequest};
+
+  let token_id = "TOKEN_ID".parse()?;
+
+  let buy_req = PriceRequest::builder().token_id(token_id).side(Side::Buy).build();
+  let buy_price = client.price(&buy_req).await?;
+  println!("Best ask: {}", buy_price.price);
+
+  let sell_req = PriceRequest::builder().token_id(token_id).side(Side::Sell).build();
+  let sell_price = client.price(&sell_req).await?;
+  println!("Best bid: {}", sell_price.price);
+  ```
+
   ```bash REST theme={null}
   # Best price for buying (lowest ask)
   curl "https://clob.polymarket.com/price?token_id=TOKEN_ID&side=BUY"
@@ -135,6 +167,15 @@ The midpoint is the average of the best bid and best ask. This is the price disp
   ```python Python theme={null}
   midpoint = client.get_midpoint("TOKEN_ID")
   print("Midpoint:", midpoint["mid"])
+  ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::request::MidpointRequest;
+
+  let token_id = "TOKEN_ID".parse()?;
+  let request = MidpointRequest::builder().token_id(token_id).build();
+  let midpoint = client.midpoint(&request).await?;
+  println!("Midpoint: {}", midpoint.mid);
   ```
 
   ```bash REST theme={null}
@@ -162,6 +203,15 @@ The spread is the difference between the best ask and the best bid. Tighter spre
   ```python Python theme={null}
   spread = client.get_spread("TOKEN_ID")
   print("Spread:", spread["spread"])
+  ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::request::SpreadRequest;
+
+  let token_id = "TOKEN_ID".parse()?;
+  let request = SpreadRequest::builder().token_id(token_id).build();
+  let spread = client.spread(&request).await?;
+  println!("Spread: {}", spread.spread);
   ```
 
   ```bash REST theme={null}
@@ -203,6 +253,22 @@ Fetch historical price data for a token over various time intervals:
 
   for point in history:
       print(f"{point['t']}: {point['p']}")
+  ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::{Interval, TimeRange, request::PriceHistoryRequest};
+
+  let token_id = "TOKEN_ID".parse()?;
+  let request = PriceHistoryRequest::builder()
+      .market(token_id) // Note: this param is named "market" but takes a token ID
+      .time_range(TimeRange::Interval { interval: Interval::OneDay })
+      .fidelity(60) // Data points every 60 minutes
+      .build();
+  let history = client.price_history(&request).await?;
+
+  for point in &history.history {
+      println!("{}: {}", point.t, point.p);
+  }
   ```
 
   ```bash REST theme={null}
@@ -261,6 +327,20 @@ Calculate the effective price you'd pay for a market order of a given size, acco
 
   print("Estimated fill price:", price)
   ```
+
+  ```rust Rust theme={null}
+  // The Rust SDK handles market price calculation automatically
+  // inside the market_order() builder when no price is specified.
+  // It walks the orderbook to determine the fill price for you.
+  let order = client
+      .market_order()
+      .token_id("TOKEN_ID".parse()?)
+      .amount(Amount::usdc(dec!(500))?)
+      .side(Side::Buy)
+      .order_type(OrderType::FOK)
+      .build()
+      .await?; // Price auto-calculated from orderbook depth
+  ```
 </CodeGroup>
 
 This walks the orderbook to estimate slippage. Useful for sizing market orders before submitting them.
@@ -303,6 +383,18 @@ All orderbook queries have batch variants for fetching data across multiple toke
   ])
   ```
 
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::{Side, request::PriceRequest};
+
+  let token_a = "TOKEN_A".parse()?;
+  let token_b = "TOKEN_B".parse()?;
+  let requests = vec![
+      PriceRequest::builder().token_id(token_a).side(Side::Buy).build(),
+      PriceRequest::builder().token_id(token_b).side(Side::Buy).build(),
+  ];
+  let prices = client.prices(&requests).await?;
+  ```
+
   ```bash REST theme={null}
   curl -X POST "https://clob.polymarket.com/prices" \
     -H "Content-Type: application/json" \
@@ -329,6 +421,15 @@ Get the price and side of the most recent trade for a token:
   ```python Python theme={null}
   last_trade = client.get_last_trade_price("TOKEN_ID")
   print(last_trade["price"], last_trade["side"])
+  ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::request::LastTradePriceRequest;
+
+  let token_id = "TOKEN_ID".parse()?;
+  let request = LastTradePriceRequest::builder().token_id(token_id).build();
+  let last_trade = client.last_trade_price(&request).await?;
+  println!("{} {:?}", last_trade.price, last_trade.side);
   ```
 </CodeGroup>
 
@@ -369,7 +470,7 @@ ws.onmessage = (event) => {
 };
 ```
 
-### Dynamic Subscribe / Unsubscribe
+### Dynamic Subscribe and Unsubscribe
 
 After connecting, you can change your subscriptions without reconnecting:
 
@@ -427,3 +528,6 @@ ws.send(
     Find token IDs for markets you want to trade
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

@@ -93,3 +93,6 @@ An empty `transactions` array means no deposits have been detected at this addre
     Check supported chains and minimum amounts.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

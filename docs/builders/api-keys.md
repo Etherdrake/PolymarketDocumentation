@@ -98,6 +98,18 @@ Store your credentials as environment variables:
     )
     ```
   </Tab>
+
+  <Tab title="Rust">
+    ```rust  theme={null}
+    use polymarket_client_sdk::auth::Credentials;
+
+    let builder_creds = Credentials::new(
+        std::env::var("POLY_BUILDER_API_KEY")?.parse()?,
+        std::env::var("POLY_BUILDER_SECRET")?,
+        std::env::var("POLY_BUILDER_PASSPHRASE")?,
+    );
+    ```
+  </Tab>
 </Tabs>
 
 ## Security Best Practices
@@ -145,3 +157,6 @@ Store your credentials as environment variables:
     Learn about rate limits and how to upgrade.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

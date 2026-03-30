@@ -57,3 +57,6 @@ The CLOB API has both public endpoints (orderbook, prices) and authenticated end
     Official TypeScript, Python, and Rust libraries.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

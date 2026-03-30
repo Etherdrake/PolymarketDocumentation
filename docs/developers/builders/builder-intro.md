@@ -20,17 +20,12 @@ A **builder** is a person, group, or organization that routes orders from users 
   </Card>
 </CardGroup>
 
-<Card title="Revenue Share" icon="percent">
-  Earn a share of fees on orders you route
-</Card>
-
 ### What You Get
 
 | Benefit             | Description                                                                     |
 | ------------------- | ------------------------------------------------------------------------------- |
 | **Relayer Access**  | Gas-free wallet deployment, approvals, order execution and CTF operations       |
 | **Volume Tracking** | All orders attributed to your builder profile                                   |
-| **Weekly Rewards**  | USDC rewards program based on volume (Verified+)                                |
 | **Leaderboard**     | Public visibility on [builders.polymarket.com](https://builders.polymarket.com) |
 | **Support**         | Telegram channel and engineering support (Verified+)                            |
 
@@ -88,7 +83,7 @@ A **builder** is a person, group, or organization that routes orders from users 
   </Step>
 </Steps>
 
-## SDKs & Libraries
+## SDKs and Libraries
 
 <CardGroup cols={2}>
   <Card title="CLOB Client (TypeScript)" icon="github" href="https://github.com/Polymarket/clob-client">
@@ -216,3 +211,6 @@ For existing Magic Link users from Polymarket.com:
     Set up gasless transactions for your users.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

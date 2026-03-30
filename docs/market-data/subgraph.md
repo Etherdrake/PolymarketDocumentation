@@ -95,3 +95,6 @@ The subgraph is open source. Review the schema and mappings on GitHub:
 <Card title="polymarket-subgraph" icon="github" href="https://github.com/Polymarket/polymarket-subgraph">
   View source code, schema definitions, and deployment configuration.
 </Card>
+
+
+Built with [Mintlify](https://mintlify.com).

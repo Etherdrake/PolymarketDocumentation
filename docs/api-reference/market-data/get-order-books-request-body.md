@@ -11,7 +11,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/clob-openapi.yaml post /books
+````yaml /api-spec/clob-openapi.yaml post /books
 openapi: 3.1.0
 info:
   title: Polymarket CLOB API
@@ -37,6 +37,8 @@ tags:
     description: User notification endpoints
   - name: Rewards
     description: Rewards and earnings endpoints
+  - name: Rebates
+    description: Maker rebate endpoints
 paths:
   /books:
     post:
@@ -189,3 +191,5 @@ components:
           example: '100'
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

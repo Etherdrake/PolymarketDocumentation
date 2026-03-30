@@ -60,3 +60,6 @@ Most L2 chains (Polygon, Arbitrum, Base, Optimism) have low minimums of $2, whil
     Track your deposit progress.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/data-openapi.yaml get /holders
+````yaml /api-spec/data-openapi.yaml get /holders
 openapi: 3.0.3
 info:
   title: Polymarket Data API
@@ -138,3 +138,5 @@ components:
       example: '0x56687bf447db6ffa42ffe2204a05edaa20f55839'
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

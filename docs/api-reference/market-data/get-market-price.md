@@ -12,7 +12,7 @@ Returns the best bid price for BUY side or best ask price for SELL side.
 
 ## OpenAPI
 
-````yaml api-spec/clob-openapi.yaml get /price
+````yaml /api-spec/clob-openapi.yaml get /price
 openapi: 3.1.0
 info:
   title: Polymarket CLOB API
@@ -38,6 +38,8 @@ tags:
     description: User notification endpoints
   - name: Rewards
     description: Rewards and earnings endpoints
+  - name: Rebates
+    description: Maker rebate endpoints
 paths:
   /price:
     get:
@@ -129,3 +131,5 @@ components:
           description: Error message
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

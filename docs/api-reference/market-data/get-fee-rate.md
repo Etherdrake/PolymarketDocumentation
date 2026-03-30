@@ -12,7 +12,7 @@ The fee rate can be provided either as a query parameter or as a path parameter.
 
 ## OpenAPI
 
-````yaml api-spec/clob-openapi.yaml get /fee-rate
+````yaml /api-spec/clob-openapi.yaml get /fee-rate
 openapi: 3.1.0
 info:
   title: Polymarket CLOB API
@@ -38,6 +38,8 @@ tags:
     description: User notification endpoints
   - name: Rewards
     description: Rewards and earnings endpoints
+  - name: Rebates
+    description: Maker rebate endpoints
 paths:
   /fee-rate:
     get:
@@ -114,3 +116,5 @@ components:
           description: Error message
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

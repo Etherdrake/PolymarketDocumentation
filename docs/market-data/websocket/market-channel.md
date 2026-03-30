@@ -144,6 +144,10 @@ Emitted when the best bid or ask prices for a market change.
 
 Emitted when a new market is created.
 
+The payload also includes market metadata fields such as `tags`,
+`condition_id`, `active`, `clob_token_ids`, `sports_market_type`, `line`,
+`game_start_time`, `order_price_min_tick_size`, and `group_item_title`.
+
 ```json  theme={null}
 {
   "id": "1031769",
@@ -164,7 +168,19 @@ Emitted when a new market is created.
     "description": "This market will resolve to \"Yes\" if the official closing price..."
   },
   "timestamp": "1766790415550",
-  "event_type": "new_market"
+  "event_type": "new_market",
+  "tags": ["stocks"],
+  "condition_id": "0x311d0c4b6671ab54af4970c06fcf58662516f5168997bdda209ec3db5aa6b0c1",
+  "active": true,
+  "clob_token_ids": [
+    "76043073756653678226373981964075571318267289248134717369284518995922789326425",
+    "31690934263385727664202099278545688007799199447969475608906331829650099442770"
+  ],
+  "sports_market_type": "",
+  "line": "",
+  "game_start_time": "",
+  "order_price_min_tick_size": "0.01",
+  "group_item_title": "NVDA above $240"
 }
 ```
 
@@ -199,3 +215,6 @@ Emitted when a market is resolved.
   "event_type": "market_resolved"
 }
 ```
+
+
+Built with [Mintlify](https://mintlify.com).

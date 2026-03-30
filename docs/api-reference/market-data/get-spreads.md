@@ -12,7 +12,7 @@ The spread is the difference between the best ask and best bid prices.
 
 ## OpenAPI
 
-````yaml api-spec/clob-openapi.yaml post /spreads
+````yaml /api-spec/clob-openapi.yaml post /spreads
 openapi: 3.1.0
 info:
   title: Polymarket CLOB API
@@ -38,6 +38,8 @@ tags:
     description: User notification endpoints
   - name: Rewards
     description: Rewards and earnings endpoints
+  - name: Rebates
+    description: Maker rebate endpoints
 paths:
   /spreads:
     post:
@@ -117,3 +119,5 @@ components:
           description: Error message
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

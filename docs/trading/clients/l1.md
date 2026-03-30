@@ -58,7 +58,7 @@ L1 methods require the client to initialize with a signer.
 
 ***
 
-### createApiKey()
+### createApiKey
 
 Creates a new API key (L2 credentials) for the wallet signer. Each wallet can only have one active API key at a time — creating a new key invalidates the previous one.
 
@@ -84,7 +84,7 @@ async createApiKey(nonce?: number): Promise<ApiKeyCreds>
 
 ***
 
-### deriveApiKey()
+### deriveApiKey
 
 Derives an existing API key using a specific nonce. If you've already created credentials with a particular nonce, this returns the same credentials.
 
@@ -110,7 +110,7 @@ async deriveApiKey(nonce?: number): Promise<ApiKeyCreds>
 
 ***
 
-### createOrDeriveApiKey()
+### createOrDeriveApiKey
 
 Convenience method that attempts to derive an API key with the default nonce, or creates a new one if it doesn't exist. **Recommended for initial setup.**
 
@@ -134,7 +134,7 @@ async createOrDeriveApiKey(nonce?: number): Promise<ApiKeyCreds>
 
 ## Order Signing
 
-### createOrder()
+### createOrder
 
 Create and sign a limit order locally without posting it to the CLOB. Use this when you want to sign orders in advance or implement custom submission logic. Submit via [`postOrder()`](/trading/clients/l2#postorder) or [`postOrders()`](/trading/clients/l2#postorders).
 
@@ -239,7 +239,7 @@ async createOrder(
 
 ***
 
-### createMarketOrder()
+### createMarketOrder
 
 Create and sign a market order locally without posting it to the CLOB. Submit via [`postOrder()`](/trading/clients/l2#postorder) or [`postOrders()`](/trading/clients/l2#postorders).
 
@@ -339,7 +339,7 @@ async createMarketOrder(
 ## Troubleshooting
 
 <AccordionGroup>
-  <Accordion title="Error: INVALID_SIGNATURE">
+  <Accordion title="Error - INVALID_SIGNATURE">
     Your wallet's private key is incorrect or improperly formatted.
 
     **Solution:**
@@ -349,7 +349,7 @@ async createMarketOrder(
     * Check that the key has proper permissions
   </Accordion>
 
-  <Accordion title="Error: NONCE_ALREADY_USED">
+  <Accordion title="Error - NONCE_ALREADY_USED">
     The nonce you provided has already been used to create an API key.
 
     **Solution:**
@@ -358,7 +358,7 @@ async createMarketOrder(
     * Or use a different nonce with `createApiKey()`
   </Accordion>
 
-  <Accordion title="Error: Invalid Funder Address">
+  <Accordion title="Error - Invalid Funder Address">
     Your funder address is incorrect or doesn't match your wallet.
 
     **Solution:** Check your proxy wallet address at [polymarket.com/settings](https://polymarket.com/settings). If it doesn't exist, the user has never logged in to Polymarket.com — deploy the proxy wallet first before creating L2 credentials.
@@ -403,3 +403,6 @@ async createMarketOrder(
     Place and manage orders with API credentials.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

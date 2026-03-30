@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/gamma-openapi.yaml get /public-profile
+````yaml /api-spec/gamma-openapi.yaml get /public-profile
 openapi: 3.0.3
 info:
   title: Markets API
@@ -152,3 +152,5 @@ components:
           description: Whether the user is a moderator
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

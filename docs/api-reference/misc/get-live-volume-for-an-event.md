@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/data-openapi.yaml get /live-volume
+````yaml /api-spec/data-openapi.yaml get /live-volume
 openapi: 3.0.3
 info:
   title: Polymarket Data API
@@ -92,3 +92,5 @@ components:
       example: '0xdd22472e552920b8438158ea7238bfadfa4f736aa4cee91a6b86c39ead110917'
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

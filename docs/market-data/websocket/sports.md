@@ -150,7 +150,7 @@ Game status values vary by sport:
 | `Forfeit`      | Game forfeited            |
 | `NotNecessary` | Scheduled, but not needed |
 
-### NBA / CBB
+### NBA and CBB
 
 | Status         | Description               |
 | -------------- | ------------------------- |
@@ -213,3 +213,6 @@ Game status values vary by sport:
 | `finished`   | Match completed         |
 | `postponed`  | Match postponed         |
 | `cancelled`  | Match canceled          |
+
+
+Built with [Mintlify](https://mintlify.com).

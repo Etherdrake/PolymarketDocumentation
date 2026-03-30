@@ -52,6 +52,17 @@ Polymarket provides official open-source clients in TypeScript, Python, and Rust
 
   markets = client.get_markets()
   ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::{Client, Config};
+
+  let client = Client::new("https://clob.polymarket.com", Config::default())?
+      .authentication_builder(&signer)
+      .authenticate()
+      .await?;
+
+  let markets = client.markets(None).await?;
+  ```
 </CodeGroup>
 
 ## Source Code
@@ -95,3 +106,6 @@ For [gasless transactions](/trading/gasless) using proxy wallets, the relayer cl
     Understand L1/L2 auth and API credentials.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

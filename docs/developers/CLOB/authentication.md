@@ -26,7 +26,7 @@ The CLOB API uses two levels of authentication: **L1 (Private Key)** and **L2 (A
 
 The CLOB uses two levels of authentication: L1 (Private Key) and L2 (API Key). Either can be accomplished using the CLOB client or REST API
 
-### L1 Authentication (Private Key)
+### L1 Authentication
 
 L1 authentication uses the wallet's private key to sign an EIP-712 message used in the request header. It proves ownership and control over the private key. The private key stays in control of the user and all trading activity remains non-custodial.
 
@@ -36,7 +36,7 @@ L1 authentication uses the wallet's private key to sign an EIP-712 message used 
 * Deriving existing API credentials
 * Signing and creating user's orders locally
 
-### L2 Authentication (API Credentials)
+### L2 Authentication
 
 L2 uses API credentials (apiKey, secret, passphrase) generated from L1 authentication. These are used solely to authenticate requests made to the CLOB API. Requests are signed using HMAC-SHA256.
 
@@ -57,7 +57,7 @@ L2 uses API credentials (apiKey, secret, passphrase) generated from L1 authentic
 
 Before making authenticated requests, you need to obtain API credentials using L1 authentication.
 
-### Using the SDK (Recommended)
+### Using the SDK
 
 <Tabs>
   <Tab title="TypeScript">
@@ -103,6 +103,29 @@ Before making authenticated requests, you need to obtain API credentials using L
     #     "secret": "base64EncodedSecretString",
     #     "passphrase": "randomPassphraseString"
     # }
+    ```
+  </Tab>
+
+  <Tab title="Rust">
+    ```rust  theme={null}
+    use std::str::FromStr;
+    use polymarket_client_sdk::POLYGON;
+    use polymarket_client_sdk::auth::{LocalSigner, Signer};
+    use polymarket_client_sdk::clob::{Client, Config};
+
+    let private_key = std::env::var("POLYMARKET_PRIVATE_KEY")?;
+    let signer = LocalSigner::from_str(&private_key)?
+        .with_chain_id(Some(POLYGON));
+
+    // Creates new credentials or derives existing ones,
+    // then initializes the authenticated client — all in one step
+    let client = Client::new("https://clob.polymarket.com", Config::default())?
+        .authentication_builder(&signer)
+        .authenticate()
+        .await?;
+
+    let credentials = client.credentials();
+    println!("API Key: {}", credentials.key());
     ```
   </Tab>
 </Tabs>
@@ -228,7 +251,7 @@ All trading endpoints require these 5 headers:
 
 The `POLY_SIGNATURE` for L2 is an HMAC-SHA256 signature created using the user's API credentials `secret` value. Reference implementations can be found in the [TypeScript](https://github.com/Polymarket/clob-client/blob/main/src/signing/hmac.ts) and [Python](https://github.com/Polymarket/py-clob-client/blob/main/py_clob_client/signing/hmac.py) clients.
 
-### CLOB Client (L2)
+### CLOB Client
 
 <Tabs>
   <Tab title="TypeScript">
@@ -272,6 +295,30 @@ The `POLY_SIGNATURE` for L2 is an HMAC-SHA256 signature created using the user's
         {"token_id": "123456", "price": 0.65, "size": 100, "side": "BUY"},
         {"tick_size": "0.01", "neg_risk": False}
     )
+    ```
+  </Tab>
+
+  <Tab title="Rust">
+    ```rust  theme={null}
+    use polymarket_client_sdk::clob::types::{Side, SignatureType};
+    use polymarket_client_sdk::types::dec;
+
+    let client = Client::new("https://clob.polymarket.com", Config::default())?
+        .authentication_builder(&signer)
+        .signature_type(SignatureType::Proxy) // signatureType explained below
+        // Funder auto-derived via CREATE2 for Proxy/GnosisSafe
+        .authenticate()
+        .await?;
+
+    // Now you can trade!
+    let order = client.limit_order()
+        .token_id("123456".parse()?)
+        .price(dec!(0.65))
+        .size(dec!(100))
+        .side(Side::Buy)
+        .build().await?;
+    let signed = client.sign(&signer, order).await?;
+    let response = client.post_order(signed).await?;
     ```
   </Tab>
 </Tabs>
@@ -324,7 +371,7 @@ When initializing the L2 client, you must specify your wallet **signatureType** 
 ## Troubleshooting
 
 <AccordionGroup>
-  <Accordion title="Error: INVALID_SIGNATURE">
+  <Accordion title="Error - INVALID_SIGNATURE">
     Your wallet's private key is incorrect or improperly formatted.
 
     **Solutions:**
@@ -334,7 +381,7 @@ When initializing the L2 client, you must specify your wallet **signatureType** 
     * Check that the key has proper permissions
   </Accordion>
 
-  <Accordion title="Error: NONCE_ALREADY_USED">
+  <Accordion title="Error - NONCE_ALREADY_USED">
     The nonce you provided has already been used to create an API key.
 
     **Solutions:**
@@ -343,7 +390,7 @@ When initializing the L2 client, you must specify your wallet **signatureType** 
     * Or use a different nonce with `createApiKey()`
   </Accordion>
 
-  <Accordion title="Error: Invalid Funder Address">
+  <Accordion title="Error - Invalid Funder Address">
     Your funder address is incorrect or doesn't match your wallet.
 
     **Solution:** Check your Polymarket profile address at [polymarket.com/settings](https://polymarket.com/settings).
@@ -375,3 +422,6 @@ When initializing the L2 client, you must specify your wallet **signatureType** 
     Check trading availability by region.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

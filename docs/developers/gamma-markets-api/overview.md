@@ -58,7 +58,7 @@ Each market has `outcomes` and `outcomePrices` arrays that map 1:1. Prices repre
 
 Endpoints are split across three APIs. See the [API Reference](/api-reference/introduction) for full endpoint documentation with parameters and response schemas.
 
-### Gamma API (`gamma-api.polymarket.com`) — Events, Markets & Discovery
+### Gamma API - Events Markets and Discovery
 
 | Endpoint             | Description                                 |
 | -------------------- | ------------------------------------------- |
@@ -72,7 +72,7 @@ Endpoints are split across three APIs. See the [API Reference](/api-reference/in
 | `GET /sports`        | Sports metadata                             |
 | `GET /teams`         | Teams                                       |
 
-### CLOB API (`clob.polymarket.com`) — Prices & Orderbooks
+### CLOB API - Prices and Orderbooks
 
 | Endpoint              | Description                       |
 | --------------------- | --------------------------------- |
@@ -84,7 +84,7 @@ Endpoints are split across three APIs. See the [API Reference](/api-reference/in
 | `GET /midpoint`       | Midpoint price for a token        |
 | `GET /spread`         | Spread for a token                |
 
-### Data API (`data-api.polymarket.com`) — Positions, Trades & Analytics
+### Data API - Positions Trades and Analytics
 
 | Endpoint                               | Description                  |
 | -------------------------------------- | ---------------------------- |
@@ -109,3 +109,6 @@ Endpoints are split across three APIs. See the [API Reference](/api-reference/in
     Full endpoint documentation with parameters and response schemas.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

@@ -137,7 +137,7 @@ For the user channel, use `markets` instead of `assets_ids`:
 
 ## Heartbeats
 
-### Market & User Channels
+### Market and User Channels
 
 Send `PING` every 10 seconds. The server responds with `PONG`.
 
@@ -165,7 +165,7 @@ pong
   close connections that don't subscribe within a timeout period.
 </Accordion>
 
-<Accordion title="Connection drops after ~10 seconds">
+<Accordion title="Connection drops after about 10 seconds">
   You're not sending heartbeats. Send `PING` every 10 seconds for market/user
   channels, or respond to server `ping` with `pong` for the sports channel.
 </Accordion>
@@ -176,6 +176,9 @@ pong
      expecting `best_bid_ask`, `new_market`, or `market_resolved` events
 </Accordion>
 
-<Accordion title="Authentication failed (user channel)">
+<Accordion title="Authentication failed - user channel">
   Verify your API credentials are correct and haven't expired.
 </Accordion>
+
+
+Built with [Mintlify](https://mintlify.com).

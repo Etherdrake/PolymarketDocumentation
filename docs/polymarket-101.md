@@ -30,12 +30,12 @@ Polymarket operates on a non-custodial model. You maintain full control of your 
 ## How Polymarket Works
 
 <Frame>
-  <img src="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/polymarket-101.png?fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=059e9831d1c51b99996d9747c0139d49" alt="Polymarket Overview" className="dark:hidden" data-og-width="1526" width="1526" data-og-height="952" height="952" data-path="images/core-concepts/polymarket-101.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/polymarket-101.png?w=280&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=cee8a9c30e5f8eeb52ce1533c9ed20a6 280w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/polymarket-101.png?w=560&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=195d47349ffa7b8121cd8145cfb59c10 560w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/polymarket-101.png?w=840&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=9ca0bddd2f81d006e2133fe3a62c2efb 840w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/polymarket-101.png?w=1100&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=c36604501b95b21d7935271369de9d29 1100w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/polymarket-101.png?w=1650&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=05150d8151fef216d54681d9150dfc50 1650w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/polymarket-101.png?w=2500&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=db38c27a42a4056f0fb2d0bceaede56d 2500w" />
+  <img src="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/polymarket-101.png?fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=059e9831d1c51b99996d9747c0139d49" alt="Polymarket Overview" className="dark:hidden" width="1526" height="952" data-path="images/core-concepts/polymarket-101.png" />
 
-  <img src="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/polymarket-101.png?fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=4e929eca98a2bb83ef7421f7bbaf9f1d" alt="Polymarket Overview" className="hidden dark:block" data-og-width="1526" width="1526" data-og-height="952" height="952" data-path="images/dark/core-concepts/polymarket-101.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/polymarket-101.png?w=280&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=5c229d1c21d6add21f0110272eefd038 280w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/polymarket-101.png?w=560&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=8f74de58b1dd88aa997965fd48b6ccc3 560w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/polymarket-101.png?w=840&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=84a3a963a45d7e0afa5663c99e1a0d6c 840w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/polymarket-101.png?w=1100&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=b555e8fce14ceefe920847c1b60d6e89 1100w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/polymarket-101.png?w=1650&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=066b0d2496c7cc67c6468455e48d38f1 1650w, https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/polymarket-101.png?w=2500&fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=9d2e44ea93790ce3cd2bf96b7aaad1a4 2500w" />
+  <img src="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/polymarket-101.png?fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=4e929eca98a2bb83ef7421f7bbaf9f1d" alt="Polymarket Overview" className="hidden dark:block" width="1526" height="952" data-path="images/dark/core-concepts/polymarket-101.png" />
 </Frame>
 
-### Prices = Probabilities
+### Prices Are Probabilities
 
 Every share on Polymarket is priced between `$0.00` and `$1.00`. The price represents the market's belief in the probability of that outcome occurring.
 
@@ -76,7 +76,7 @@ When an event concludes, markets are resolved through the **UMA Optimistic Oracl
 
 This community-driven process ensures fair and accurate market resolution.
 
-## Why Blockchain?
+## Why Blockchain
 
 Polymarket is built on **Polygon**, a blockchain network, for several key reasons:
 
@@ -117,3 +117,6 @@ Ready to start trading?
     Browse active prediction markets on Polymarket.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

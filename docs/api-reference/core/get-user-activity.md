@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/data-openapi.yaml get /activity
+````yaml /api-spec/data-openapi.yaml get /activity
 openapi: 3.0.3
 info:
   title: Polymarket Data API
@@ -89,6 +89,7 @@ paths:
                 - REWARD
                 - CONVERSION
                 - MAKER_REBATE
+                - REFERRAL_REWARD
         - in: query
           name: start
           schema:
@@ -182,6 +183,7 @@ components:
             - REWARD
             - CONVERSION
             - MAKER_REBATE
+            - REFERRAL_REWARD
         size:
           type: number
         usdcSize:
@@ -228,3 +230,5 @@ components:
         - error
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

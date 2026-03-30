@@ -100,3 +100,6 @@ Withdrawals are **instant** and **free** — Polymarket does not charge withdraw
     Track your withdrawal progress.
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

@@ -10,7 +10,7 @@ Polymarket's CLOB (Central Limit Order Book) is a hybrid-decentralized trading s
 
 We recommend using the open-source SDK clients, which handle order signing, authentication, and submission:
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card title="TypeScript Client" icon="github" href="https://github.com/Polymarket/clob-client">
     <p className="font-mono text-[0.8rem]">
       npm install @polymarket/clob-client
@@ -19,6 +19,10 @@ We recommend using the open-source SDK clients, which handle order signing, auth
 
   <Card title="Python Client" icon="github" href="https://github.com/Polymarket/py-clob-client">
     <p className="font-mono text-[0.8rem]">pip install py-clob-client</p>
+  </Card>
+
+  <Card title="Rust Client" icon="github" href="https://github.com/Polymarket/rs-clob-client">
+    <p className="font-mono text-[0.8rem]">cargo add polymarket-client-sdk</p>
   </Card>
 </CardGroup>
 
@@ -66,6 +70,23 @@ You use your private key once to derive **L2 credentials** (API key, secret, pas
   temp_client = ClobClient("https://clob.polymarket.com", key=private_key, chain_id=137)
   api_creds = temp_client.create_or_derive_api_creds()
   ```
+
+  ```rust Rust theme={null}
+  use std::str::FromStr;
+  use polymarket_client_sdk::POLYGON;
+  use polymarket_client_sdk::auth::{LocalSigner, Signer};
+  use polymarket_client_sdk::clob::{Client, Config};
+
+  let private_key = std::env::var("POLYMARKET_PRIVATE_KEY")?;
+  let signer = LocalSigner::from_str(&private_key)?
+      .with_chain_id(Some(POLYGON));
+
+  // Derive L2 API credentials and initialize client in one step
+  let client = Client::new("https://clob.polymarket.com", Config::default())?
+      .authentication_builder(&signer)
+      .authenticate()
+      .await?;
+  ```
 </CodeGroup>
 
 ***
@@ -109,6 +130,16 @@ When initializing the trading client, you must specify your wallet's **signature
       signature_type=2,  # GNOSIS_SAFE
       funder="0x..."  # Your proxy wallet address
   )
+  ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::SignatureType;
+
+  let client = Client::new("https://clob.polymarket.com", Config::default())?
+      .authentication_builder(&signer)
+      .signature_type(SignatureType::GnosisSafe) // Funder auto-derived via CREATE2
+      .authenticate()
+      .await?;
   ```
 </CodeGroup>
 
@@ -167,7 +198,7 @@ If you're using the REST API directly (without the SDK), you need to attach auth
 
 ***
 
-## What's in This Section
+## What Is in This Section
 
 <CardGroup cols={2}>
   <Card title="Quickstart" icon="bolt" href="/trading/quickstart">
@@ -198,3 +229,6 @@ If you're using the REST API directly (without the SDK), you need to attach auth
     Deposit and withdraw funds across chains
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

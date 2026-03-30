@@ -46,7 +46,7 @@ These errors can occur on **any authenticated endpoint**.
 
 Errors from the order book endpoints.
 
-### `GET /book`
+### GET book
 
 <ResponseField name="400" type="Bad Request">
   `Invalid token id` — The `token_id` query parameter is missing or not a valid token ID.
@@ -56,7 +56,7 @@ Errors from the order book endpoints.
   `No orderbook exists for the requested token id`
 </ResponseField>
 
-### `POST /books`
+### POST books
 
 <ResponseField name="400" type="Bad Request">
   `Invalid payload` — The request body is malformed or missing required fields.
@@ -72,7 +72,7 @@ Errors from the order book endpoints.
 
 Errors from price, midpoint, and spread endpoints.
 
-### `GET /price`
+### GET price
 
 <ResponseField name="400" type="Bad Request">
   `Invalid token id` — The `token_id` parameter is missing or invalid.
@@ -86,7 +86,7 @@ Errors from price, midpoint, and spread endpoints.
   `No orderbook exists for the requested token id`
 </ResponseField>
 
-### `POST /prices`
+### POST prices
 
 <ResponseField name="400" type="Bad Request">
   `Invalid payload` — The request body is malformed or missing required fields.
@@ -100,7 +100,7 @@ Errors from price, midpoint, and spread endpoints.
   `Payload exceeds the limit` — Too many token IDs in a single request.
 </ResponseField>
 
-### `GET /midpoint`
+### GET midpoint
 
 <ResponseField name="400" type="Bad Request">
   `Invalid token id` — The `token_id` parameter is missing or invalid.
@@ -110,7 +110,7 @@ Errors from price, midpoint, and spread endpoints.
   `No orderbook exists for the requested token id`
 </ResponseField>
 
-### `POST /midpoints`
+### POST midpoints
 
 <ResponseField name="400" type="Bad Request">
   `Invalid payload` — The request body is malformed or missing required fields.
@@ -120,7 +120,7 @@ Errors from price, midpoint, and spread endpoints.
   `Payload exceeds the limit` — Too many token IDs in a single request.
 </ResponseField>
 
-### `GET /spread`
+### GET spread
 
 <ResponseField name="400" type="Bad Request">
   `Invalid token id` — The `token_id` parameter is missing or invalid.
@@ -130,7 +130,7 @@ Errors from price, midpoint, and spread endpoints.
   `No orderbook exists for the requested token id`
 </ResponseField>
 
-### `POST /spreads`
+### POST spreads
 
 <ResponseField name="400" type="Bad Request">
   `Invalid payload` — The request body is malformed or missing required fields.
@@ -146,7 +146,7 @@ Errors from price, midpoint, and spread endpoints.
 
 Errors from order placement endpoints.
 
-### `POST /order`
+### POST order
 
 <ResponseField name="400" type="Bad Request">
   `Invalid order payload` — The request body is malformed, missing required fields, or contains invalid values.
@@ -168,7 +168,7 @@ Errors from order placement endpoints.
   `'{address}' address in closed only mode`
 </ResponseField>
 
-### `POST /orders`
+### POST orders
 
 All errors from `POST /order` apply, plus:
 
@@ -268,7 +268,7 @@ Internal matching engine errors that may surface during order execution.
 
 Errors from order cancellation endpoints.
 
-### `DELETE /order`
+### DELETE order
 
 <ResponseField name="400" type="Bad Request">
   `Invalid order payload` — The request body is malformed.
@@ -278,7 +278,7 @@ Errors from order cancellation endpoints.
   `Invalid orderID` — The provided order ID is not a valid format.
 </ResponseField>
 
-### `DELETE /orders`
+### DELETE orders
 
 <ResponseField name="400" type="Bad Request">
   `Invalid order payload` — The request body is malformed.
@@ -292,7 +292,7 @@ Errors from order cancellation endpoints.
   `Invalid orderID` — One or more order IDs are not valid.
 </ResponseField>
 
-### `DELETE /cancel-market-orders`
+### DELETE cancel-market-orders
 
 <ResponseField name="400" type="Bad Request">
   `Invalid order payload` — The request body is malformed or contains invalid filter parameters.
@@ -304,7 +304,7 @@ Errors from order cancellation endpoints.
 
 Errors from order query endpoints.
 
-### `GET /order/{orderID}`
+### GET order by ID
 
 <ResponseField name="400" type="Bad Request">
   `Invalid orderID` — The order ID in the URL path is not valid.
@@ -314,7 +314,7 @@ Errors from order query endpoints.
   `Internal server error` — An unexpected error occurred while fetching the order.
 </ResponseField>
 
-### `GET /orders`
+### GET orders
 
 <ResponseField name="400" type="Bad Request">
   `invalid order params payload` — The query parameters are malformed or contain invalid values.
@@ -328,7 +328,7 @@ Errors from order query endpoints.
 
 ## Trades
 
-### `GET /trades`
+### GET trades
 
 <ResponseField name="400" type="Bad Request">
   `Invalid trade params payload` — The query parameters are malformed or contain invalid values.
@@ -338,7 +338,7 @@ Errors from order query endpoints.
   `Internal server error` — An unexpected error occurred while fetching trades.
 </ResponseField>
 
-### `GET /last-trade-price`
+### GET last-trade-price
 
 <ResponseField name="400" type="Bad Request">
   `Invalid token id` — The `token_id` parameter is missing or invalid.
@@ -348,7 +348,7 @@ Errors from order query endpoints.
   `Internal server error` — An unexpected error occurred while fetching the last trade price.
 </ResponseField>
 
-### `POST /last-trades-prices`
+### POST last-trades-prices
 
 <ResponseField name="400" type="Bad Request">
   `Invalid payload` — The request body is malformed or missing required fields.
@@ -362,7 +362,7 @@ Errors from order query endpoints.
 
 ## Markets
 
-### `GET /markets/{condition_id}`
+### GET market by condition ID
 
 <ResponseField name="400" type="Bad Request">
   `Invalid market` — The condition ID is not a valid format.
@@ -372,7 +372,7 @@ Errors from order query endpoints.
   `market not found` — No market exists with this condition ID.
 </ResponseField>
 
-### `GET /tick-size/{token_id}`
+### GET tick-size
 
 <ResponseField name="400" type="Bad Request">
   `Invalid token id` — The token ID is not valid.
@@ -382,7 +382,7 @@ Errors from order query endpoints.
   `market not found` — No market found for this token ID.
 </ResponseField>
 
-### `GET /neg-risk/{token_id}`
+### GET neg-risk
 
 <ResponseField name="400" type="Bad Request">
   `Invalid token id` — The token ID is not valid.
@@ -396,13 +396,13 @@ Errors from order query endpoints.
 
 ## Price History
 
-### `GET /prices-history`
+### GET prices-history
 
 <ResponseField name="400" type="Bad Request">
   Filter validation errors — One or more query parameters (`market`, `startTs`, `endTs`, `fidelity`) are invalid.
 </ResponseField>
 
-### `GET /ohlc`
+### GET ohlc
 
 <ResponseField name="400" type="Bad Request">
   `startTs is required` — The `startTs` query parameter is missing.
@@ -420,7 +420,7 @@ Errors from order query endpoints.
   `limit cannot exceed 1000` — Reduce the `limit` parameter to 1000 or below.
 </ResponseField>
 
-### `GET /orderbook-history`
+### GET orderbook-history
 
 <ResponseField name="400" type="Bad Request">
   `startTs is required` — The `startTs` query parameter is missing.
@@ -436,9 +436,9 @@ Errors from order query endpoints.
 
 ***
 
-## Authentication & API Keys
+## Authentication and API Keys
 
-### `POST /auth/api-key`
+### POST auth api-key
 
 <ResponseField name="401" type="Unauthorized">
   `Invalid L1 Request headers` — L1 authentication headers are missing or invalid.
@@ -448,19 +448,19 @@ Errors from order query endpoints.
   `Could not create api key`
 </ResponseField>
 
-### `GET /auth/api-keys`
+### GET auth api-keys
 
 <ResponseField name="500" type="Internal Server Error">
   `Could not retrieve API keys` — An unexpected error occurred while fetching your API keys.
 </ResponseField>
 
-### `DELETE /auth/api-key`
+### DELETE auth api-key
 
 <ResponseField name="500" type="Internal Server Error">
   `Could not delete API key` — An unexpected error occurred while deleting the API key.
 </ResponseField>
 
-### `GET /auth/derive-api-key`
+### GET auth derive-api-key
 
 <ResponseField name="401" type="Unauthorized">
   `Invalid L1 Request headers` — L1 authentication headers are missing or invalid.
@@ -474,19 +474,19 @@ Errors from order query endpoints.
 
 ## Builder API Keys
 
-### `POST /auth/builder-api-key`
+### POST auth builder-api-key
 
 <ResponseField name="500" type="Internal Server Error">
   `could not create builder api key` — Builder API key creation failed.
 </ResponseField>
 
-### `GET /auth/builder-api-key`
+### GET auth builder-api-key
 
 <ResponseField name="500" type="Internal Server Error">
   `could not get builder api keys` — An unexpected error occurred while fetching builder API keys.
 </ResponseField>
 
-### `DELETE /auth/builder-api-key`
+### DELETE auth builder-api-key
 
 <ResponseField name="400" type="Bad Request">
   `invalid revoke builder api key body` — The request body is malformed.
@@ -504,7 +504,7 @@ Errors from order query endpoints.
 
 ## Builder Trades
 
-### `GET /builder/trades`
+### GET builder trades
 
 <ResponseField name="400" type="Bad Request">
   `invalid builder trade params` — The query parameters are malformed or contain invalid values.
@@ -516,9 +516,9 @@ Errors from order query endpoints.
 
 ***
 
-## Balance & Allowance
+## Balance and Allowance
 
-### `GET /balance-allowance`
+### GET balance-allowance
 
 <ResponseField name="400" type="Bad Request">
   `Invalid asset type` — The `asset_type` parameter is not a recognized asset type.
@@ -545,3 +545,6 @@ Errors from order query endpoints.
 <Note>
   The CLOB API has an internal override: any error message containing `"not found"` returns `404`, `"unauthorized"` returns `401`, and `"context canceled"` returns `400`, regardless of the original status code.
 </Note>
+
+
+Built with [Mintlify](https://mintlify.com).

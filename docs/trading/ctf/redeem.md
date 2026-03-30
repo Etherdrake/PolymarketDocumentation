@@ -92,3 +92,6 @@ When you call `redeemPositions()`:
     Understand how markets are resolved
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

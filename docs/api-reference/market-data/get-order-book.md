@@ -12,7 +12,7 @@ Includes bids, asks, market details, and last trade price.
 
 ## OpenAPI
 
-````yaml api-spec/clob-openapi.yaml get /book
+````yaml /api-spec/clob-openapi.yaml get /book
 openapi: 3.1.0
 info:
   title: Polymarket CLOB API
@@ -38,6 +38,8 @@ tags:
     description: User notification endpoints
   - name: Rewards
     description: Rewards and earnings endpoints
+  - name: Rebates
+    description: Maker rebate endpoints
 paths:
   /book:
     get:
@@ -189,3 +191,5 @@ components:
           example: '100'
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

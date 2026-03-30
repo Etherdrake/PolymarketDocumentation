@@ -10,7 +10,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/clob-openapi.yaml get /prices-history
+````yaml /api-spec/clob-openapi.yaml get /prices-history
 openapi: 3.1.0
 info:
   title: Polymarket CLOB API
@@ -36,6 +36,8 @@ tags:
     description: User notification endpoints
   - name: Rewards
     description: Rewards and earnings endpoints
+  - name: Rebates
+    description: Maker rebate endpoints
 paths:
   /prices-history:
     get:
@@ -133,3 +135,5 @@ components:
           format: float
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

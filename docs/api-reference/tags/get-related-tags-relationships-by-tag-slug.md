@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/gamma-openapi.yaml get /tags/slug/{slug}/related-tags
+````yaml /api-spec/gamma-openapi.yaml get /tags/slug/{slug}/related-tags
 openapi: 3.0.3
 info:
   title: Markets API
@@ -92,3 +92,5 @@ components:
           nullable: true
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

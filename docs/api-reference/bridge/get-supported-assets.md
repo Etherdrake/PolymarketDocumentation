@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/bridge-openapi.yaml get /supported-assets
+````yaml /api-spec/bridge-openapi.yaml get /supported-assets
 openapi: 3.0.3
 info:
   title: Polymarket Bridge API
@@ -97,3 +97,5 @@ components:
           example: 6
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

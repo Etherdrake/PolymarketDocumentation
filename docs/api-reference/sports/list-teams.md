@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/gamma-openapi.yaml get /teams
+````yaml /api-spec/gamma-openapi.yaml get /teams
 openapi: 3.0.3
 info:
   title: Markets API
@@ -135,3 +135,5 @@ components:
           nullable: true
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

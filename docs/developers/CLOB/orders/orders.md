@@ -71,6 +71,11 @@ Retrieve the tick size for a market using the SDK:
   tick_size = client.get_tick_size(token_id)
   # Returns: "0.1" | "0.01" | "0.001" | "0.0001"
   ```
+
+  ```rust Rust theme={null}
+  let resp = client.tick_size(token_id).await?;
+  // resp.minimum_tick_size: TickSize::Tenth | Hundredth | Thousandth | TenThousandth
+  ```
 </CodeGroup>
 
 <Tip>
@@ -114,6 +119,21 @@ Multi-outcome events (e.g., "Who will win the election?" with 3+ candidates) use
       }
   )
   ```
+
+  ```rust Rust theme={null}
+  // The Rust SDK auto-detects neg risk from the token ID — no flag needed.
+  // The order builder fetches neg_risk and uses the correct exchange contract.
+  let order = client
+      .limit_order()
+      .token_id("TOKEN_ID".parse()?)
+      .price(dec!(0.50))
+      .size(dec!(10))
+      .side(Side::Buy)
+      .build()
+      .await?;
+  let signed = client.sign(&signer, order).await?;
+  let response = client.post_order(signed).await?;
+  ```
 </CodeGroup>
 
 You can check whether a market uses negative risk via the SDK or the market object's `neg_risk` field:
@@ -125,6 +145,10 @@ You can check whether a market uses negative risk via the SDK or the market obje
 
   ```python Python theme={null}
   is_neg_risk = client.get_neg_risk(token_id)
+  ```
+
+  ```rust Rust theme={null}
+  let is_neg_risk = client.neg_risk(token_id).await?;
   ```
 </CodeGroup>
 
@@ -165,7 +189,7 @@ $$
 
 ## Querying Orders
 
-All query endpoints require [L2 authentication](/api-reference/authentication).
+All query endpoints require [L2 authentication](/api-reference/authentication). [Builder-authenticated](/trading/clients/builder) clients can also query orders attributed to their builder account using the same methods.
 
 ### Get a Single Order
 
@@ -180,6 +204,11 @@ Retrieve details for a specific order by its ID:
   ```python Python theme={null}
   order = client.get_order("0xb816482a...")
   print(order)
+  ```
+
+  ```rust Rust theme={null}
+  let order = client.order("0xb816482a...").await?;
+  println!("{order:?}");
   ```
 </CodeGroup>
 
@@ -215,6 +244,25 @@ Retrieve your open orders, optionally filtered by market or asset:
           market="0xbd31dc8a...",
       )
   )
+  ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::request::OrdersRequest;
+
+  // All open orders
+  let orders = client.orders(&OrdersRequest::default(), None).await?;
+
+  // Filtered by market
+  let request = OrdersRequest::builder()
+      .market("0xbd31dc8a...".parse()?)
+      .build();
+  let market_orders = client.orders(&request, None).await?;
+
+  // Filtered by asset
+  let request = OrdersRequest::builder()
+      .asset_id("52114319501245...".parse()?)
+      .build();
+  let asset_orders = client.orders(&request, None).await?;
   ```
 </CodeGroup>
 
@@ -325,6 +373,19 @@ Retrieve your trades with the SDK:
       )
   )
   ```
+
+  ```rust Rust theme={null}
+  use polymarket_client_sdk::clob::types::request::TradesRequest;
+
+  // All trades
+  let trades = client.trades(&TradesRequest::default(), None).await?;
+
+  // Filtered by market
+  let request = TradesRequest::builder()
+      .market("0xbd31dc8a...".parse()?)
+      .build();
+  let market_trades = client.trades(&request, None).await?;
+  ```
 </CodeGroup>
 
 ***
@@ -351,6 +412,15 @@ The heartbeat endpoint maintains session liveness for order safety. If a valid h
       resp = client.post_heartbeat(heartbeat_id)
       heartbeat_id = resp["heartbeat_id"]
       time.sleep(5)
+  ```
+
+  ```rust Rust theme={null}
+  // With the `heartbeats` feature, auto-send in background:
+  Client::start_heartbeats(&mut client)?;
+
+  // Or manually:
+  let resp = client.post_heartbeat(None).await?; // None for first call
+  let resp = client.post_heartbeat(Some(resp.heartbeat_id)).await?;
   ```
 </CodeGroup>
 
@@ -387,6 +457,15 @@ Check if your resting orders are eligible for [maker rebates](/market-makers/mak
   batch_scoring = client.are_orders_scoring(
       OrdersScoringParams(orderIds=["0x...", "0x..."])
   )
+  ```
+
+  ```rust Rust theme={null}
+  // Single order
+  let scoring = client.is_order_scoring("0x...").await?;
+  println!("Scoring: {}", scoring.scoring);
+
+  // Multiple orders
+  let batch = client.are_orders_scoring(&["0x...", "0x..."]).await?;
   ```
 </CodeGroup>
 
@@ -461,3 +540,6 @@ The operator's privileges are limited to order matching and ensuring correct ord
     Cancel single, multiple, or all orders
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).

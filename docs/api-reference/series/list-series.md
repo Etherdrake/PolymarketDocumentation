@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/gamma-openapi.yaml get /series
+````yaml /api-spec/gamma-openapi.yaml get /series
 openapi: 3.0.3
 info:
   title: Markets API
@@ -79,6 +79,10 @@ paths:
           in: query
           schema:
             type: string
+        - name: exclude_events
+          in: query
+          schema:
+            type: boolean
       responses:
         '200':
           description: List of series
@@ -1233,3 +1237,5 @@ components:
           nullable: true
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

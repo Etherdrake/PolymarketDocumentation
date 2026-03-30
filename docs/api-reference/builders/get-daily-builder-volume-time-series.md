@@ -8,7 +8,7 @@
 
 ## OpenAPI
 
-````yaml api-spec/data-openapi.yaml get /v1/builders/volume
+````yaml /api-spec/data-openapi.yaml get /v1/builders/volume
 openapi: 3.0.3
 info:
   title: Polymarket Data API
@@ -103,3 +103,5 @@ components:
         - error
 
 ````
+
+Built with [Mintlify](https://mintlify.com).

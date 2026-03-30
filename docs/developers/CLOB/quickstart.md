@@ -18,6 +18,10 @@ This guide walks you through placing an order on Polymarket end-to-end.
       ```bash Python theme={null}
       pip install py-clob-client
       ```
+
+      ```bash Rust theme={null}
+      cargo add polymarket-client-sdk --features clob
+      ```
     </CodeGroup>
   </Step>
 
@@ -69,6 +73,23 @@ This guide walks you through placing an order on Polymarket end-to-end.
           signature_type=0,  # EOA
           funder="YOUR_WALLET_ADDRESS"
       )
+      ```
+
+      ```rust Rust theme={null}
+      use std::str::FromStr;
+      use polymarket_client_sdk::POLYGON;
+      use polymarket_client_sdk::auth::{LocalSigner, Signer};
+      use polymarket_client_sdk::clob::{Client, Config};
+
+      let private_key = std::env::var("POLYMARKET_PRIVATE_KEY")?;
+      let signer = LocalSigner::from_str(&private_key)?
+          .with_chain_id(Some(POLYGON));
+
+      // Derive API credentials and initialize client (EOA by default)
+      let client = Client::new("https://clob.polymarket.com", Config::default())?
+          .authentication_builder(&signer)
+          .authenticate()
+          .await?;
       ```
     </CodeGroup>
 
@@ -131,6 +152,28 @@ This guide walks you through placing an order on Polymarket end-to-end.
       print("Order ID:", response["orderID"])
       print("Status:", response["status"])
       ```
+
+      ```rust Rust theme={null}
+      use polymarket_client_sdk::clob::types::Side;
+      use polymarket_client_sdk::types::dec;
+
+      let token_id = "YOUR_TOKEN_ID".parse()?;
+
+      // Tick size and neg risk are auto-fetched by the order builder
+      let order = client
+          .limit_order()
+          .token_id(token_id)
+          .price(dec!(0.50))
+          .size(dec!(10))
+          .side(Side::Buy)
+          .build()
+          .await?;
+      let signed_order = client.sign(&signer, order).await?;
+      let response = client.post_order(signed_order).await?;
+
+      println!("Order ID: {}", response.order_id);
+      println!("Status: {:?}", response.status);
+      ```
     </CodeGroup>
 
     <Tip>
@@ -167,6 +210,21 @@ This guide walks you through placing an order on Polymarket end-to-end.
       # Cancel an order
       client.cancel(order_id=response["orderID"])
       ```
+
+      ```rust Rust theme={null}
+      use polymarket_client_sdk::clob::types::request::{OrdersRequest, TradesRequest};
+
+      // View all open orders
+      let open_orders = client.orders(&OrdersRequest::default(), None).await?;
+      println!("You have {} open orders", open_orders.data.len());
+
+      // View your trade history
+      let trades = client.trades(&TradesRequest::default(), None).await?;
+      println!("You've made {} trades", trades.data.len());
+
+      // Cancel an order
+      client.cancel_order(&response.order_id).await?;
+      ```
     </CodeGroup>
   </Step>
 </Steps>
@@ -176,7 +234,7 @@ This guide walks you through placing an order on Polymarket end-to-end.
 ## Troubleshooting
 
 <AccordionGroup>
-  <Accordion title="L2_AUTH_NOT_AVAILABLE / Invalid Signature">
+  <Accordion title="L2 AUTH NOT AVAILABLE - Invalid Signature">
     Wrong private key, signature type, or funder address for the derived API credentials.
 
     * Check that `signatureType` matches your account type (`0`, `1`, or `2`)
@@ -184,7 +242,7 @@ This guide walks you through placing an order on Polymarket end-to-end.
     * Re-derive credentials with `createOrDeriveApiKey()` if unsure
   </Accordion>
 
-  <Accordion title="Order rejected: insufficient balance">
+  <Accordion title="Order rejected - insufficient balance">
     Your funder address doesn't have enough tokens:
 
     * **BUY orders**: need USDC.e in your funder address
@@ -192,13 +250,13 @@ This guide walks you through placing an order on Polymarket end-to-end.
     * Ensure you have more USDC.e than what's committed in open orders
   </Accordion>
 
-  <Accordion title="Order rejected: insufficient allowance">
+  <Accordion title="Order rejected - insufficient allowance">
     You need to approve the Exchange contract to spend your tokens. This is
     typically done through the Polymarket UI on your first trade, or using the CTF
     contract's `setApprovalForAll()` method.
   </Accordion>
 
-  <Accordion title="What's my funder address?">
+  <Accordion title="What is my funder address">
     Your funder address is the wallet where your funds are held:
 
     * **EOA (type 0)**: Your wallet address directly
@@ -207,7 +265,7 @@ This guide walks you through placing an order on Polymarket end-to-end.
     If the proxy wallet doesn't exist, log into Polymarket.com first (it's deployed on first login).
   </Accordion>
 
-  <Accordion title="Blocked by Cloudflare / Geoblock">
+  <Accordion title="Blocked by Cloudflare or Geoblock">
     You're trying to place a trade from a restricted region. See [Geographic Restrictions](/api-reference/geoblock) for details.
   </Accordion>
 </AccordionGroup>
@@ -225,3 +283,6 @@ This guide walks you through placing an order on Polymarket end-to-end.
     Attribute orders to your builder account for volume credit
   </Card>
 </CardGroup>
+
+
+Built with [Mintlify](https://mintlify.com).
