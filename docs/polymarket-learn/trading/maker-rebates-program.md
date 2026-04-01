@@ -39,7 +39,7 @@ Maker Rebates are funded by taker fees collected in eligible markets. A percenta
 | --------------- | ------------ | ------------------- |
 | Crypto          | 20%          | Fee-curve weighted  |
 | Sports          | 25%          | Fee-curve weighted  |
-| Finance         | 50%          | Fee-curve weighted  |
+| Finance         | 25%          | Fee-curve weighted  |
 | Politics        | 25%          | Fee-curve weighted  |
 | Economics       | 25%          | Fee-curve weighted  |
 | Culture         | 25%          | Fee-curve weighted  |
@@ -64,24 +64,24 @@ Rebates are distributed using the **same formula as taker fees**. This ensures m
 For each filled maker order:
 
 ```text  theme={null}
-fee_equivalent = C × p × feeRate × (p × (1 - p))^exponent
+fee_equivalent = C × feeRate × p × (1 - p)
 ```
 
 Where **C** = number of shares traded and **p** = price of the shares. The fee parameters differ by market type:
 
-| Category        | Fee Rate | Exponent |
-| --------------- | -------- | -------- |
-| Crypto          | 0.072    | 1        |
-| Sports          | 0.03     | 1        |
-| Finance         | 0.04     | 1        |
-| Politics        | 0.04     | 1        |
-| Economics       | 0.03     | 0.5      |
-| Culture         | 0.05     | 1        |
-| Weather         | 0.025    | 0.5      |
-| Other / General | 0.2      | 2        |
-| Mentions        | 0.25     | 2        |
-| Tech            | 0.04     | 1        |
-| Geopolitics     | 0        | —        |
+| Category        | Taker Fee Rate | Maker Fee Rate |
+| --------------- | -------------- | -------------- |
+| Crypto          | 0.072          | 0              |
+| Sports          | 0.03           | 0              |
+| Finance         | 0.04           | 0              |
+| Politics        | 0.04           | 0              |
+| Economics       | 0.05           | 0              |
+| Culture         | 0.05           | 0              |
+| Weather         | 0.05           | 0              |
+| Other / General | 0.05           | 0              |
+| Mentions        | 0.04           | 0              |
+| Tech            | 0.04           | 0              |
+| Geopolitics     | 0              | 0              |
 
 Your daily rebate:
 
@@ -95,11 +95,11 @@ Totals are calculated per market, so you only compete with other makers in the s
 
 ## Taker Fee Structure
 
-Taker fees are calculated in USDC and vary based on the share price. However, fees are collected in shares on buy orders and USDC on sell orders. Fees are highest at 50% probability and lowest at the extremes (near 0% or 100%).
+Taker fees are calculated in USDC and vary based on the share price. However, fees are collected in shares on buy orders and USDC on sell orders. The fee amount in USDC is symmetric around 50% probability — a trade at 30¢ incurs the same dollar fee as a trade at 70¢.
 
 <Frame>
   <div className="p-3 bg-white rounded-xl">
-    <iframe title="Fee Curves" aria-label="Line chart" id="datawrapper-chart-qTzMH" src="https://datawrapper.dwcdn.net/qTzMH/1/" scrolling="no" frameborder="0" width={700} style={{ width: "0", minWidth: "100% !important", border: "none" }} height="450" data-external="1" />
+    <iframe title="Fee Curves" aria-label="Line chart" id="datawrapper-chart-cY9H4" src="https://datawrapper.dwcdn.net/cY9H4/" scrolling="no" frameborder="0" width={700} style={{ width: "0", minWidth: "100% !important", border: "none" }} height="450" data-external="1" />
   </div>
 </Frame>
 
@@ -109,7 +109,7 @@ For detailed fee tables for each market category, see the [Fees](/trading/fees) 
 
 ### Fee Precision
 
-Fees are rounded to 4 decimal places. The smallest fee charged is 0.0001 USDC. Anything smaller rounds to zero, so very small trades near the extremes may incur no fee at all.
+Fees are rounded to 5 decimal places. The smallest fee charged is 0.00001 USDC. Anything smaller rounds to zero, so very small trades near the extremes may incur no fee at all.
 
 ***
 

@@ -6,6 +6,15 @@
 
 > Welcome to the Polymarket Changelog. Here you will find any important changes to Polymarket, including but not limited to CLOB, API, UI and Mobile Applications.
 
+<Update label="Mar 31, 2026" description="REST API Fee Fields Update">
+  * **Fee calculation source**: Fees should now be calculated using the `feeSchedule` object within a market.
+</Update>
+
+<Update label="Mar 30, 2026" description="Fee Structure V2">
+  * **New fee categories**: Fees now apply to Crypto, Sports, Finance, Politics, Economics, Culture, Weather, Tech, Mentions, and Other / General markets with updated rates per category. Geopolitical and world events markets remain fee-free.
+  * **Updated documentation**: [Fees](/trading/fees) and [Maker Rebates Program](/market-makers/maker-rebates).
+</Update>
+
 <Update label="Mar 17, 2026" description="March Madness: $2M+ in Liquidity Rewards">
   * **March Madness Liquidity Rewards**: Adding \$2M+ in liquidity rewards to both live and pregame markets.
   * **How it works**: Liquidity rewards are payments for placing competitive bids. Rewards are paid out based on the size of your orders, how close they are to the midpoint, and how consistently they are quoted relative to other liquidity providers. Orders must be active on the book for a minimum of **3.5 seconds** to be eligible.
