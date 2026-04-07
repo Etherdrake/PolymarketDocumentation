@@ -1122,6 +1122,11 @@ components:
           type: string
           format: date-time
           nullable: true
+        feesEnabled:
+          type: boolean
+          nullable: true
+        feeSchedule:
+          $ref: '#/components/schemas/FeeSchedule'
     EventCreator:
       type: object
       properties:
@@ -1184,6 +1189,21 @@ components:
           nullable: true
         outcomes:
           type: string
+          nullable: true
+    FeeSchedule:
+      type: object
+      properties:
+        exponent:
+          type: number
+          nullable: true
+        rate:
+          type: number
+          nullable: true
+        takerOnly:
+          type: boolean
+          nullable: true
+        rebateRate:
+          type: number
           nullable: true
 
 ````

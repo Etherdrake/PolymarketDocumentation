@@ -153,10 +153,6 @@ curl "https://gamma-api.polymarket.com/events?active=true&closed=false&limit=50&
   <Card title="API Reference" icon="code" href="/api-reference/introduction">
     Full endpoint documentation with parameters and response schemas.
   </Card>
-
-  <Card title="Subgraph" icon="share-nodes" href="/market-data/subgraph">
-    Query onchain data directly from the Polymarket subgraph.
-  </Card>
 </CardGroup>
 
 

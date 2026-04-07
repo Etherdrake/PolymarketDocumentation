@@ -493,6 +493,11 @@ components:
           type: string
           format: date-time
           nullable: true
+        feesEnabled:
+          type: boolean
+          nullable: true
+        feeSchedule:
+          $ref: '#/components/schemas/FeeSchedule'
     ImageOptimization:
       type: object
       properties:
@@ -881,6 +886,21 @@ components:
           nullable: true
         isCarousel:
           type: boolean
+          nullable: true
+    FeeSchedule:
+      type: object
+      properties:
+        exponent:
+          type: number
+          nullable: true
+        rate:
+          type: number
+          nullable: true
+        takerOnly:
+          type: boolean
+          nullable: true
+        rebateRate:
+          type: number
           nullable: true
     Series:
       type: object
