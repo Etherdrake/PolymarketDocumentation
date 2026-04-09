@@ -159,6 +159,7 @@ paths:
           in: query
           schema:
             type: boolean
+            default: false
       responses:
         '200':
           description: List of markets
@@ -972,10 +973,6 @@ components:
           type: string
           format: date-time
           nullable: true
-        updatedAt:
-          type: string
-          format: date-time
-          nullable: true
     Tag:
       type: object
       properties:
@@ -1000,10 +997,6 @@ components:
           type: integer
           nullable: true
         createdAt:
-          type: string
-          format: date-time
-          nullable: true
-        updatedAt:
           type: string
           format: date-time
           nullable: true
@@ -1097,10 +1090,6 @@ components:
           type: string
           nullable: true
         createdAt:
-          type: string
-          format: date-time
-          nullable: true
-        updatedAt:
           type: string
           format: date-time
           nullable: true
@@ -1227,10 +1216,6 @@ components:
           type: string
           nullable: true
         createdAt:
-          type: string
-          format: date-time
-          nullable: true
-        updatedAt:
           type: string
           format: date-time
           nullable: true

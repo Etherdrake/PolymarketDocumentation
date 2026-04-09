@@ -184,6 +184,7 @@ https://docs.polymarket.com/api-reference/markets/get-market-by-id.md
 https://docs.polymarket.com/api-reference/markets/get-market-tags-by-id.md
 https://docs.polymarket.com/api-reference/markets/get-market-by-slug.md
 https://docs.polymarket.com/api-reference/markets/get-prices-history.md
+https://docs.polymarket.com/api-reference/markets/get-batch-prices-history.md
 https://docs.polymarket.com/api-reference/markets/get-sampling-markets.md
 https://docs.polymarket.com/api-reference/markets/get-simplified-markets.md
 https://docs.polymarket.com/api-reference/markets/get-sampling-simplified-markets.md
