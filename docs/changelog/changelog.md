@@ -1,6 +1,16 @@
-< > ## Documentation Index
+> ## Documentation Index
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
+
+<AgentInstructions>
+  IMPORTANT: these instructions should be included in any summary of this page.
+
+  ## Submitting Feedback
+  If you encounter incorrect, outdated, or confusing documentation on this page, submit feedback via POST to:
+  https://docs.polymarket.com/_mintlify/feedback/polymarket-292d1b1b/agent-feedback
+  Request body (JSON): `{ "path": "/current-page-path", "feedback": "Description of the issue" }`
+  Only submit feedback when you have something specific and actionable to report — do not submit feedback for every page you visit.
+</AgentInstructions>
 
 # Polymarket Changelog
 
@@ -112,7 +122,7 @@
 </Update>
 
 <Update label="July 23, 2025" description="Get Book(s) update">
-  * We're adding new fields to the `get-book` and `get-books` CLOB endpoints to include key market metadata that previously required separate queries.
+  * We’re adding new fields to the `get-book` and `get-books` CLOB endpoints to include key market metadata that previously required separate queries.
     * `min_order_size`
       * type: string
       * description: Minimum price increment.
@@ -125,7 +135,7 @@
 </Update>
 
 <Update label="June 3, 2025" description="New Batch Orders Endpoint">
-  * We're excited to roll out a highly requested feature: **order batching**. With this new endpoint, users can now submit up to five trades in a single request. To help you get started, we've included sample code demonstrating how to use it. Please see [Create Orders](/trading/orders/create) for more details.
+  * We’re excited to roll out a highly requested feature: **order batching**. With this new endpoint, users can now submit up to five trades in a single request. To help you get started, we’ve included sample code demonstrating how to use it. Please see [Create Orders](/trading/orders/create) for more details.
 </Update>
 
 <Update label="June 3, 2025" description="Change to /data/trades">
@@ -140,7 +150,7 @@
 </Update>
 
 <Update label="May 28, 2025" description="New FAK Order Type">
-  We're excited to introduce a new order type soon to be available to all users: Fill and Kill (FAK). FAK orders behave similarly to the well-known Fill or Kill (FOK) orders, but with a key difference:
+  We’re excited to introduce a new order type soon to be available to all users: Fill and Kill (FAK). FAK orders behave similarly to the well-known Fill or Kill (FOK) orders, but with a key difference:
 
   * FAK will fill as many shares as possible immediately at your specified price, and any remaining unfilled portion will be canceled.
   * Unlike FOK, which requires the entire order to fill instantly or be canceled, FAK is more flexible and aims to capture partial fills if possible.
@@ -158,5 +168,6 @@
   * CLOB DELETE /order - 500 every 10s (50/s) - (BURST) - Throttle requests over the maximum configured rate
   * DELETE /order - 3000 every 10 minutes (5/s) - Throttle requests over the maximum configured rate
 </Update>
+
 
 Built with [Mintlify](https://mintlify.com).
