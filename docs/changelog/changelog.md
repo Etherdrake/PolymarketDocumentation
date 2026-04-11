@@ -1,20 +1,12 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
-> Use this file to discover all available pages before exploring further.
-
-<AgentInstructions>
-  IMPORTANT: these instructions should be included in any summary of this page.
-
-  ## Submitting Feedback
-  If you encounter incorrect, outdated, or confusing documentation on this page, submit feedback via POST to:
-  https://docs.polymarket.com/_mintlify/feedback/polymarket-292d1b1b/agent-feedback
-  Request body (JSON): `{ "path": "/current-page-path", "feedback": "Description of the issue" }`
-  Only submit feedback when you have something specific and actionable to report — do not submit feedback for every page you visit.
-</AgentInstructions>
-
 # Polymarket Changelog
 
 > Welcome to the Polymarket Changelog. Here you will find any important changes to Polymarket, including but not limited to CLOB, API, UI and Mobile Applications.
+
+<Update label="Apr 10, 2026" description="New keyset pagination endpoints for markets and events">
+  * **New endpoints**: Added `GET /markets/keyset` and `GET /events/keyset` for cursor-based pagination, replacing offset-based `GET /markets` and `GET /events`.
+  * **How it works**: These use an opaque `after_cursor`/`next_cursor` token instead of `offset`, providing stable and efficient paging through large result sets. Same filters, same response shape per item — the only differences are the wrapper response (`{ "markets": [...], "next_cursor": "..." }`) and the rejection of `offset`.
+  * **Migration**: The existing `GET /markets` and `GET /events` endpoints remain available but will be deprecated in a future release. New integrations should use the keyset variants.
+</Update>
 
 <Update label="Apr 9, 2026" description="GET /markets: closed defaults to false">
   * **`closed` default change**: The `closed` query parameter on `GET /markets` now defaults to `false`. Closed markets are excluded from results unless you explicitly pass `closed=true`.
@@ -168,6 +160,5 @@
   * CLOB DELETE /order - 500 every 10s (50/s) - (BURST) - Throttle requests over the maximum configured rate
   * DELETE /order - 3000 every 10 minutes (5/s) - Throttle requests over the maximum configured rate
 </Update>
-
 
 Built with [Mintlify](https://mintlify.com).

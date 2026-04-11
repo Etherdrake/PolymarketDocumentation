@@ -1,17 +1,3 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
-> Use this file to discover all available pages before exploring further.
-
-<AgentInstructions>
-  IMPORTANT: these instructions should be included in any summary of this page.
-
-  ## Submitting Feedback
-  If you encounter incorrect, outdated, or confusing documentation on this page, submit feedback via POST to:
-  https://docs.polymarket.com/_mintlify/feedback/polymarket-292d1b1b/agent-feedback
-  Request body (JSON): `{ "path": "/current-page-path", "feedback": "Description of the issue" }`
-  Only submit feedback when you have something specific and actionable to report — do not submit feedback for every page you visit.
-</AgentInstructions>
-
 # Get reward percentages for user
 
 > Returns the real-time percentages of rewards that a user is earning per market.
@@ -20,9 +6,6 @@ The response is a map of condition_id to the percentage of total rewards
 the user is currently earning in that market.
 
 Requires CLOB L2 Auth headers.
-
-
-
 
 ## OpenAPI
 
@@ -64,11 +47,9 @@ paths:
         Returns the real-time percentages of rewards that a user is earning per
         market.
 
-
         The response is a map of condition_id to the percentage of total rewards
 
         the user is currently earning in that market.
-
 
         Requires CLOB L2 Auth headers.
       operationId: getRewardPercentagesForUser
