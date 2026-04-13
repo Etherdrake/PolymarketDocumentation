@@ -2,6 +2,10 @@
 
 > Welcome to the Polymarket Changelog. Here you will find any important changes to Polymarket, including but not limited to CLOB, API, UI and Mobile Applications.
 
+<Update label="Apr 13, 2026" description="Bridge API: added support link for bridging issues">
+  * **Support contact**: Added a link to [our Bridge API provider's support](https://intercom.help/funxyz/en/articles/10732578-contact-us) (Fun.xyz) for failed, stuck, or compliance-held bridge transactions. See [Deposit Status](/trading/bridge/status).
+</Update>
+
 <Update label="Apr 10, 2026" description="New keyset pagination endpoints for markets and events">
   * **New endpoints**: Added `GET /markets/keyset` and `GET /events/keyset` for cursor-based pagination, replacing offset-based `GET /markets` and `GET /events`.
   * **How it works**: These use an opaque `after_cursor`/`next_cursor` token instead of `offset`, providing stable and efficient paging through large result sets. Same filters, same response shape per item — the only differences are the wrapper response (`{ "markets": [...], "next_cursor": "..." }`) and the rejection of `offset`.
