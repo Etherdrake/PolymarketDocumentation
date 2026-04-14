@@ -1,7 +1,14 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Post multiple orders
 
 > Creates multiple new orders in the order book. Orders are processed in parallel.
 Maximum 15 orders per request.
+
+
+
 
 ## OpenAPI
 
@@ -391,5 +398,3 @@ components:
       description: Unix timestamp of the request
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

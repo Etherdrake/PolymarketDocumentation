@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Geographic Restrictions
 
 > Check geographic restrictions before placing orders on the Polymarket API
@@ -16,7 +20,7 @@ Polymarket restricts order placement from certain geographic locations due to re
 
 Check the geographic eligibility of the requesting IP address:
 
-```bash  theme={null}
+```bash theme={null}
 GET https://polymarket.com/api/geoblock
 ```
 
@@ -24,7 +28,7 @@ GET https://polymarket.com/api/geoblock
 
 ### Response
 
-```json  theme={null}
+```json theme={null}
 {
   "blocked": true,
   "ip": "203.0.113.42",
@@ -118,7 +122,7 @@ The geoblocking system includes:
 
 <Tabs>
   <Tab title="TypeScript">
-    ```typescript  theme={null}
+    ```typescript theme={null}
     interface GeoblockResponse {
       blocked: boolean;
       ip: string;
@@ -143,7 +147,7 @@ The geoblocking system includes:
   </Tab>
 
   <Tab title="Python">
-    ```python  theme={null}
+    ```python theme={null}
     import requests
 
     def check_geoblock() -> dict:
@@ -161,7 +165,7 @@ The geoblocking system includes:
   </Tab>
 
   <Tab title="Rust">
-    ```rust  theme={null}
+    ```rust theme={null}
     use polymarket_client_sdk::clob::Client;
 
     let client = Client::default();
@@ -203,5 +207,3 @@ If you believe you are incorrectly restricted or have questions about geographic
     Start placing orders (from eligible regions).
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

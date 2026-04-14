@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Quote
 
 > Preview fees and estimated output for deposits and withdrawals
@@ -6,7 +10,7 @@ Get an estimated quote before executing a deposit or withdrawal. Quotes include 
 
 ## Get a Quote
 
-```bash  theme={null}
+```bash theme={null}
 curl -X POST https://bridge.polymarket.com/quote \
   -H "Content-Type: application/json" \
   -d '{
@@ -111,5 +115,3 @@ The `estFeeBreakdown` object contains:
     Withdraw from Polymarket to another chain.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

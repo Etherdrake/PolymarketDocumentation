@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Maker Rebates Program
 
 > Earn daily USDC rebates by providing liquidity on Polymarket
@@ -59,7 +63,7 @@ Rebates are distributed using the **same formula as taker fees**. This ensures m
 
 For each filled maker order:
 
-```text  theme={null}
+```text theme={null}
 fee_equivalent = C × feeRate × p × (1 - p)
 ```
 
@@ -81,7 +85,7 @@ Where **C** = number of shares traded and **p** = price of the shares. The fee p
 
 Your daily rebate:
 
-```text  theme={null}
+```text theme={null}
 rebate = (your_fee_equivalent / total_fee_equivalent) * rebate_pool
 ```
 
@@ -162,5 +166,3 @@ The following market categories have taker fees enabled and are eligible for mak
     Start placing orders on Polymarket.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

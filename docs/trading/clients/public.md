@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Public Methods
 
 > These methods can be called without a signer or user credentials. Use these for reading market data, prices, and order books.
@@ -8,7 +12,7 @@ Public methods require the client to initialize with the host URL and Polygon ch
 
 <Tabs>
   <Tab title="TypeScript">
-    ```typescript  theme={null}
+    ```typescript theme={null}
     import { ClobClient } from "@polymarket/clob-client";
 
     const client = new ClobClient(
@@ -22,7 +26,7 @@ Public methods require the client to initialize with the host URL and Polygon ch
   </Tab>
 
   <Tab title="Python">
-    ```python  theme={null}
+    ```python theme={null}
     from py_clob_client.client import ClobClient
 
     client = ClobClient(
@@ -657,5 +661,3 @@ async getServerTime(): Promise<number>
     Real-time market data streaming.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

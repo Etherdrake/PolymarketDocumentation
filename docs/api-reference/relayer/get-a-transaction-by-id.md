@@ -1,6 +1,13 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get a transaction by ID
 
 > Gets a transaction submitted to the Relayer. Takes in a required transaction ID as a query parameter.
+
+
+
 
 ## OpenAPI
 
@@ -25,11 +32,13 @@ tags:
       However, Relayer API keys can only be created using Gamma auth. Every
       address can create a maximum of 100 keys.
 
+
       The API key auth headers are:
 
       - `RELAYER_API_KEY`
 
       - `RELAYER_API_KEY_ADDRESS`
+
 
       `RELAYER_API_KEY_ADDRESS` must match the address that owns the key.
 paths:
@@ -190,5 +199,3 @@ components:
       example: '0x6e0c80c90ea6c15917308F820Eac91Ce2724B5b5'
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

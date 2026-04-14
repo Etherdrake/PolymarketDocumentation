@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Negative Risk Markets
 
 > Capital-efficient trading for multi-outcome events
@@ -37,7 +41,7 @@ This is capital-efficient because betting against one outcome is economically eq
 
 The Gamma API includes a `negRisk` boolean on events and markets:
 
-```json  theme={null}
+```json theme={null}
 {
   "id": "123",
   "title": "Who will win the 2024 Presidential Election?",
@@ -48,7 +52,7 @@ The Gamma API includes a `negRisk` boolean on events and markets:
 
 When placing orders on neg risk markets, you must specify this in your order options:
 
-```typescript  theme={null}
+```typescript theme={null}
 const response = await client.createAndPostOrder(
   {
     tokenID: "TOKEN_ID",
@@ -102,7 +106,7 @@ Standard negative risk requires the complete set of outcomes to be known at mark
 
 An event is augmented neg risk when both flags are true:
 
-```json  theme={null}
+```json theme={null}
 {
   "enableNegRisk": true,
   "negRiskAugmented": true
@@ -139,5 +143,3 @@ The conversion operation is atomic and happens through the Neg Risk Adapter:
     Learn about token operations like split, merge, and redeem.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

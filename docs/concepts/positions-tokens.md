@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Positions & Tokens
 
 > Understanding outcome tokens and how positions work on Polymarket
@@ -110,5 +114,3 @@ You can lock in profits or cut losses by selling before the market resolves:
 * Bought Yes at `$0.40`
 * Price rises to `$0.70`
 * Sell at `$0.70` → Profit of `$0.30` per token (75%)
-
-Built with [Mintlify](https://mintlify.com).

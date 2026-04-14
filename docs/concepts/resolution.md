@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Resolution
 
 > How markets are resolved and winning positions redeemed
@@ -145,5 +149,3 @@ Clarifications:
     Understand how markets are structured.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Builder Methods
 
 > Methods for querying orders and trades using builder API credentials.
@@ -364,5 +368,3 @@ async revokeBuilderApiKey(): Promise<any>
     Execute onchain operations without paying gas.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Merge Tokens
 
 > Convert outcome token pairs back to USDC.e
@@ -57,5 +61,3 @@ The operation is atomic — if you don't have enough of both tokens, the transac
     Learn more about the Conditional Token Framework
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

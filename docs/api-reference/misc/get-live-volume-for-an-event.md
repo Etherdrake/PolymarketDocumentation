@@ -1,4 +1,10 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get live volume for an event
+
+
 
 ## OpenAPI
 
@@ -86,5 +92,3 @@ components:
       example: '0xdd22472e552920b8438158ea7238bfadfa4f736aa4cee91a6b86c39ead110917'
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

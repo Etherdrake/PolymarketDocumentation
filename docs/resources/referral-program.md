@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Referral Program
 
 > Earn rewards by referring users to Polymarket
@@ -28,5 +32,3 @@ These rewards will be for the first 180 days after a user has signed up to Polym
 * Rewards are paid out once a day at midnight UTC.
 * Rewards are unlimited. You will earn more money the more the users you refer trade on the platform.
 * Polymarket reserves the right, in its sole discretion, to disqualify referrals that violate our Terms of Service — including but not limited to self-referrals or inauthentic trading.
-
-Built with [Mintlify](https://mintlify.com).

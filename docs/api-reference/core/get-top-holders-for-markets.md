@@ -1,4 +1,10 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get top holders for markets
+
+
 
 ## OpenAPI
 
@@ -132,5 +138,3 @@ components:
       example: '0x56687bf447db6ffa42ffe2204a05edaa20f55839'
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

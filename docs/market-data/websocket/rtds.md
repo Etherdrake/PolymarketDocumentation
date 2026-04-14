@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Real-Time Data Socket
 
 > Stream comments, crypto prices, and equity prices via WebSocket
@@ -20,7 +24,7 @@ Some user-specific streams may require `gamma_auth` with your wallet address.
 
 Send a JSON message to subscribe to data streams:
 
-```json  theme={null}
+```json theme={null}
 {
   "action": "subscribe",
   "subscriptions": [
@@ -46,7 +50,7 @@ Subscriptions can be added, removed, and modified without disconnecting. Send `P
 
 All messages follow this structure:
 
-```json  theme={null}
+```json theme={null}
 {
   "topic": "string",
   "type": "string",
@@ -70,7 +74,7 @@ Real-time cryptocurrency price data from two sources: **Binance** and **Chainlin
 
 Subscribe to all symbols:
 
-```json  theme={null}
+```json theme={null}
 {
   "action": "subscribe",
   "subscriptions": [
@@ -84,7 +88,7 @@ Subscribe to all symbols:
 
 Subscribe to specific symbols with a comma-separated filter:
 
-```json  theme={null}
+```json theme={null}
 {
   "action": "subscribe",
   "subscriptions": [
@@ -101,7 +105,7 @@ Symbols use lowercase concatenated format (e.g., `solusdt`, `btcusdt`).
 
 **Solana price update:**
 
-```json  theme={null}
+```json theme={null}
 {
   "topic": "crypto_prices",
   "type": "update",
@@ -116,7 +120,7 @@ Symbols use lowercase concatenated format (e.g., `solusdt`, `btcusdt`).
 
 **Bitcoin price update:**
 
-```json  theme={null}
+```json theme={null}
 {
   "topic": "crypto_prices",
   "type": "update",
@@ -137,7 +141,7 @@ Symbols use lowercase concatenated format (e.g., `solusdt`, `btcusdt`).
 
 Subscribe to all symbols:
 
-```json  theme={null}
+```json theme={null}
 {
   "action": "subscribe",
   "subscriptions": [
@@ -152,7 +156,7 @@ Subscribe to all symbols:
 
 Subscribe to a specific symbol with a JSON filter:
 
-```json  theme={null}
+```json theme={null}
 {
   "action": "subscribe",
   "subscriptions": [
@@ -169,7 +173,7 @@ Symbols use slash-separated format (e.g., `eth/usd`, `btc/usd`).
 
 **Ethereum price update:**
 
-```json  theme={null}
+```json theme={null}
 {
   "topic": "crypto_prices_chainlink",
   "type": "update",
@@ -184,7 +188,7 @@ Symbols use slash-separated format (e.g., `eth/usd`, `btc/usd`).
 
 **Bitcoin price update:**
 
-```json  theme={null}
+```json theme={null}
 {
   "topic": "crypto_prices_chainlink",
   "type": "update",
@@ -235,7 +239,7 @@ All asset classes stream through a single `equity_prices` topic. When you subscr
 
 Subscribe to a specific symbol with a JSON filter:
 
-```json  theme={null}
+```json theme={null}
 {
   "action": "subscribe",
   "subscriptions": [
@@ -250,7 +254,7 @@ Subscribe to a specific symbol with a JSON filter:
 
 Subscribe to multiple symbols across asset classes:
 
-```json  theme={null}
+```json theme={null}
 {
   "action": "subscribe",
   "subscriptions": [
@@ -264,7 +268,7 @@ Subscribe to multiple symbols across asset classes:
 
 Use `type: "*"` to receive all message types (live updates and snapshots):
 
-```json  theme={null}
+```json theme={null}
 {
   "action": "subscribe",
   "subscriptions": [
@@ -291,7 +295,7 @@ Filter values are case-insensitive on subscribe, but the `symbol` field in paylo
 
 **Apple stock update:**
 
-```json  theme={null}
+```json theme={null}
 {
   "topic": "equity_prices",
   "type": "update",
@@ -308,7 +312,7 @@ Filter values are case-insensitive on subscribe, but the `symbol` field in paylo
 
 **Gold price update (market closed):**
 
-```json  theme={null}
+```json theme={null}
 {
   "topic": "equity_prices",
   "type": "update",
@@ -328,7 +332,7 @@ Filter values are case-insensitive on subscribe, but the `symbol` field in paylo
 
 On subscribe, the server delivers a backfill of the last 2 minutes of price data. Use the `type` field to distinguish: `"subscribe"` for the initial snapshot vs `"update"` for live ticks.
 
-```json  theme={null}
+```json theme={null}
 {
   "topic": "equity_prices",
   "type": "subscribe",
@@ -420,7 +424,7 @@ Real-time comment events on the Polymarket platform, including new comments, rep
 
 ### Subscribe
 
-```json  theme={null}
+```json theme={null}
 {
   "action": "subscribe",
   "subscriptions": [
@@ -445,7 +449,7 @@ Real-time comment events on the Polymarket platform, including new comments, rep
 
 Emitted when a user posts a new comment or replies to an existing one.
 
-```json  theme={null}
+```json theme={null}
 {
   "topic": "comments",
   "type": "comment_created",
@@ -474,7 +478,7 @@ Emitted when a user posts a new comment or replies to an existing one.
 
 A reply to the above comment — note `parentCommentID` references the parent:
 
-```json  theme={null}
+```json theme={null}
 {
   "topic": "comments",
   "type": "comment_created",
@@ -548,5 +552,3 @@ Comments support nested threading:
 <Accordion title="Authentication failures">
   If subscribing to user-specific streams, ensure your `gamma_auth` object includes a valid wallet `address`. Authentication failures will prevent subscription to protected topics.
 </Accordion>
-
-Built with [Mintlify](https://mintlify.com).

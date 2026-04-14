@@ -1,4 +1,10 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get total value of a user's positions
+
+
 
 ## OpenAPI
 
@@ -89,5 +95,3 @@ components:
         - error
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

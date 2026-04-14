@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Prices & Orderbook
 
 > How prices work and how the order book enables peer-to-peer trading
@@ -110,5 +114,3 @@ When matched, `$1.00` is converted into 1 Yes token and 1 No token, each going t
     Understand what happens from order placement to settlement.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

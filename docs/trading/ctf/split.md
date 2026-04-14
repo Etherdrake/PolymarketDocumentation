@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Split Tokens
 
 > Convert USDC.e into outcome token pairs
@@ -63,5 +67,3 @@ The operation is atomic — if any step fails, the entire transaction reverts.
     Place orders using your newly split tokens
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

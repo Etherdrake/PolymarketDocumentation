@@ -1,7 +1,14 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get fee rate
 
 > Retrieves the base fee rate for a specific token ID.
 The fee rate can be provided either as a query parameter or as a path parameter.
+
+
+
 
 ## OpenAPI
 
@@ -109,5 +116,3 @@ components:
           description: Error message
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get current active rewards configurations
 
 > Returns all current active rewards configurations grouped by market.
@@ -6,6 +10,9 @@ When `sponsored=true`, returns sponsored reward configurations instead.
 
 Results are paginated (500 items per page). Use next_cursor to fetch subsequent pages.
 A next_cursor value of "LTE=" indicates the last page.
+
+
+
 
 ## OpenAPI
 
@@ -46,7 +53,9 @@ paths:
       description: >
         Returns all current active rewards configurations grouped by market.
 
+
         When `sponsored=true`, returns sponsored reward configurations instead.
+
 
         Results are paginated (500 items per page). Use next_cursor to fetch
         subsequent pages.
@@ -216,5 +225,3 @@ components:
         - rate_per_day
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

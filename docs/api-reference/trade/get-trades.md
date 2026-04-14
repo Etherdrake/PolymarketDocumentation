@@ -1,7 +1,14 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get trades
 
 > Retrieves trades for the authenticated user. Returns paginated results.
 Requires readonly or level 2 API key authentication.
+
+
+
 
 ## OpenAPI
 
@@ -380,5 +387,3 @@ components:
       description: Unix timestamp of the request
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

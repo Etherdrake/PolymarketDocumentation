@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Overview
 
 > Build on the world's largest prediction market. Trade, integrate, and access real-time market data with the Polymarket API.
@@ -144,5 +148,3 @@ export const IconCard = ({ icon, title, description, href, color }) => {
     </div>
   </div>
 </div>
-
-Built with [Mintlify](https://mintlify.com).

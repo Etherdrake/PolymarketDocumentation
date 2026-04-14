@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Matching Engine Restarts
 
 > Restart schedule, maintenance windows, and how to handle downtime
@@ -160,5 +164,3 @@ Check the HTTP status code on responses to the CLOB API and retry on `425`:
 * **Handle 425 gracefully** — treat it as a temporary condition, not an error; your retry logic should resume automatically
 * **Avoid aggressive retries** — the engine needs time to reload orderbooks; rapid-fire retries won't speed things up and may hit rate limits once the engine is back
 * **Log restart events** — track when your client encounters 425s to correlate with announced maintenance windows
-
-Built with [Mintlify](https://mintlify.com).

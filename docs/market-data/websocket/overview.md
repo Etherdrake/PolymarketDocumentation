@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Overview
 
 > Real-time market data and trading updates via WebSocket
@@ -46,7 +50,7 @@ Send a subscription message after connecting to specify which data you want to r
 
 ### Market Channel
 
-```json  theme={null}
+```json theme={null}
 {
   "assets_ids": [
     "21742633143463906290569050155826241533067272736897614950488156847949938836455",
@@ -65,7 +69,7 @@ Send a subscription message after connecting to specify which data you want to r
 
 ### User Channel
 
-```json  theme={null}
+```json theme={null}
 {
   "auth": {
     "apiKey": "your-api-key",
@@ -105,7 +109,7 @@ Modify subscriptions without reconnecting.
 
 ### Subscribe to more assets
 
-```json  theme={null}
+```json theme={null}
 {
   "assets_ids": ["new_asset_id_1", "new_asset_id_2"],
   "operation": "subscribe",
@@ -115,7 +119,7 @@ Modify subscriptions without reconnecting.
 
 ### Unsubscribe from assets
 
-```json  theme={null}
+```json theme={null}
 {
   "assets_ids": ["asset_id_to_remove"],
   "operation": "unsubscribe"
@@ -124,7 +128,7 @@ Modify subscriptions without reconnecting.
 
 For the user channel, use `markets` instead of `assets_ids`:
 
-```json  theme={null}
+```json theme={null}
 {
   "markets": ["0x1234...condition_id"],
   "operation": "subscribe"
@@ -175,5 +179,3 @@ pong
 <Accordion title="Authentication failed - user channel">
   Verify your API credentials are correct and haven't expired.
 </Accordion>
-
-Built with [Mintlify](https://mintlify.com).

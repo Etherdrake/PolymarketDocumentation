@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get current rebated fees for a maker
 
 > Returns the current rebated fees for a maker address on a given date.
@@ -5,6 +9,9 @@
 Each entry includes the condition ID, asset address, and the USDC amount rebated.
 
 This endpoint does not require authentication.
+
+
+
 
 ## OpenAPI
 
@@ -45,8 +52,10 @@ paths:
       description: >
         Returns the current rebated fees for a maker address on a given date.
 
+
         Each entry includes the condition ID, asset address, and the USDC amount
         rebated.
+
 
         This endpoint does not require authentication.
       operationId: getCurrentRebatedFees
@@ -147,5 +156,3 @@ components:
           description: Error message
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

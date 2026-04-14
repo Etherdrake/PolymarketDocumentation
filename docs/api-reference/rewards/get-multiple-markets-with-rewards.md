@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get multiple markets with rewards
 
 > Returns a list of active markets with their reward configurations.
@@ -5,6 +9,9 @@ Supports text search, tag filtering, numeric filters, and sorting.
 
 Results are paginated (100 items per page by default). Use next_cursor to fetch subsequent pages.
 A next_cursor value of "LTE=" indicates the last page.
+
+
+
 
 ## OpenAPI
 
@@ -46,6 +53,7 @@ paths:
         Returns a list of active markets with their reward configurations.
 
         Supports text search, tag filtering, numeric filters, and sorting.
+
 
         Results are paginated (100 items per page by default). Use next_cursor
         to fetch subsequent pages.
@@ -397,5 +405,3 @@ components:
         - rate_per_day
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Getting Started
 
 > One-time setup for market making on Polymarket
@@ -16,7 +20,7 @@ Before you can start market making, you need to complete these one-time setup st
 
     ### Using the Bridge API
 
-    ```typescript  theme={null}
+    ```typescript theme={null}
     // Get deposit addresses for your Polymarket wallet
     const deposit = await fetch("https://bridge.polymarket.com/deposit", {
       method: "POST",
@@ -95,7 +99,7 @@ Before you can start market making, you need to complete these one-time setup st
 
     ### Contract Addresses
 
-    ```typescript  theme={null}
+    ```typescript theme={null}
     const ADDRESSES = {
       USDCe: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
       CTF: "0x4D97DCd97eC945f40cF65F87097ACe5EA0476045",
@@ -221,5 +225,3 @@ Before you can start market making, you need to complete these one-time setup st
     Connect to real-time market data
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Order Attribution
 
 > Attribute orders to your builder key for volume credit
@@ -385,5 +389,3 @@ After revoking, generate new credentials from your [Builder Profile](https://pol
     Build, sign, and submit orders
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Withdraw
 
 > Bridge USDC.e from Polymarket to any supported chain
@@ -38,7 +42,7 @@ Withdraw USDC.e from your Polymarket wallet to any supported chain and token. Fu
 
 Generate deposit addresses configured for your withdrawal destination. See the [Bridge API Reference](/api-reference/introduction) for full request and response schemas.
 
-```bash  theme={null}
+```bash theme={null}
 curl -X POST https://bridge.polymarket.com/withdraw \
   -H "Content-Type: application/json" \
   -d '{
@@ -96,5 +100,3 @@ Withdrawals are **instant** and **free** — Polymarket does not charge withdraw
     Track your withdrawal progress.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

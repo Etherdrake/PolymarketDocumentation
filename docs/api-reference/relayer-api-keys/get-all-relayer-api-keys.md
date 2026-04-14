@@ -1,6 +1,13 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get all relayer API keys
 
 > Returns all relayer API keys for the authenticated address. Auth allowed: Gamma auth or Relayer API key auth (`RELAYER_API_KEY` + `RELAYER_API_KEY_ADDRESS`).
+
+
+
 
 ## OpenAPI
 
@@ -25,11 +32,13 @@ tags:
       However, Relayer API keys can only be created using Gamma auth. Every
       address can create a maximum of 100 keys.
 
+
       The API key auth headers are:
 
       - `RELAYER_API_KEY`
 
       - `RELAYER_API_KEY_ADDRESS`
+
 
       `RELAYER_API_KEY_ADDRESS` must match the address that owns the key.
 paths:
@@ -128,5 +137,3 @@ components:
         - error
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

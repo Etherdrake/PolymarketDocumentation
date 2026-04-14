@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Deposit
 
 > Bridge assets from any supported chain to fund your Polymarket account
@@ -15,7 +19,7 @@ Polymarket uses **USDC.e** (Bridged USDC) on Polygon as collateral for all tradi
 
 Generate unique deposit addresses linked to your Polymarket wallet. See the [Bridge API Reference](/api-reference/introduction) for full request and response schemas.
 
-```bash  theme={null}
+```bash theme={null}
 curl -X POST https://bridge.polymarket.com/deposit \
   -H "Content-Type: application/json" \
   -d '{"address": "0x56687bf447db6ffa42ffe2204a05edaa20f55839"}'
@@ -99,5 +103,3 @@ If you deposited the wrong token on Ethereum or Polygon, use these tools to reco
     Track your deposit progress through completion.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

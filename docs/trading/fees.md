@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Fees
 
 > Understanding trading fees on Polymarket
@@ -16,7 +20,7 @@ Polymarket charges a small taker fee on certain markets. These fees fund the [Ma
 
 Fees are calculated using the following formula:
 
-```text  theme={null}
+```text theme={null}
 fee = C × feeRate × p × (1 - p)
 ```
 
@@ -172,7 +176,7 @@ Fees are rounded to 5 decimal places. The smallest fee charged is **0.00001 USDC
 
 Markets with fees have `feesEnabled` set to `true` on the market object. You can also query the fee-rate endpoint to check any specific market. See the [API Reference](/api-reference/introduction) for full endpoint documentation.
 
-```bash  theme={null}
+```bash theme={null}
 GET https://clob.polymarket.com/fee-rate?token_id={token_id}
 ```
 
@@ -212,7 +216,7 @@ If you're calling the REST API directly or building your own order signing, you 
 
 **Step 1:** Fetch the fee rate for the token ID before creating your order:
 
-```bash  theme={null}
+```bash theme={null}
 GET https://clob.polymarket.com/fee-rate?token_id={token_id}
 ```
 
@@ -220,7 +224,7 @@ See the [fee-rate API Reference](/api-reference/introduction) for full response 
 
 **Step 2:** Add the `feeRateBps` field to your order object. This value is part of the signed payload — the CLOB validates your signature against it.
 
-```json  theme={null}
+```json theme={null}
 {
   "salt": "12345",
   "maker": "0x...",
@@ -262,5 +266,3 @@ See the [fee-rate API Reference](/api-reference/introduction) for full response 
     Start placing orders on Polymarket.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

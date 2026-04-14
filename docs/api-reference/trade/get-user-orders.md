@@ -1,7 +1,14 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get user orders
 
 > Retrieves open orders for the authenticated user. Returns paginated results.
 Builder-authenticated clients can also use this endpoint to retrieve orders attributed to their builder account.
+
+
+
 
 ## OpenAPI
 
@@ -336,5 +343,3 @@ components:
       description: Unix timestamp for builder authentication
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

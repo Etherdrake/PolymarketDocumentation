@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Supported Assets
 
 > Chains and tokens supported for deposits to Polymarket
@@ -8,7 +12,7 @@ The Bridge API supports deposits from multiple chains and tokens. All deposits a
 
 Retrieve the full list of supported chains and tokens with their minimum deposit amounts.
 
-```bash  theme={null}
+```bash theme={null}
 curl https://bridge.polymarket.com/supported-assets
 ```
 
@@ -56,5 +60,3 @@ Most L2 chains (Polygon, Arbitrum, Base, Optimism) have low minimums of $2, whil
     Track your deposit progress.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

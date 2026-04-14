@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Orderbook
 
 > Reading the orderbook, prices, spreads, and midpoints
@@ -71,7 +75,7 @@ Fetch the full orderbook for a token, including all resting bid and ask levels:
 
 ### Response
 
-```json  theme={null}
+```json theme={null}
 {
   "market": "0xbd31dc8a...",
   "asset_id": "52114319501245...",
@@ -437,7 +441,7 @@ For live orderbook data, use the WebSocket API instead of polling. The `market` 
 
 ### Connecting
 
-```typescript  theme={null}
+```typescript theme={null}
 const ws = new WebSocket(
   "wss://ws-subscriptions-clob.polymarket.com/ws/market",
 );
@@ -470,7 +474,7 @@ ws.onmessage = (event) => {
 
 After connecting, you can change your subscriptions without reconnecting:
 
-```typescript  theme={null}
+```typescript theme={null}
 // Subscribe to additional tokens
 ws.send(
   JSON.stringify({
@@ -524,5 +528,3 @@ ws.send(
     Find token IDs for markets you want to trade
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

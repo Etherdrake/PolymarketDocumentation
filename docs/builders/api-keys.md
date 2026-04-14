@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # API Keys
 
 > Create and manage your Builder API credentials
@@ -71,7 +75,7 @@ Store your credentials as environment variables:
   </Tab>
 
   <Tab title="TypeScript">
-    ```typescript  theme={null}
+    ```typescript theme={null}
     import { BuilderApiKeyCreds } from "@polymarket/builder-signing-sdk";
 
     const builderCreds: BuilderApiKeyCreds = {
@@ -83,7 +87,7 @@ Store your credentials as environment variables:
   </Tab>
 
   <Tab title="Python">
-    ```python  theme={null}
+    ```python theme={null}
     import os
     from py_builder_signing_sdk import BuilderApiKeyCreds
 
@@ -96,7 +100,7 @@ Store your credentials as environment variables:
   </Tab>
 
   <Tab title="Rust">
-    ```rust  theme={null}
+    ```rust theme={null}
     use polymarket_client_sdk::auth::Credentials;
 
     let builder_creds = Credentials::new(
@@ -153,5 +157,3 @@ Store your credentials as environment variables:
     Learn about rate limits and how to upgrade.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Submit a transaction
 
 > Submit a transaction request to the Relayer. Authenticated using Builder API Keys or Relayer API Keys.
@@ -11,6 +15,9 @@
 **Relayer API Key auth headers:**
 - `RELAYER_API_KEY`
 - `RELAYER_API_KEY_ADDRESS`
+
+
+
 
 ## OpenAPI
 
@@ -35,11 +42,13 @@ tags:
       However, Relayer API keys can only be created using Gamma auth. Every
       address can create a maximum of 100 keys.
 
+
       The API key auth headers are:
 
       - `RELAYER_API_KEY`
 
       - `RELAYER_API_KEY_ADDRESS`
+
 
       `RELAYER_API_KEY_ADDRESS` must match the address that owns the key.
 paths:
@@ -52,6 +61,7 @@ paths:
         Submit a transaction request to the Relayer. Authenticated using Builder
         API Keys or Relayer API Keys.
 
+
         **Builder API Key auth headers:**
 
         - `POLY_BUILDER_API_KEY`
@@ -61,6 +71,7 @@ paths:
         - `POLY_BUILDER_PASSPHRASE`
 
         - `POLY_BUILDER_SIGNATURE`
+
 
         **Relayer API Key auth headers:**
 
@@ -280,5 +291,3 @@ components:
           example: '0x0000000000000000000000000000000000000000'
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

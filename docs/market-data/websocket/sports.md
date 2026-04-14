@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Sports WebSocket
 
 > Live sports scores and game state
@@ -16,7 +20,7 @@ No subscription message required — connect and start receiving data for all ac
 
 The server sends `ping` every 5 seconds. Respond with `pong` within 10 seconds or the connection will close.
 
-```javascript  theme={null}
+```javascript theme={null}
 ws.onmessage = (event) => {
   if (event.data === "ping") {
     ws.send("pong");
@@ -43,7 +47,7 @@ Emitted when:
 
 **NFL (in progress):**
 
-```json  theme={null}
+```json theme={null}
 {
   "gameId": 19439,
   "leagueAbbreviation": "nfl",
@@ -62,7 +66,7 @@ Emitted when:
 
 **Esports — CS2 (finished):**
 
-```json  theme={null}
+```json theme={null}
 {
   "gameId": 1317359,
   "leagueAbbreviation": "cs2",
@@ -209,5 +213,3 @@ Game status values vary by sport:
 | `finished`   | Match completed         |
 | `postponed`  | Match postponed         |
 | `cancelled`  | Match canceled          |
-
-Built with [Mintlify](https://mintlify.com).

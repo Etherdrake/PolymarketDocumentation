@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Create Order
 
 > Build, sign, and submit orders
@@ -585,7 +589,7 @@ These optional fields can be passed in the `UserOrder` object for fine-grained c
 Sports markets have additional behaviors:
 
 * Outstanding limit orders are **automatically cancelled** once the game begins, clearing the entire order book at the official start time
-* Marketable orders have a **3-second placement delay** before matching
+* Marketable orders have a **1-second placement delay** before matching
 * Game start times can shift — monitor your orders closely, as they may not be cleared if the start time changes unexpectedly
 
 ***
@@ -594,7 +598,7 @@ Sports markets have additional behaviors:
 
 A successful order placement returns:
 
-```json  theme={null}
+```json theme={null}
 {
   "success": true,
   "errorMsg": "",
@@ -688,5 +692,3 @@ The heartbeat endpoint maintains session liveness. If a valid heartbeat is not r
     Attribute orders to your builder account for volume credit
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

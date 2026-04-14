@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Overview
 
 > Order types, tick sizes, and querying orders
@@ -31,7 +35,7 @@ The underlying order primitive is structured, hashed, and signed using the [EIP-
 <Note>
   **GTD expiration**: There is a security threshold of one minute. If you need
   the order to expire in 90 seconds, the correct expiration value is `now + 1
-    minute + 30 seconds`.
+      minute + 30 seconds`.
 </Note>
 
 ### Post-Only Orders
@@ -536,5 +540,3 @@ The operator's privileges are limited to order matching and ensuring correct ord
     Cancel single, multiple, or all orders
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

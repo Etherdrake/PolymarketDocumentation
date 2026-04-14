@@ -1,9 +1,16 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Send heartbeat
 
 > Sends a heartbeat signal to maintain active session status.
 If heartbeats are not sent regularly, all open orders for the user will be automatically canceled.
 This is useful for automated trading systems that need to ensure orders are canceled
 if the system becomes unresponsive.
+
+
+
 
 ## OpenAPI
 
@@ -131,5 +138,3 @@ components:
       description: Unix timestamp of the request
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

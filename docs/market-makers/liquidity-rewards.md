@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Liquidity Rewards
 
 > Earn rewards for providing liquidity on Polymarket
@@ -361,5 +365,3 @@ Every game in these leagues has liquidity rewards split across pre-game and live
     Earn USDC rebates on eligible crypto and sports markets
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

@@ -1,7 +1,14 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get order book
 
 > Retrieves the order book summary for a specific token ID.
 Includes bids, asks, market details, and last trade price.
+
+
+
 
 ## OpenAPI
 
@@ -184,5 +191,3 @@ components:
           example: '100'
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

@@ -1,7 +1,14 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get last trade price
 
 > Retrieves the last trade price and side for a specific token ID.
 Returns default values of "0.5" for price and empty string for side if no trades found.
+
+
+
 
 ## OpenAPI
 
@@ -105,5 +112,3 @@ components:
           description: Error message
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

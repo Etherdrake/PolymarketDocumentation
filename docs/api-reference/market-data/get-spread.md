@@ -1,7 +1,14 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get spread
 
 > Retrieves the spread for a specific token ID.
 The spread is the difference between the best ask and best bid prices.
+
+
+
 
 ## OpenAPI
 
@@ -94,5 +101,3 @@ components:
           description: Error message
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

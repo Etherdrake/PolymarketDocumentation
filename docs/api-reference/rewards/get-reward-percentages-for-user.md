@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get reward percentages for user
 
 > Returns the real-time percentages of rewards that a user is earning per market.
@@ -6,6 +10,9 @@ The response is a map of condition_id to the percentage of total rewards
 the user is currently earning in that market.
 
 Requires CLOB L2 Auth headers.
+
+
+
 
 ## OpenAPI
 
@@ -47,9 +54,11 @@ paths:
         Returns the real-time percentages of rewards that a user is earning per
         market.
 
+
         The response is a map of condition_id to the percentage of total rewards
 
         the user is currently earning in that market.
+
 
         Requires CLOB L2 Auth headers.
       operationId: getRewardPercentagesForUser
@@ -164,5 +173,3 @@ components:
       description: Unix timestamp of the request
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

@@ -1,10 +1,14 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Overview
 
 > Fetch market data with no authentication required
 
 All market data is available through public REST endpoints. No API key, no authentication, no wallet required.
 
-```bash  theme={null}
+```bash theme={null}
 curl "https://gamma-api.polymarket.com/events?limit=5"
 ```
 
@@ -37,7 +41,7 @@ Polymarket structures data using two organizational models. The most fundamental
 
 Each market has `outcomes` and `outcomePrices` arrays that map 1:1. Prices represent implied probabilities:
 
-```json  theme={null}
+```json theme={null}
 {
   "outcomes": "[\"Yes\", \"No\"]",
   "outcomePrices": "[\"0.20\", \"0.80\"]"
@@ -105,5 +109,3 @@ Endpoints are split across three APIs. See the [API Reference](/api-reference/in
     Full endpoint documentation with parameters and response schemas.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

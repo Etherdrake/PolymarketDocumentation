@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Gasless Transactions
 
 > Execute onchain operations without paying gas fees
@@ -333,7 +337,7 @@ Choose a wallet type when initializing the client:
 
 Use the `execute` method to send transactions through the relayer:
 
-```typescript  theme={null}
+```typescript theme={null}
 interface Transaction {
   to: string; // Target contract address
   data: string; // Encoded function call
@@ -571,5 +575,3 @@ See [Contract Addresses](/resources/contract-addresses) for all Polymarket smart
     Understand token operations like split, merge, and redeem.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

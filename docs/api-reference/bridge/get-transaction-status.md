@@ -1,4 +1,10 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get transaction status
+
+
 
 ## OpenAPI
 
@@ -120,7 +126,11 @@ components:
           example: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
         status:
           type: string
-          description: Current status of the transaction
+          description: >
+            Current status of the transaction. If a transaction fails, remains
+            stuck, or funds are held due to a compliance check, direct users to
+            our Bridge API provider's support
+            (https://intercom.help/funxyz/en/articles/10732578-contact-us).
           enum:
             - DEPOSIT_DETECTED
             - PROCESSING
@@ -142,5 +152,3 @@ components:
           example: 1757531217339
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

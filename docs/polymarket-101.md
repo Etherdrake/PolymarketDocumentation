@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Polymarket 101
 
 > An intro to Polymarket - the world's largest prediction market
@@ -113,5 +117,3 @@ Ready to start trading?
     Browse active prediction markets on Polymarket.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

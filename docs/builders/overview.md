@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Builder Program
 
 > Build applications that route orders through Polymarket
@@ -207,5 +211,3 @@ For existing Magic Link users from Polymarket.com:
     Set up gasless transactions for your users.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

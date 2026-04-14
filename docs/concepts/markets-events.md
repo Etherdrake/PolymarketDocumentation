@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Markets & Events
 
 > Understanding the fundamental building blocks of Polymarket
@@ -80,7 +84,7 @@ https://polymarket.com/event/fed-decision-in-october
 
 You can use slugs to fetch specific markets or events from the API:
 
-```bash  theme={null}
+```bash theme={null}
 # Fetch event by slug
 curl "https://gamma-api.polymarket.com/events?slug=fed-decision-in-october"
 ```
@@ -102,5 +106,3 @@ Specifically for sports markets, outstanding limit orders are **automatically ca
     Start querying markets and events from the API.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

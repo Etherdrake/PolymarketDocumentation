@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get order scoring status
 
 > Checks if a specific order is currently scoring for rewards.
@@ -7,6 +11,9 @@ An order is considered "scoring" if it meets all the criteria for earning maker 
 - The order meets the minimum size requirements
 - The order is within the valid spread range
 - The order has been live for the required duration
+
+
+
 
 ## OpenAPI
 
@@ -46,6 +53,7 @@ paths:
       summary: Get order scoring status
       description: >
         Checks if a specific order is currently scoring for rewards.
+
 
         An order is considered "scoring" if it meets all the criteria for
         earning maker rewards:
@@ -178,5 +186,3 @@ components:
       description: Unix timestamp of the request
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

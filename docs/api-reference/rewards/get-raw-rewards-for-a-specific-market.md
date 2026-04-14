@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get raw rewards for a specific market
 
 > Returns an array of present and future rewards configured on a market.
@@ -7,6 +11,9 @@ When `sponsored=true`, sponsored daily rates are folded into each config's
 
 Results are paginated (100 items per page). Use next_cursor to fetch subsequent pages.
 A next_cursor value of "LTE=" indicates the last page.
+
+
+
 
 ## OpenAPI
 
@@ -47,10 +54,12 @@ paths:
       description: >
         Returns an array of present and future rewards configured on a market.
 
+
         When `sponsored=true`, sponsored daily rates are folded into each
         config's
 
         `rate_per_day` .
+
 
         Results are paginated (100 items per page). Use next_cursor to fetch
         subsequent pages.
@@ -276,5 +285,3 @@ components:
         - rate_per_day
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

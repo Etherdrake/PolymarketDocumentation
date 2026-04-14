@@ -1,10 +1,14 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Error Codes
 
 > Complete reference for CLOB API error responses
 
 All CLOB API errors return a JSON object with a single `error` field:
 
-```json  theme={null}
+```json theme={null}
 {
   "error": "<message>"
 }
@@ -541,5 +545,3 @@ Errors from order query endpoints.
 <Note>
   The CLOB API has an internal override: any error message containing `"not found"` returns `404`, `"unauthorized"` returns `401`, and `"context canceled"` returns `400`, regardless of the original status code.
 </Note>
-
-Built with [Mintlify](https://mintlify.com).

@@ -1,7 +1,14 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get last trade prices (request body)
 
 > Retrieves last trade prices for multiple token IDs using a request body.
 Maximum 500 token IDs can be requested per call.
+
+
+
 
 ## OpenAPI
 
@@ -142,5 +149,3 @@ components:
           description: Error message
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

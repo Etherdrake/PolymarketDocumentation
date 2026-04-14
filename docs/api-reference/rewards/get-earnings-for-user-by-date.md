@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get earnings for user by date
 
 > Returns an array of user earnings per market for a provided day.
@@ -6,6 +10,9 @@ Requires CLOB L2 Auth headers.
 
 Results are paginated (100 items per page). Use next_cursor to fetch subsequent pages.
 A next_cursor value of "LTE=" indicates the last page.
+
+
+
 
 ## OpenAPI
 
@@ -46,7 +53,9 @@ paths:
       description: >
         Returns an array of user earnings per market for a provided day.
 
+
         Requires CLOB L2 Auth headers.
+
 
         Results are paginated (100 items per page). Use next_cursor to fetch
         subsequent pages.
@@ -247,5 +256,3 @@ components:
       description: Unix timestamp of the request
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

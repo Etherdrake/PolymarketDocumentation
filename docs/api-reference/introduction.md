@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Introduction
 
 > Overview of the Polymarket APIs
@@ -53,5 +57,3 @@ The CLOB API has both public endpoints (orderbook, prices) and authenticated end
     Official TypeScript, Python, and Rust libraries.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

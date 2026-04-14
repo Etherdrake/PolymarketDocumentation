@@ -1,7 +1,14 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get server time
 
 > Returns the current Unix timestamp of the server.
 This can be used to synchronize client time with server time.
+
+
+
 
 ## OpenAPI
 
@@ -72,5 +79,3 @@ components:
           description: Error message
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

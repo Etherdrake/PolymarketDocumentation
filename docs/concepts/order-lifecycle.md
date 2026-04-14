@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Order Lifecycle
 
 > Understanding how orders flow from creation to settlement
@@ -89,7 +93,7 @@ When you place an order, it receives one of these statuses:
 | ----------- | --------------------------------------------------------------------------- |
 | `live`      | Order is resting on the book                                                |
 | `matched`   | Order matched immediately                                                   |
-| `delayed`   | Marketable order subject to a 3-second matching delay (sports markets)      |
+| `delayed`   | Marketable order subject to a 1-second matching delay (sports markets)      |
 | `unmatched` | Marketable order placed on the book after the delay expired without a match |
 
 ## Trade Statuses
@@ -151,5 +155,3 @@ Before placing orders, ensure:
     Start placing orders with our step-by-step guide.
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

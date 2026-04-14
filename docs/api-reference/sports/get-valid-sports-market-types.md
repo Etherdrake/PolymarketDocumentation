@@ -1,4 +1,10 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get valid sports market types
+
+
 
 ## OpenAPI
 
@@ -57,5 +63,3 @@ components:
             type: string
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

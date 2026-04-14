@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Trading
 
 > Order entry, management, and best practices for market makers
@@ -366,5 +370,3 @@ See [Fees](/trading/fees) for the full fee schedule, rates by category, and calc
     Full order creation reference with all options
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

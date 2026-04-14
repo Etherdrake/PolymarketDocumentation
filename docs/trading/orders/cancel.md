@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Cancel Order
 
 > Cancel single, multiple, or all open orders
@@ -395,5 +399,3 @@ Check if your resting orders are eligible for [maker rebates](/market-makers/mak
     Understand fee structures and maker rebates
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

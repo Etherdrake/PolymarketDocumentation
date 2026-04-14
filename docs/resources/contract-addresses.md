@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Contract Addresses
 
 > All Polymarket smart contract addresses on Polygon
@@ -100,5 +104,3 @@ All Polymarket contracts are deployed on **Polygon mainnet** (Chain ID: 137). Th
   // neg_config.neg_risk_adapter: Some(0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296)
   ```
 </CodeGroup>
-
-Built with [Mintlify](https://mintlify.com).

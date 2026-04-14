@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get user earnings and markets configuration
 
 > Returns an array of current rewards including user earnings and live percentages
@@ -13,6 +17,9 @@ Optional features:
 - Filter by tag slugs using `tag_slug` parameter (multiple values are OR'ed)
 - Filter by favorite markets using `favorite_markets=true`
 - Sort by various fields using `order_by` and `position` parameters
+
+
+
 
 ## OpenAPI
 
@@ -56,12 +63,15 @@ paths:
 
         per market for a provided day.
 
+
         Results are paginated (100 items per page by default, max 500). Use
         next_cursor to fetch subsequent pages.
 
         A next_cursor value of "LTE=" indicates the last page.
 
+
         Requires CLOB L2 Auth headers.
+
 
         Optional features:
 
@@ -485,5 +495,3 @@ components:
       description: Unix timestamp of the request
 
 ````
-
-Built with [Mintlify](https://mintlify.com).

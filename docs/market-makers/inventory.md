@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Inventory Management
 
 > Managing outcome token inventory for market making
@@ -295,7 +299,7 @@ Once a market resolves, redeem winning tokens for USDC.e. Each winning token is 
 
 Multi-outcome markets use the Neg Risk CTF Exchange. Split and merge work the same way, but use different contract addresses:
 
-```typescript  theme={null}
+```typescript theme={null}
 const NEG_RISK_ADAPTER = "0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296";
 const NEG_RISK_CTF_EXCHANGE = "0xC5d563A36AE78145C45a50134d48A1215220f80a";
 ```
@@ -331,7 +335,7 @@ See [Negative Risk Markets](/advanced/neg-risk) for details on how multi-outcome
 
 Execute multiple inventory operations in a single relayer call for efficiency:
 
-```typescript  theme={null}
+```typescript theme={null}
 const transactions: Transaction[] = [
   // Split on Market A
   {
@@ -384,5 +388,3 @@ await response.wait();
     Relayer Client setup and configuration
   </Card>
 </CardGroup>
-
-Built with [Mintlify](https://mintlify.com).

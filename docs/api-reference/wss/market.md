@@ -1,6 +1,12 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Market Channel
 
 > Public WebSocket for real-time orderbook, price, and market lifecycle updates.
+
+
 
 ## AsyncAPI
 
@@ -1242,5 +1248,3 @@ extensions:
 securitySchemes: []
 
 ````
-
-Built with [Mintlify](https://mintlify.com).
