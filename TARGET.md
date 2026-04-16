@@ -174,12 +174,14 @@ https://docs.polymarket.com/api-reference/tags/get-tags-related-to-a-tag-slug.md
 
 ## API Reference - Events
 https://docs.polymarket.com/api-reference/events/list-events.md
+https://docs.polymarket.com/api-reference/events/list-events-keyset-pagination.md
 https://docs.polymarket.com/api-reference/events/get-event-by-id.md
 https://docs.polymarket.com/api-reference/events/get-event-tags.md
 https://docs.polymarket.com/api-reference/events/get-event-by-slug.md
 
 ## API Reference - Markets
 https://docs.polymarket.com/api-reference/markets/list-markets.md
+https://docs.polymarket.com/api-reference/markets/list-markets-keyset-pagination.md
 https://docs.polymarket.com/api-reference/markets/get-market-by-id.md
 https://docs.polymarket.com/api-reference/markets/get-market-tags-by-id.md
 https://docs.polymarket.com/api-reference/markets/get-market-by-slug.md
