@@ -6,6 +6,36 @@
 
 > Welcome to the Polymarket Changelog. Here you will find any important changes to Polymarket, including but not limited to CLOB, API, UI and Mobile Applications.
 
+<Update label="Apr 17, 2026" description="CLOB V2: upgrades go live April 22 at ~11:00 UTC, with ~1 hour of downtime">
+  Polymarket is shipping a coordinated upgrade: **new Exchange contracts, a rewritten CLOB backend, and a new collateral token (pUSD)**.
+
+  **Exchange upgrades go live April 22, 2026 at \~11:00 UTC with \~1 hour of downtime.** All integrations must migrate to the V2 SDK before the cutover — there will be no backward compatibility after go-live.
+
+  **Full walkthrough:** [Migrating to CLOB V2](/v2-migration). Follow [Discord](https://discord.gg/polymarket), Telegram, and [status.polymarket.com](https://status.polymarket.com) for the exact start time.
+
+  **Test against V2 now:** point your client at `https://clob-v2.polymarket.com`. On April 22, V2 takes over `https://clob.polymarket.com`, so no base-URL change is needed after the cutover.
+
+  **What's changing**
+
+  * New Exchange contracts (CTF Exchange V2 + Neg Risk CTF Exchange V2)
+  * **pUSD** replaces USDC.e as the collateral token (standard ERC-20 on Polygon, backed by USDC, backing enforced onchain)
+  * Order struct: `nonce`, `feeRateBps`, `taker` removed — `timestamp` (ms), `metadata`, `builder` added
+  * Fees are now set at match time — no more `feeRateBps` on orders
+  * Builder attribution is native via `builderCode` on orders (no more `builder-signing-sdk`)
+  * EIP-712 Exchange domain version bumps from `"1"` to `"2"` (ClobAuth stays at `"1"`)
+
+  **What you need to do**
+
+  * Install the V2 SDK — [`@polymarket/clob-client-v2`](https://www.npmjs.com/package/@polymarket/clob-client-v2) or [`py-clob-client-v2`](https://pypi.org/project/py-clob-client-v2/) — and remove the legacy `clob-client` / `py-clob-client` packages
+  * Update constructor from positional args to options object; rename `chainId` → `chain`
+  * Remove `feeRateBps`, `nonce`, and `taker` from your order creation code
+  * If you're a builder, copy your code from [Settings → Builder](https://polymarket.com/settings?tab=builder) and attach it to orders
+  * If you sign orders without the SDK, update the `verifyingContract` and the signed Order fields — see [For API users](/v2-migration#for-api-users)
+  * Plan for all open orders to be wiped at cutover
+
+  **During the window:** Trading will be paused for \~1 hour on April 22 starting around 11:00 UTC. The SDK's hot-swap mechanism will auto-refresh the client when V2 goes live — no manual action needed if you're on the latest SDK.
+</Update>
+
 <Update label="Apr 13, 2026" description="Bridge API: added support link for bridging issues">
   * **Support contact**: Added a link to [our Bridge API provider's support](https://intercom.help/funxyz/en/articles/10732578-contact-us) (Fun.xyz) for failed, stuck, or compliance-held bridge transactions. See [Deposit Status](/trading/bridge/status).
 </Update>
