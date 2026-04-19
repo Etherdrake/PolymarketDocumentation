@@ -65,7 +65,7 @@ components:
           $ref: '#/components/schemas/Address'
           description: >-
             Your Polymarket wallet address where deposited funds will be
-            credited as USDC.e
+            credited as pUSD
     DepositResponse:
       type: object
       properties:

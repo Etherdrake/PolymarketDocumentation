@@ -39,7 +39,7 @@ paths:
               fromTokenAddress: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359'
               recipientAddress: '0x17eC161f126e82A8ba337f4022d574DBEaFef575'
               toChainId: '137'
-              toTokenAddress: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
+              toTokenAddress: '0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB'
       responses:
         '200':
           description: Quote retrieved successfully
@@ -135,7 +135,7 @@ components:
         toTokenAddress:
           type: string
           description: Destination token address
-          example: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
+          example: '0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB'
     QuoteResponse:
       type: object
       properties:

@@ -12,11 +12,11 @@ Polymarket provides official open-source clients in TypeScript, Python, and Rust
 
 <CodeGroup>
   ```bash TypeScript theme={null}
-  npm install @polymarket/clob-client ethers@5
+  npm install @polymarket/clob-client-v2 ethers@5
   ```
 
   ```bash Python theme={null}
-  pip install py-clob-client
+  pip install py-clob-client-v2
   ```
 
   ```bash Rust theme={null}
@@ -28,14 +28,14 @@ Polymarket provides official open-source clients in TypeScript, Python, and Rust
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
-  import { ClobClient } from "@polymarket/clob-client";
+  import { ClobClient } from "@polymarket/clob-client-v2";
 
-  const client = new ClobClient(
-    "https://clob.polymarket.com",
-    137,
+  const client = new ClobClient({
+    host: "https://clob.polymarket.com",
+    chain: 137,
     signer,
-    apiCreds,
-  );
+    creds: apiCreds,
+  });
 
   const markets = await client.getMarkets();
   ```
@@ -46,7 +46,7 @@ Polymarket provides official open-source clients in TypeScript, Python, and Rust
   client = ClobClient(
       "https://clob.polymarket.com",
       key=private_key,
-      chain_id=137,
+      chain=137,
       creds=api_creds,
   )
 
@@ -67,24 +67,13 @@ Polymarket provides official open-source clients in TypeScript, Python, and Rust
 
 ## Source Code
 
-| Language   | Package                   | Repository                                                                           |
-| ---------- | ------------------------- | ------------------------------------------------------------------------------------ |
-| TypeScript | `@polymarket/clob-client` | [github.com/Polymarket/clob-client](https://github.com/Polymarket/clob-client)       |
-| Python     | `py-clob-client`          | [github.com/Polymarket/py-clob-client](https://github.com/Polymarket/py-clob-client) |
-| Rust       | `polymarket-client-sdk`   | [github.com/Polymarket/rs-clob-client](https://github.com/Polymarket/rs-clob-client) |
+| Language   | Package                      | Repository                                                                                 |
+| ---------- | ---------------------------- | ------------------------------------------------------------------------------------------ |
+| TypeScript | `@polymarket/clob-client-v2` | [github.com/Polymarket/clob-client-v2](https://github.com/Polymarket/clob-client-v2)       |
+| Python     | `py-clob-client-v2`          | [github.com/Polymarket/py-clob-client-v2](https://github.com/Polymarket/py-clob-client-v2) |
+| Rust       | `polymarket-client-sdk`      | [github.com/Polymarket/rs-clob-client-v2](https://github.com/Polymarket/rs-clob-client-v2) |
 
 Each repository includes working examples in the `/examples` directory.
-
-## Builder SDKs
-
-If you're building an app through the [Builder Program](/builders/overview), additional signing SDKs are available:
-
-| Language   | Package                           | Repository                                                                                           |
-| ---------- | --------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| TypeScript | `@polymarket/builder-signing-sdk` | [github.com/Polymarket/builder-signing-sdk](https://github.com/Polymarket/builder-signing-sdk)       |
-| Python     | `py_builder_signing_sdk`          | [github.com/Polymarket/py-builder-signing-sdk](https://github.com/Polymarket/py-builder-signing-sdk) |
-
-See [Order Attribution](/trading/orders/attribution) for usage details.
 
 ## Relayer SDK
 

@@ -21,7 +21,7 @@ Market makers are essential to Polymarket's ecosystem — they provide liquidity
 
 <Steps>
   <Step title="Complete Setup">
-    Deploy wallets, fund with USDC.e, and set token approvals. See the [Getting
+    Deploy wallets, fund with pUSD, and set token approvals. See the [Getting
     Started](/market-makers/getting-started) guide.
   </Step>
 
@@ -39,14 +39,14 @@ Market makers are essential to Polymarket's ecosystem — they provide liquidity
 
 ## Quick Reference
 
-| Action                 | Tool           | Documentation                                     |
-| ---------------------- | -------------- | ------------------------------------------------- |
-| Deposit USDC.e         | Bridge API     | [Bridge](/trading/bridge/deposit)                 |
-| Approve tokens         | Relayer Client | [Getting Started](/market-makers/getting-started) |
-| Post limit orders      | CLOB REST API  | [Create Orders](/trading/orders/create)           |
-| Monitor orderbook      | WebSocket      | [WebSocket](/market-data/websocket/overview)      |
-| Split USDC.e to tokens | CTF / Relayer  | [Inventory](/market-makers/inventory)             |
-| Merge tokens to USDC.e | CTF / Relayer  | [Inventory](/market-makers/inventory)             |
+| Action               | Tool           | Documentation                                     |
+| -------------------- | -------------- | ------------------------------------------------- |
+| Deposit pUSD         | Bridge API     | [Bridge](/trading/bridge/deposit)                 |
+| Approve tokens       | Relayer Client | [Getting Started](/market-makers/getting-started) |
+| Post limit orders    | CLOB REST API  | [Create Orders](/trading/orders/create)           |
+| Monitor orderbook    | WebSocket      | [WebSocket](/market-data/websocket/overview)      |
+| Split pUSD to tokens | CTF / Relayer  | [Inventory](/market-makers/inventory)             |
+| Merge tokens to pUSD | CTF / Relayer  | [Inventory](/market-makers/inventory)             |
 
 ***
 

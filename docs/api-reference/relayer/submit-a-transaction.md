@@ -123,7 +123,7 @@ paths:
               $ref: '#/components/schemas/SubmitRequest'
             example:
               from: '0x6e0c80c90ea6c15917308F820Eac91Ce2724B5b5'
-              to: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
+              to: '0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB'
               proxyWallet: '0x6d8c4e9aDF5748Af82Dabe2C6225207770d6B4fa'
               data: 0x...
               nonce: '60'

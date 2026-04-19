@@ -12,11 +12,11 @@ This guide walks you through placing an order on Polymarket end-to-end.
   <Step title="Install the SDK">
     <CodeGroup>
       ```bash TypeScript theme={null}
-      npm install @polymarket/clob-client ethers@5
+      npm install @polymarket/clob-client-v2 ethers@5
       ```
 
       ```bash Python theme={null}
-      pip install py-clob-client
+      pip install py-clob-client-v2
       ```
 
       ```bash Rust theme={null}
@@ -30,7 +30,7 @@ This guide walks you through placing an order on Polymarket end-to-end.
 
     <CodeGroup>
       ```typescript TypeScript theme={null}
-      import { ClobClient } from "@polymarket/clob-client";
+      import { ClobClient } from "@polymarket/clob-client-v2";
       import { Wallet } from "ethers"; // v5.8.0
 
       const HOST = "https://clob.polymarket.com";
@@ -38,18 +38,18 @@ This guide walks you through placing an order on Polymarket end-to-end.
       const signer = new Wallet(process.env.PRIVATE_KEY);
 
       // Derive API credentials
-      const tempClient = new ClobClient(HOST, CHAIN_ID, signer);
+      const tempClient = new ClobClient({ host: HOST, chain: CHAIN_ID, signer });
       const apiCreds = await tempClient.createOrDeriveApiKey();
 
       // Initialize trading client
-      const client = new ClobClient(
-        HOST,
-        CHAIN_ID,
+      const client = new ClobClient({
+        host: HOST,
+        chain: CHAIN_ID,
         signer,
-        apiCreds,
-        0, // EOA
-        signer.address,
-      );
+        creds: apiCreds,
+        signatureType: 0, // EOA
+        funderAddress: signer.address,
+      });
       ```
 
       ```python Python theme={null}
@@ -57,18 +57,18 @@ This guide walks you through placing an order on Polymarket end-to-end.
       import os
 
       host = "https://clob.polymarket.com"
-      chain_id = 137  # Polygon mainnet
+      chain = 137  # Polygon mainnet
       private_key = os.getenv("PRIVATE_KEY")
 
       # Derive API credentials
-      temp_client = ClobClient(host, key=private_key, chain_id=chain_id)
+      temp_client = ClobClient(host, key=private_key, chain=chain)
       api_creds = temp_client.create_or_derive_api_creds()
 
       # Initialize trading client
       client = ClobClient(
           host,
           key=private_key,
-          chain_id=chain_id,
+          chain=chain,
           creds=api_creds,
           signature_type=0,  # EOA
           funder="YOUR_WALLET_ADDRESS"
@@ -100,7 +100,7 @@ This guide walks you through placing an order on Polymarket end-to-end.
     </Note>
 
     <Warning>
-      Before trading, your funder address needs **USDC.e** (for buying outcome
+      Before trading, your funder address needs **pUSD** (for buying outcome
       tokens) and **POL** (for gas, if using EOA type `0`). Proxy wallet users
       (types `1` and `2`) can use Polymarket's gasless relayer instead.
     </Warning>
@@ -111,7 +111,7 @@ This guide walks you through placing an order on Polymarket end-to-end.
 
     <CodeGroup>
       ```typescript TypeScript theme={null}
-      import { Side, OrderType } from "@polymarket/clob-client";
+      import { Side, OrderType } from "@polymarket/clob-client-v2";
 
       const response = await client.createAndPostOrder(
         {
@@ -237,7 +237,7 @@ This guide walks you through placing an order on Polymarket end-to-end.
   <Accordion title="L2 AUTH NOT AVAILABLE - Invalid Signature">
     Wrong private key, signature type, or funder address for the derived API credentials.
 
-    * Check that `signatureType` matches your account type (`0`, `1`, or `2`)
+    * Check that `signatureType` matches your account type (`0`, `1`, `2`, or `3`)
     * Ensure `funder` is correct for your wallet type
     * Re-derive credentials with `createOrDeriveApiKey()` if unsure
   </Accordion>
@@ -245,9 +245,9 @@ This guide walks you through placing an order on Polymarket end-to-end.
   <Accordion title="Order rejected - insufficient balance">
     Your funder address doesn't have enough tokens:
 
-    * **BUY orders**: need USDC.e in your funder address
+    * **BUY orders**: need pUSD in your funder address
     * **SELL orders**: need outcome tokens in your funder address
-    * Ensure you have more USDC.e than what's committed in open orders
+    * Ensure you have more pUSD than what's committed in open orders
   </Accordion>
 
   <Accordion title="Order rejected - insufficient allowance">

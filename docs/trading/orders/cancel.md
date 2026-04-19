@@ -149,16 +149,6 @@ Cancel all orders for a specific market, optionally filtered to a single token. 
 
 ***
 
-## Onchain Cancellation
-
-If the API is unavailable, you can cancel orders directly on the [Exchange contract](https://github.com/Polymarket/ctf-exchange/tree/main/src) by calling `cancelOrder(Order order)` onchain. Pass the full order struct that was signed when placing the order.
-
-Use the `CTFExchange` or `NegRiskCTFExchange` contract depending on the market type. See [Contract Addresses](/resources/contract-addresses) for addresses.
-
-This is a fallback mechanism — API cancellation is instant while onchain cancellation requires a transaction.
-
-***
-
 ## Querying Orders
 
 ### Get a Single Order

@@ -41,12 +41,13 @@ A **builder** is a person, group, or organization that routes orders from users 
     User places an order through your application.
   </Step>
 
-  <Step title="Sign Request">
-    Your app signs the request with Builder API credentials.
+  <Step title="Attach Builder Code">
+    Your app adds your `builderCode` to the order struct.
   </Step>
 
   <Step title="Submit to CLOB">
-    Order is submitted to Polymarket's CLOB with attribution headers.
+    Order is submitted to Polymarket's CLOB — the builder code is serialized
+    onchain as part of the signed order.
   </Step>
 
   <Step title="Trade Execution">
@@ -54,7 +55,8 @@ A **builder** is a person, group, or organization that routes orders from users 
   </Step>
 
   <Step title="Volume Attribution">
-    Volume is credited to your builder account.
+    Volume is credited to your builder account for every matched trade where
+    your code is attached.
   </Step>
 </Steps>
 
@@ -64,12 +66,12 @@ A **builder** is a person, group, or organization that routes orders from users 
   <Step title="Create Builder Profile">
     Go to
     [polymarket.com/settings?tab=builder](https://polymarket.com/settings?tab=builder)
-    and generate your API keys.
+    and copy your builder code.
   </Step>
 
-  <Step title="Configure Attribution">
-    Set up your CLOB client to include builder authentication headers with every
-    order.
+  <Step title="Attach Your Builder Code">
+    Pass `builderCode` on every order you submit — see [Order
+    Attribution](/trading/orders/attribution).
   </Step>
 
   <Step title="Enable Gasless Transactions">
@@ -86,11 +88,11 @@ A **builder** is a person, group, or organization that routes orders from users 
 ## SDKs and Libraries
 
 <CardGroup cols={2}>
-  <Card title="CLOB Client (TypeScript)" icon="github" href="https://github.com/Polymarket/clob-client">
+  <Card title="CLOB Client (TypeScript)" icon="github" href="https://github.com/Polymarket/clob-client-v2">
     Place orders with builder attribution
   </Card>
 
-  <Card title="CLOB Client (Python)" icon="github" href="https://github.com/Polymarket/py-clob-client">
+  <Card title="CLOB Client (Python)" icon="github" href="https://github.com/Polymarket/py-clob-client-v2">
     Place orders with builder attribution
   </Card>
 
@@ -102,16 +104,8 @@ A **builder** is a person, group, or organization that routes orders from users 
     Gasless onchain transactions
   </Card>
 
-  <Card title="CLOB Client (Rust)" icon="github" href="https://github.com/Polymarket/rs-clob-client">
+  <Card title="CLOB Client (Rust)" icon="github" href="https://github.com/Polymarket/rs-clob-client-v2">
     Place orders with builder attribution
-  </Card>
-
-  <Card title="Signing SDK (TypeScript)" icon="github" href="https://github.com/Polymarket/builder-signing-sdk">
-    Sign builder authentication headers
-  </Card>
-
-  <Card title="Signing SDK (Python)" icon="github" href="https://github.com/Polymarket/py-builder-signing-sdk">
-    Sign builder authentication headers
   </Card>
 </CardGroup>
 
@@ -177,7 +171,7 @@ For existing Magic Link users from Polymarket.com:
 
   <Tab title="Wallet Operations">
     * Safe wallet deployment via Relayer
-    * Batch token approvals (USDC.e + outcome tokens)
+    * Batch token approvals (pUSD + outcome tokens)
     * CTF operations (split, merge, redeem)
     * Transaction monitoring
   </Tab>

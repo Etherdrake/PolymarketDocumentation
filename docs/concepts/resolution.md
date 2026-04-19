@@ -34,7 +34,7 @@ Every market has pre-defined resolution rules that specify:
     Anyone can propose a resolution by:
 
     1. Selecting the winning outcome
-    2. Posting a bond (typically \$750 USDC.e)
+    2. Posting a bond (typically \$750 pUSD)
     3. Submitting the proposal to the UMA Oracle
 
     If the proposal is correct and undisputed, the proposer receives their bond back plus a reward.
@@ -89,10 +89,10 @@ Once a market resolves:
 
 ### Redeeming Tokens
 
-After resolution, call the `redeemPositions` function on the CTF contract to exchange winning tokens for USDC.e. The contract burns your tokens and returns the corresponding collateral.
+After resolution, call the `redeemPositions` function on the CTF contract to exchange winning tokens for pUSD. The contract burns your tokens and returns the corresponding collateral.
 
 ```
-100 winning tokens → $100 USDC.e
+100 winning tokens → $100 pUSD
 ```
 
 ## Clarifications

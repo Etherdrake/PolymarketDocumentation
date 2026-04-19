@@ -71,7 +71,7 @@ const response = await client.createAndPostOrder(
 
 Neg risk markets use different contracts than standard markets:
 
-See [Contract Addresses](/resources/contract-addresses) for the Neg Risk Adapter and Neg Risk CTF Exchange addresses.
+See [Contracts](/resources/contracts) for the Neg Risk Adapter and Neg Risk CTF Exchange addresses.
 
 ## Augmented Negative Risk
 

@@ -4,13 +4,13 @@
 
 # Redeem Tokens
 
-> Exchange winning tokens for USDC.e after market resolution
+> Exchange winning tokens for pUSD after market resolution
 
-**Redeeming** converts winning outcome tokens into USDC.e after a market resolves. Each winning token is worth exactly $1.00 — the losing token is worth $0.
+**Redeeming** converts winning outcome tokens into pUSD after a market resolves. Each winning token is worth exactly $1.00 — the losing token is worth $0.
 
 ```
 Market resolves YES:
-  100 Yes tokens → $100 USDC.e
+  100 Yes tokens → $100 pUSD
   100 No tokens  → $0
 ```
 
@@ -18,7 +18,7 @@ Market resolves YES:
 
 Redemption is only available **after a market resolves**. Once the oracle reports the outcome:
 
-* **Winning tokens** can be redeemed for \$1.00 USDC.e each
+* **Winning tokens** can be redeemed for \$1.00 pUSD each
 * **Losing tokens** are worth \$0 and produce no payout
 
 <Note>
@@ -44,7 +44,7 @@ Before redeeming:
 ## Function Parameters
 
 <ResponseField name="collateralToken" type="IERC20">
-  USDC.e (Bridged USDC) contract address: `0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174`
+  pUSD (Polymarket USD) contract address: `0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB`
 </ResponseField>
 
 <ResponseField name="parentCollectionId" type="bytes32">
@@ -78,7 +78,7 @@ When you call `redeemPositions()`:
 
 * Your token balance is multiplied by the payout
 * Winning tokens are burned
-* USDC.e is transferred to your wallet
+* pUSD is transferred to your wallet
 * Losing tokens are burned as well, but produce a \$0 payout
 
 ## Next Steps

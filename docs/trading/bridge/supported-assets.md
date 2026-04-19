@@ -6,7 +6,7 @@
 
 > Chains and tokens supported for deposits to Polymarket
 
-The Bridge API supports deposits from multiple chains and tokens. All deposits are automatically converted to **USDC.e on Polygon**, which is used as collateral for trading on Polymarket.
+The Bridge API supports deposits from multiple chains and tokens. All deposits are automatically converted to **pUSD on Polygon**, which is used as collateral for trading on Polymarket.
 
 ## Get Supported Assets
 

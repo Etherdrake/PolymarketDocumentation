@@ -61,14 +61,15 @@ paths:
                   order:
                     maker: '0x1234567890123456789012345678901234567890'
                     signer: '0x1234567890123456789012345678901234567890'
-                    taker: '0x0000000000000000000000000000000000000000'
                     tokenId: 0xabc123def456...
                     makerAmount: '100000000'
                     takerAmount: '200000000'
                     side: BUY
                     expiration: '1735689600'
-                    nonce: '0'
-                    feeRateBps: '30'
+                    timestamp: '1735689600000'
+                    metadata: ''
+                    builder: >-
+                      0x0000000000000000000000000000000000000000000000000000000000000000
                     signature: 0x1234abcd...
                     salt: 1234567890
                     signatureType: 0
@@ -276,14 +277,13 @@ components:
       required:
         - maker
         - signer
-        - taker
         - tokenId
         - makerAmount
         - takerAmount
         - side
         - expiration
-        - nonce
-        - feeRateBps
+        - timestamp
+        - builder
         - signature
         - salt
         - signatureType
@@ -298,10 +298,6 @@ components:
           type: string
           description: Ethereum address of the signer
           example: '0x1234567890123456789012345678901234567890'
-        taker:
-          type: string
-          description: Ethereum address of the taker (0x0 for open orders)
-          example: '0x0000000000000000000000000000000000000000'
         tokenId:
           type: string
           description: Token ID (asset ID) for the order
@@ -325,14 +321,22 @@ components:
           type: string
           description: Unix timestamp when the order expires
           example: '1735689600'
-        nonce:
+        timestamp:
           type: string
-          description: Order nonce
-          example: '0'
-        feeRateBps:
+          description: >-
+            Unix timestamp in milliseconds when the order was created (used for
+            order uniqueness)
+          example: '1735689600000'
+        metadata:
           type: string
-          description: Fee rate in basis points
-          example: '30'
+          description: Reserved for future use
+          example: ''
+        builder:
+          type: string
+          description: >-
+            Builder code (bytes32) for integrator attribution. `0x` + 64 hex
+            chars or empty.
+          example: '0x0000000000000000000000000000000000000000000000000000000000000000'
         signature:
           type: string
           description: Cryptographic signature of the order

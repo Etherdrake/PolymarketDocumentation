@@ -67,9 +67,9 @@ export const IconCard = ({ icon, title, description, href, color }) => {
 
       <CodeGroup>
         ```typescript TypeScript theme={null}
-        import { ClobClient, Side } from "@polymarket/clob-client";
+        import { ClobClient, Side } from "@polymarket/clob-client-v2";
 
-        const client = new ClobClient(host, chainId, signer, creds);
+        const client = new ClobClient({ host, chain: chainId, signer, creds });
 
         const order = await client.createAndPostOrder(
           { tokenID, price: 0.50, size: 10, side: Side.BUY },
@@ -81,7 +81,7 @@ export const IconCard = ({ icon, title, description, href, color }) => {
         from py_clob_client.client import ClobClient
         from py_clob_client.order_builder.constants import BUY
 
-        client = ClobClient(host, key=key, chain_id=chain_id, creds=creds)
+        client = ClobClient(host, key=key, chain=chain, creds=creds)
         order = client.create_and_post_order(
             OrderArgs(token_id=token_id, price=0.50, size=10, side=BUY),
             options={"tick_size": "0.01", "neg_risk": False}

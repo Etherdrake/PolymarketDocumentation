@@ -69,8 +69,8 @@ paths:
       parameters:
         - name: condition_id
           in: path
-          description: The condition ID of the market
           required: true
+          description: The condition ID of the market
           schema:
             type: string
           example: '0xbd31dc8a20211944f6b70f31557f1001557b59905b7738480ca09bd4532f84af'

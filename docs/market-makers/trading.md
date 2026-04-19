@@ -22,16 +22,16 @@ The core market making workflow is posting a bid and ask around your fair value.
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
-  import { ClobClient, Side, OrderType } from "@polymarket/clob-client";
+  import { ClobClient, Side, OrderType } from "@polymarket/clob-client-v2";
 
-  const client = new ClobClient(
-    "https://clob.polymarket.com",
-    137,
-    wallet,
-    credentials,
+  const client = new ClobClient({
+    host: "https://clob.polymarket.com",
+    chain: 137,
+    signer: wallet,
+    creds: credentials,
     signatureType,
-    funder,
-  );
+    funderAddress: funder,
+  });
 
   // Bid at 0.48
   const bid = await client.createAndPostOrder({
@@ -257,7 +257,7 @@ Cancel individual orders, by market, or everything at once:
   ```
 </CodeGroup>
 
-See [Cancel Orders](/trading/orders/cancel) for full details including onchain cancellation.
+See [Cancel Orders](/trading/orders/cancel) for full details.
 
 ### Monitoring Open Orders
 
