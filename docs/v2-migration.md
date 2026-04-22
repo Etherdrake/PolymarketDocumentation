@@ -9,11 +9,11 @@
 Polymarket is shipping a coordinated upgrade of its entire trading infrastructure: **new Exchange contracts**, a **rewritten CLOB backend**, and a **new collateral token** (Polymarket USD, or pUSD). This guide walks you through everything you need to migrate.
 
 <Warning>
-  **Go-live: April 22, 2026 (\~11:00 UTC)** — approximately 1 hour of downtime. All open orders will be wiped during the cutover. Make sure your integration is on the V2 SDK before the maintenance window starts.
+  **Go-live: April 28, 2026 (\~11:00 UTC)** — approximately 1 hour of downtime. All open orders will be wiped during the cutover. Make sure your integration is on the V2 SDK before the maintenance window starts.
 </Warning>
 
 <Note>
-  **Test against V2 before go-live.** Point your client at `https://clob-v2.polymarket.com` to start integrating now. On April 22nd (\~11:00 UTC), V2 takes over the production URL — `https://clob.polymarket.com` — so you don't need to change the base URL again after the cutover.
+  **Test against V2 before go-live.** Point your client at `https://clob-v2.polymarket.com` to start integrating now. On April 28th (\~11:00 UTC), V2 takes over the production URL — `https://clob.polymarket.com` — so you don't need to change the base URL again after the cutover.
 </Note>
 
 ***
@@ -240,7 +240,7 @@ CLOB V2 ships under new package names. Install them directly — don't keep usin
 </CodeGroup>
 
 <Warning>
-  The legacy `@polymarket/clob-client` and `py-clob-client` packages only work against V1 and will stop functioning after the April 22 cutover.
+  The legacy `@polymarket/clob-client` and `py-clob-client` packages only work against V1 and will stop functioning after the April 28 cutover.
 </Warning>
 
 <Note>
@@ -540,7 +540,7 @@ Work through this list as you update your integration:
 
 ## Cutover day
 
-**Go-live: April 22, 2026 (\~11:00 UTC).** The migration involves approximately **1 hour of downtime** during which trading is paused.
+**Go-live: April 28, 2026 (\~11:00 UTC).** The migration involves approximately **1 hour of downtime** during which trading is paused.
 
 **During the window:**
 
