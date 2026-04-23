@@ -6,6 +6,8 @@
 
 > Gets a transaction submitted to the Relayer. Takes in a required transaction ID as a query parameter.
 
+Poll this endpoint with the `transactionID` returned from `POST /submit` to retrieve the onchain `transactionHash` once the transaction has been broadcast.
+
 
 
 
@@ -50,6 +52,11 @@ paths:
       description: >
         Gets a transaction submitted to the Relayer. Takes in a required
         transaction ID as a query parameter.
+
+
+        Poll this endpoint with the `transactionID` returned from `POST /submit`
+        to retrieve the onchain `transactionHash` once the transaction has been
+        broadcast.
       parameters:
         - name: id
           in: query

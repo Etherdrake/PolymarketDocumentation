@@ -387,6 +387,10 @@ V2 replaces the old builder authentication flow (HMAC headers + separate signing
   `BuilderConfig` still exists, but its shape changed. In V1 it wrapped HMAC credentials from `@polymarket/builder-signing-sdk`. In V2 it's just `{ builderCode: string }`.
 </Note>
 
+<Note>
+  **Your builder API key isn't retired.** The HMAC-based builder API key is still used to authenticate with the [Relayer](/trading/gasless) for gasless transactions. Only the order-signing flow moves to the `builderCode` field — your relayer integration keeps the same credentials.
+</Note>
+
 <CodeGroup>
   ```typescript Before (V1) theme={null}
   import { BuilderConfig, BuilderApiKeyCreds } from "@polymarket/builder-signing-sdk";
