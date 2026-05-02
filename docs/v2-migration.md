@@ -6,14 +6,14 @@
 
 > A complete guide to upgrading your integration to Polymarket's CLOB V2 — new contracts, new backend, new collateral token, and a simpler builder program.
 
-Polymarket is shipping a coordinated upgrade of its entire trading infrastructure: **new Exchange contracts**, a **rewritten CLOB backend**, and a **new collateral token** (Polymarket USD, or pUSD). This guide walks you through everything you need to migrate.
+Polymarket has shipped a coordinated upgrade of its entire trading infrastructure: **new Exchange contracts**, a **rewritten CLOB backend**, and a **new collateral token** (Polymarket USD, or pUSD). This guide walks you through everything you need to migrate from CLOB V1 to CLOB V2.
 
 <Warning>
-  **Go-live: April 28, 2026 (\~11:00 UTC)** — approximately 1 hour of downtime. All open orders will be wiped during the cutover. Make sure your integration is on the V2 SDK before the maintenance window starts.
+  **CLOB V2 is live as of April 28, 2026.** Legacy V1 SDKs and V1-signed orders are no longer supported on production. Upgrade to the V2 SDK or update your raw order signing before submitting orders to `https://clob.polymarket.com`.
 </Warning>
 
 <Note>
-  **Test against V2 before go-live.** Point your client at `https://clob-v2.polymarket.com` to start integrating now. On April 28th (\~11:00 UTC), V2 takes over the production URL — `https://clob.polymarket.com` — so you don't need to change the base URL again after the cutover.
+  **Production URL:** CLOB V2 now runs at `https://clob.polymarket.com`. The pre-cutover `https://clob-v2.polymarket.com` testing host is no longer the integration target for production clients.
 </Note>
 
 ***
@@ -32,7 +32,7 @@ Polymarket is shipping a coordinated upgrade of its entire trading infrastructur
 | Exchange `verifyingContract` (raw API signers) | V1 addresses                                                                                               | V2 addresses — see [Contracts](/resources/contracts)         |
 | Raw API order signing                          | V1 Order type                                                                                              | Updated Order type — [see API users section](#for-api-users) |
 
-**If you're on the latest SDK,** most of this is handled automatically. The hot-swap mechanism detects the cutover and refreshes the client without manual intervention.
+**If you're on the latest SDK,** most of this is handled automatically. If you're signing orders manually, update the EIP-712 domain, order fields, and contract addresses described below.
 
 ***
 
@@ -44,16 +44,16 @@ Polymarket is shipping a coordinated upgrade of its entire trading infrastructur
   </Step>
 
   <Step title="Pin the latest SDK">
-    Install the V2 SDK: [`@polymarket/clob-client-v2`](https://www.npmjs.com/package/@polymarket/clob-client-v2) (TypeScript) or [`py-clob-client-v2`](https://pypi.org/project/py-clob-client-v2/) (Python). Don't keep using the old `clob-client` / `py-clob-client` packages — those only work against V1 and stop functioning after cutover.
+    Install the V2 SDK: [`@polymarket/clob-client-v2`](https://www.npmjs.com/package/@polymarket/clob-client-v2) (TypeScript) or [`py-clob-client-v2`](https://pypi.org/project/py-clob-client-v2/) (Python). Don't keep using the old `clob-client` / `py-clob-client` packages — those only work against V1 and no longer function against production.
   </Step>
 
-  <Step title="Have a test wallet ready">
-    The order book is wiped during the maintenance window. Test your integration before the cutover.
+  <Step title="Test with a funded wallet">
+    Use a small funded wallet to test market discovery, order signing, posting, cancellation, and settlement behavior end-to-end on production.
   </Step>
 </Steps>
 
 <Warning>
-  **Order book wipe:** All open orders are cancelled as part of the cutover. Plan to re-place orders immediately after the window closes.
+  **Open orders from before the CLOB V2 cutover were wiped.** If you had resting V1-era orders, they did not migrate and must be re-created with V2 order signing.
 </Warning>
 
 ***
@@ -180,6 +180,8 @@ Order(
 
 ### POST /order body
 
+`expiration` is still present in the `POST /order` wire body for GTD/order-expiry handling, but it is **not** part of the V2 EIP-712 signed struct.
+
 ```ts theme={null}
 {
   "order": {
@@ -190,7 +192,7 @@ Order(
     "tokenId": "102936...",
     "makerAmount": "1000000",
     "takerAmount": "2000000",
-    "expiration": "0", // [!code --]
+    "expiration": "0",
     "nonce": "0", // [!code --]
     "feeRateBps": "0", // [!code --]
     "side": "BUY",
@@ -231,16 +233,16 @@ CLOB V2 ships under new package names. Install them directly — don't keep usin
 
 <CodeGroup>
   ```bash TypeScript theme={null}
-  npm install @polymarket/clob-client-v2@1.0.0
+  npm install @polymarket/clob-client-v2 viem
   ```
 
   ```bash Python theme={null}
-  pip install py-clob-client-v2==1.0.0
+  pip install py-clob-client-v2
   ```
 </CodeGroup>
 
 <Warning>
-  The legacy `@polymarket/clob-client` and `py-clob-client` packages only work against V1 and will stop functioning after the April 28 cutover.
+  The legacy `@polymarket/clob-client` and `py-clob-client` packages only work against V1 and no longer work against production CLOB V2.
 </Warning>
 
 <Note>
@@ -475,23 +477,42 @@ Polymarket USD (pUSD) replaces USDC.e as the collateral token. pUSD is a standar
 
 ## Test markets
 
-The following events have liquidity on `clob-v2.polymarket.com` — use them to dry-run your integration end-to-end before go-live.
+The markets below were used for pre-cutover testing on `clob-v2.polymarket.com` and are retained for migration reference. For live testing, resolve current active markets into token IDs and metadata with [`gamma-api.polymarket.com/markets?condition_ids=<id>`](https://gamma-api.polymarket.com/markets), then submit small orders to production CLOB V2 at `https://clob.polymarket.com`.
 
-### US / Iran nuclear deal in 2027?
+### Markets with fees enabled
 
-* Event: [`gamma-api.polymarket.com/events/73106`](https://gamma-api.polymarket.com/events/73106)
-* Orderbook: [`token_id=102936…7216`](https://clob-v2.polymarket.com/book?token_id=102936224134271070189104847090829839924697394514566827387181305960175107677216)
+Use these to verify fee handling end-to-end.
 
-### Highest grossing movie in 2026?
+* `0xaf5e903876ad42de97e1cf02c2ef8484df69bcfc5541b96a400116557d1e504e`
+* `0xe9955a31d76ea97457410f61c9b9f2d27ac6fbd8302ed1849d93133884f4fb3b`
+* `0x8e6a263fc5f4dd9433b4ccbc9bb9e0d89f4de8a91d3a82d6b437fe73fd847ea5`
+* `0xc7d462e462d8d369aee17c9e3ea8f113166cf9a342a6434a0b2a0f7588dc1bbf`
+* `0x0440d08e4f534afa8ad9f616a239a19ebf7f2476bd802b1d54180435fa83463f`
+* `0xd048b3e9ccad82c57a4eec953e75794aeb5e6d0e08bdb79b9e01b24e0049f16d`
+* `0x88310713845c54e36f29791a1c2dc172b9819b645ba82d5f87560805cd2bb788`
+* `0xffcab88076a28795281bb07a082c7003a4ff5671420086cb16ec09dfbf9aea68`
+* `0x64a5bcfb0c76a75081c8be49c895a976d506fce8d21aa9d73f1099e502f2fa4e`
+* `0x8babe4f4d0eff732d660fa02929a581cb8478ed2a1696c158290b2794d3d7ac0`
 
-* Event: [`gamma-api.polymarket.com/events/79831`](https://gamma-api.polymarket.com/events/79831)
-* Orderbooks:
-  * [`token_id=81662…2777`](https://clob-v2.polymarket.com/book?token_id=81662326158871781857247725348568394697379926716334270967994039975048021832777)
-  * [`token_id=17546…1707`](https://clob-v2.polymarket.com/book?token_id=17546146554206665273662853938002443411871542020107489725107067382874986311707)
-  * [`token_id=28161…2479`](https://clob-v2.polymarket.com/book?token_id=28161183422242370392388296744035422249088647252796713903067039294971789722479)
-  * [`token_id=89576…4694`](https://clob-v2.polymarket.com/book?token_id=89576274136595202327975910079635847102293810595609428633134997662847357374694)
-  * [`token_id=21556…6607`](https://clob-v2.polymarket.com/book?token_id=21556669163785052148858748369786715040594704429426952390307023288865165566607)
-  * [`token_id=51020…2516`](https://clob-v2.polymarket.com/book?token_id=51020513216536535954567404775362000484668846352577848437115610667663875702516)
+### Additional markets with liquidity
+
+* `0xcf8a237df51a51511c4f96bb4390480ad72b898ca8ec7e9a3c16c47c8e5e468a`
+* `0x242d251e7e804f79e1f237896b0f5e73caea72375dcb84e5a60d1cd0d2f80ef5`
+* `0x9c47ba9e666983bd8d82bfab790509153bf7756c43913f6ef269e33c8955939c`
+* `0x221aaa62fed17db56fbc7983f88110a9c34861c3262154ee3315425378e3ae12`
+* `0x625d0091f4c647e5497bd9b03f8526bd486d6c339380b8046e4dd5b3373046b7`
+* `0xc9b9f89ac915385c8d77edb73872c49e5bf76e510b74b9609e74e7f8d0339df2`
+* `0xde9f827cb2d568db7801439693645a941a38fe6feaeb08b86087ad367d991704`
+* `0xfd029ab3d6d27b6e1f3480dce858c97fb12e5bebd6fb50be7520102c56ba8ce1`
+* `0x894a61a2baa777adf1d03a263a4b2d8faa7e1ebc7bf6694a37701fae8add01d9`
+* `0xcd57f3ad3bbbdaa96aacabd35f50c2d6e30f777e4a33876a4ab2dcd9f0b8c170`
+* `0xc4b07998e8f9bf6b95f079d6dc0529f3c6f59698d4e168817ad5f99304de6c57`
+* `0xe4f4b614a6c2b4ecd8eb700d19c0e6533d3fbd1bc28193b2255394ef74006e6f`
+* `0xec181db4470b152493b58229862af3f6335b77cc719f5a0e7ed58c9f9848b992`
+* `0x6ec4fec4885df7f3ac46e5d0051beb6d8ac75de6a8481f13f245ff26dcb4b662`
+* `0x8f6e71601903224dc29c69b886a63f248c8051be259e7db299850708f1f86dd6`
+* `0xfa40b5612a905f16ee42a18979f23fa1bbfcfc365f11d168f2e22bd0159ada77`
+* `0x182390641d3b1b47cc64274b9da290efd04221c586651ba190880713da6347d9`
 
 ***
 
@@ -534,9 +555,9 @@ Work through this list as you update your integration:
   </Accordion>
 
   <Accordion title="Testing">
-    * [ ] Test full order lifecycle on preprod
+    * [ ] Test the full order lifecycle with small production orders
     * [ ] Verify builder attribution appears on the [Builder Leaderboard](https://builders.polymarket.com)
-    * [ ] Plan for order book wipe — all open orders must be re-placed after migration
+    * [ ] Re-create any pre-cutover resting orders with V2 signing
   </Accordion>
 </AccordionGroup>
 
@@ -544,17 +565,17 @@ Work through this list as you update your integration:
 
 ## Cutover day
 
-**Go-live: April 28, 2026 (\~11:00 UTC).** The migration involves approximately **1 hour of downtime** during which trading is paused.
+**Go-live occurred on April 28, 2026 (\~11:00 UTC).** The migration involved approximately **1 hour of downtime** during which trading was paused.
 
 **During the window:**
 
-* All open orders are wiped. You must re-place orders after the migration completes.
-* The SDK's **hot-swap mechanism** queries a version endpoint and auto-refreshes when V2 goes live.
-* If you're on the latest V2 SDK, **no manual intervention is needed during the cutover.**
+* All open orders were wiped. Any pre-cutover resting orders must be re-placed with V2 signing.
+* The SDK's **hot-swap mechanism** queried a version endpoint and auto-refreshed when V2 went live.
+* Clients already on the latest V2 SDK did not require manual intervention during the cutover.
 
-**If your integration is on the V1 SDK after migration, it will stop working.** There is no backward compatibility.
+**If your integration is still on the V1 SDK, it will not work against production CLOB V2.** There is no backward compatibility.
 
-Follow [Discord](https://discord.gg/polymarket), Telegram, and [status.polymarket.com](https://status.polymarket.com) for the exact maintenance window start time. The window is scheduled to avoid large market resolutions.
+Follow [Discord](https://discord.gg/polymarket), Telegram, and [status.polymarket.com](https://status.polymarket.com) for operational updates and incident notices.
 
 ***
 
@@ -566,11 +587,11 @@ Follow [Discord](https://discord.gg/polymarket), Telegram, and [status.polymarke
   </Accordion>
 
   <Accordion title="Will my open orders migrate automatically?">
-    No — all open orders are wiped during the maintenance window. Re-place them after the window closes.
+    No — open orders from before the CLOB V2 cutover were wiped. Re-place them with V2 signing.
   </Accordion>
 
   <Accordion title="What happens if I forget to update the SDK?">
-    Your V1 client will fail against the V2 backend after cutover. There is no backward compatibility — upgrade before the maintenance window ends.
+    Your V1 client will fail against the V2 backend. There is no backward compatibility — upgrade before submitting production orders.
   </Accordion>
 
   <Accordion title="Do I need to migrate my USDC.e to pUSD manually?">

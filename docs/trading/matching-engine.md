@@ -125,7 +125,7 @@ Check the HTTP status code on responses to the CLOB API and retry on `425`:
   ```
 
   ```rust Rust theme={null}
-  use polymarket_client_sdk::error::{Kind, StatusCode};
+  use polymarket_client_sdk_v2::error::{Kind, StatusCode};
 
   // Wrap SDK calls with retry logic for HTTP 425.
   // Re-build and re-sign the order each attempt since SignedOrder is consumed.
@@ -140,7 +140,7 @@ Check the HTTP status code on responses to the CLOB API and retry on `425`:
       match client.post_order(signed).await {
           Ok(response) => return Ok(response),
           Err(err) if err.kind() == Kind::Status => {
-              if let Some(status) = err.downcast_ref::<polymarket_client_sdk::error::Status>() {
+              if let Some(status) = err.downcast_ref::<polymarket_client_sdk_v2::error::Status>() {
                   if status.status_code == StatusCode::from_u16(425).unwrap() {
                       eprintln!("Engine restarting, retrying in {delay:?}...");
                       tokio::time::sleep(delay).await;

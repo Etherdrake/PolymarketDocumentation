@@ -6,6 +6,15 @@
 
 > Welcome to the Polymarket Changelog. Here you will find any important changes to Polymarket, including but not limited to CLOB, API, UI and Mobile Applications.
 
+<Update label="Apr 28, 2026" description="CLOB V2 is live on production">
+  Polymarket's CLOB V2 upgrade is live on `https://clob.polymarket.com`.
+
+  * **Production URL unchanged**: V2 now runs on the standard CLOB host. New integrations should use `https://clob.polymarket.com`.
+  * **No V1 compatibility**: Legacy V1 SDKs and V1-signed orders are no longer supported on production.
+  * **Open orders wiped**: Resting orders from before the cutover did not migrate and must be re-created with V2 signing.
+  * **Migration guide**: See [Migrating to CLOB V2](/v2-migration) for the SDK, raw order signing, pUSD, and builder attribution changes.
+</Update>
+
 <Update label="Apr 21, 2026" description="Relayer API: POST /submit returns immediately without transactionHash">
   * **Faster `POST /submit` responses**: The Relayer's `POST /submit` endpoint now returns immediately with just `{ transactionID, state: "STATE_NEW" }`. The `transactionHash` field has been removed from the submit response to improve performance.
   * **How to get the hash**: Poll [`GET /transaction`](/api-reference/relayer/get-a-transaction-by-id) with the returned `transactionID` to retrieve the onchain `transactionHash` once the transaction has been broadcast.
@@ -18,7 +27,7 @@
 
   **Full walkthrough:** [Migrating to CLOB V2](/v2-migration). Follow [Discord](https://discord.gg/polymarket), Telegram, and [status.polymarket.com](https://status.polymarket.com) for the exact start time.
 
-  **Test against V2 now:** point your client at `https://clob-v2.polymarket.com`. On April 28, V2 takes over `https://clob.polymarket.com`, so no base-URL change is needed after the cutover.
+  **Historical pre-cutover note:** before go-live, integrations could test against `https://clob-v2.polymarket.com`. As of April 28, V2 runs on `https://clob.polymarket.com`.
 
   **What's changing**
 
@@ -157,7 +166,7 @@
 </Update>
 
 <Update label="July 23, 2025" description="Get Book(s) update">
-  * We’re adding new fields to the `get-book` and `get-books` CLOB endpoints to include key market metadata that previously required separate queries.
+  * We're adding new fields to the `get-book` and `get-books` CLOB endpoints to include key market metadata that previously required separate queries.
     * `min_order_size`
       * type: string
       * description: Minimum price increment.
@@ -170,7 +179,7 @@
 </Update>
 
 <Update label="June 3, 2025" description="New Batch Orders Endpoint">
-  * We’re excited to roll out a highly requested feature: **order batching**. With this new endpoint, users can now submit up to five trades in a single request. To help you get started, we’ve included sample code demonstrating how to use it. Please see [Create Orders](/trading/orders/create) for more details.
+  * We're excited to roll out a highly requested feature: **order batching**. With this new endpoint, users can now submit up to five trades in a single request. To help you get started, we've included sample code demonstrating how to use it. Please see [Create Orders](/trading/orders/create) for more details.
 </Update>
 
 <Update label="June 3, 2025" description="Change to /data/trades">
@@ -185,7 +194,7 @@
 </Update>
 
 <Update label="May 28, 2025" description="New FAK Order Type">
-  We’re excited to introduce a new order type soon to be available to all users: Fill and Kill (FAK). FAK orders behave similarly to the well-known Fill or Kill (FOK) orders, but with a key difference:
+  We're excited to introduce a new order type soon to be available to all users: Fill and Kill (FAK). FAK orders behave similarly to the well-known Fill or Kill (FOK) orders, but with a key difference:
 
   * FAK will fill as many shares as possible immediately at your specified price, and any remaining unfilled portion will be canceled.
   * Unlike FOK, which requires the entire order to fill instantly or be canceled, FAK is more flexible and aims to capture partial fills if possible.
@@ -199,7 +208,7 @@
   * CLOB - /price (100req - 10s / Throttle requests over the maximum configured rate)
   * CLOB markets/0x (50req / 10s - Throttle requests over the maximum configured rate)
   * CLOB POST /order - 500 every 10s (50/s) - (BURST) - Throttle requests over the maximum configured rate
-  * CLOB POST /order - 3000 every 10 minutes (5/s) - Throttle requests over the maximum configured rate
+  * CLOB POST /order - 3000 every 10 minutes (5/s) - Throttle requests over the maximum configured rate)
   * CLOB DELETE /order - 500 every 10s (50/s) - (BURST) - Throttle requests over the maximum configured rate
-  * DELETE /order - 3000 every 10 minutes (5/s) - Throttle requests over the maximum configured rate
+  * DELETE /order - 3000 every 10 minutes (5/s) - Throttle requests over the maximum configured rate)
 </Update>
