@@ -33,6 +33,10 @@ Polymarket pays gas for all operations routed through the relayer:
 
 The relayer uses **Relayer API Keys**. You can create one from [Settings > API Keys](https://polymarket.com/settings?tab=api-keys) on the Polymarket website.
 
+<Note>
+  **Already have a builder signing key?** Your existing HMAC-based builder API key keeps working with the Relayer — no need to rotate or reissue. Only order-signing moved to the native `builderCode` field in CLOB V2. See [Migrating to CLOB V2](/v2-migration#builder-program) for context.
+</Note>
+
 Include these headers with your requests:
 
 | Header                    | Description                   |

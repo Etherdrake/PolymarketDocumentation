@@ -274,6 +274,14 @@ components:
           description: Error message
     Order:
       type: object
+      description: >
+        Order payload submitted to the CLOB API. In CLOB V2, `expiration`
+        remains in
+
+        the POST /order wire body for GTD/order-expiry handling, but it is not
+        part
+
+        of the EIP-712 signed order struct.
       required:
         - maker
         - signer
@@ -319,7 +327,9 @@ components:
           example: BUY
         expiration:
           type: string
-          description: Unix timestamp when the order expires
+          description: >-
+            Unix timestamp when the order expires. Present in the API wire body;
+            not part of the CLOB V2 EIP-712 signed order struct.
           example: '1735689600'
         timestamp:
           type: string

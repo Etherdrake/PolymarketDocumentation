@@ -89,7 +89,7 @@ Once a market resolves:
 
 ### Redeeming Tokens
 
-After resolution, call the `redeemPositions` function on the CTF contract to exchange winning tokens for pUSD. The contract burns your tokens and returns the corresponding collateral.
+After resolution, redeem through the CTF collateral adapter to exchange winning tokens for pUSD. The adapter burns your ERC1155 outcome tokens through the CTF contract, receives the released USDC.e collateral, wraps it into pUSD, and returns pUSD to your wallet.
 
 ```
 100 winning tokens → $100 pUSD

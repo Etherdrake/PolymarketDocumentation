@@ -14,12 +14,14 @@ L2 methods require the client to initialize with a signer, signature type, API c
   <Tab title="TypeScript">
     ```typescript theme={null}
     import { ClobClient } from "@polymarket/clob-client-v2";
-    import { Wallet } from "ethers";
+    import { createWalletClient, http } from "viem";
+    import { privateKeyToAccount } from "viem/accounts";
 
-    const signer = new Wallet(process.env.PRIVATE_KEY);
+    const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`);
+    const signer = createWalletClient({ account, transport: http() });
 
     const apiCreds = {
-      apiKey: process.env.API_KEY,
+      key: process.env.API_KEY,
       secret: process.env.SECRET,
       passphrase: process.env.PASSPHRASE,
     };
@@ -40,8 +42,8 @@ L2 methods require the client to initialize with a signer, signature type, API c
 
   <Tab title="Python">
     ```python theme={null}
-    from py_clob_client.client import ClobClient
-    from py_clob_client.clob_types import ApiCreds
+    from py_clob_client_v2 import ClobClient
+    from py_clob_client_v2 import ApiCreds
     import os
 
     api_creds = ApiCreds(
@@ -52,7 +54,7 @@ L2 methods require the client to initialize with a signer, signature type, API c
 
     client = ClobClient(
         host="https://clob.polymarket.com",
-        chain=137,
+        chain_id=137,
         key=os.getenv("PRIVATE_KEY"),
         creds=api_creds,
         signature_type=2,  # GNOSIS_SAFE

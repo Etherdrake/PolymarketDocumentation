@@ -4,8 +4,7 @@
 
 # Get builder trades
 
-> Retrieves originated trades for a given builder.
-Builders can only see their own originated trades.
+> Retrieves trades attributed to a builder code.
 
 
 
@@ -47,10 +46,17 @@ paths:
         - Trade
       summary: Get builder trades
       description: |
-        Retrieves originated trades for a given builder.
-        Builders can only see their own originated trades.
+        Retrieves trades attributed to a builder code.
       operationId: getBuilderTrades
       parameters:
+        - name: builder_code
+          in: query
+          description: Builder code to fetch attributed trades for
+          required: true
+          schema:
+            type: string
+            pattern: ^0x[a-fA-F0-9]{64}$
+          example: '0x0000000000000000000000000000000000000000000000000000000000000001'
         - name: id
           in: query
           description: Trade ID to filter by specific trade
@@ -58,15 +64,6 @@ paths:
           schema:
             type: string
           example: trade-123
-        - name: builder
-          in: query
-          description: >-
-            Builder identifier (automatically set from authenticated builder, or
-            can be specified with admin token)
-          required: false
-          schema:
-            type: string
-          example: 0199bfa0-f4c1-7a98-9c2b-b29cc6d39e10
         - name: market
           in: query
           description: Market (condition ID) to filter trades
@@ -124,7 +121,8 @@ paths:
                       - id: trade-123
                         tradeType: TAKER
                         takerOrderHash: '0xabcdef1234567890abcdef1234567890abcdef12'
-                        builder: 0199bfa0-f4c1-7a98-9c2b-b29cc6d39e10
+                        builder: >-
+                          0x0000000000000000000000000000000000000000000000000000000000000001
                         market: >-
                           0x0000000000000000000000000000000000000000000000000000000000000001
                         assetId: >-
@@ -154,14 +152,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 error: invalid builder trade params
-        '401':
-          description: Unauthorized - Invalid builder API key or authentication failed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: Invalid API key
         '500':
           description: Internal server error
           content:
@@ -170,12 +160,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 error: could not fetch builder trades
-      security:
-        - polyApiKey: []
-          polyAddress: []
-          polySignature: []
-          polyPassphrase: []
-          polyTimestamp: []
 components:
   schemas:
     BuilderTradesResponse:
@@ -253,8 +237,9 @@ components:
           example: '0xabcdef1234567890abcdef1234567890abcdef12'
         builder:
           type: string
-          description: Builder identifier
-          example: 0199bfa0-f4c1-7a98-9c2b-b29cc6d39e10
+          description: Builder code attributed to the trade
+          pattern: ^0x[a-fA-F0-9]{64}$
+          example: '0x0000000000000000000000000000000000000000000000000000000000000001'
         market:
           type: string
           description: Market (condition ID)
@@ -342,31 +327,5 @@ components:
           format: date-time
           description: Last update timestamp
           example: '2024-01-01T00:00:00Z'
-  securitySchemes:
-    polyApiKey:
-      type: apiKey
-      in: header
-      name: POLY_API_KEY
-      description: Your API key
-    polyAddress:
-      type: apiKey
-      in: header
-      name: POLY_ADDRESS
-      description: Ethereum address associated with the API key
-    polySignature:
-      type: apiKey
-      in: header
-      name: POLY_SIGNATURE
-      description: HMAC signature of the request
-    polyPassphrase:
-      type: apiKey
-      in: header
-      name: POLY_PASSPHRASE
-      description: API key passphrase
-    polyTimestamp:
-      type: apiKey
-      in: header
-      name: POLY_TIMESTAMP
-      description: Unix timestamp of the request
 
 ````

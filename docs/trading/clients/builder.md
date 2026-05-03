@@ -37,14 +37,14 @@ Builder attribution in V2 is handled natively through the order struct — you a
   ```
 
   ```python Python theme={null}
-  from py_clob_client.client import ClobClient
-  from py_clob_client.clob_types import OrderArgs
-  from py_clob_client.order_builder.constants import BUY
+  from py_clob_client_v2 import ClobClient
+  from py_clob_client_v2 import OrderArgs, PartialCreateOrderOptions
+  from py_clob_client_v2.order_builder.constants import BUY
   import os
 
   client = ClobClient(
       host="https://clob.polymarket.com",
-      chain=137,
+      chain_id=137,
       key=os.getenv("PRIVATE_KEY"),
       creds=creds,
       signature_type=signature_type,
@@ -60,7 +60,7 @@ Builder attribution in V2 is handled natively through the order struct — you a
           side=BUY,
           builder_code=os.environ["POLY_BUILDER_CODE"],
       ),
-      options={"tick_size": "0.01", "neg_risk": False},
+      options=PartialCreateOrderOptions(tick_size="0.01", neg_risk=False),
   )
   ```
 </CodeGroup>

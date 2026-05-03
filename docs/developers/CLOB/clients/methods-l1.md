@@ -14,9 +14,11 @@ L1 methods require the client to initialize with a signer.
   <Tab title="TypeScript">
     ```typescript theme={null}
     import { ClobClient } from "@polymarket/clob-client-v2";
-    import { Wallet } from "ethers";
+    import { createWalletClient, http } from "viem";
+    import { privateKeyToAccount } from "viem/accounts";
 
-    const signer = new Wallet(process.env.PRIVATE_KEY);
+    const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`);
+    const signer = createWalletClient({ account, transport: http() });
 
     const client = new ClobClient({
       host: "https://clob.polymarket.com",
@@ -31,14 +33,14 @@ L1 methods require the client to initialize with a signer.
 
   <Tab title="Python">
     ```python theme={null}
-    from py_clob_client.client import ClobClient
+    from py_clob_client_v2 import ClobClient
     import os
 
     private_key = os.getenv("PRIVATE_KEY")
 
     client = ClobClient(
         host="https://clob.polymarket.com",
-        chain=137,
+        chain_id=137,
         key=private_key  # Signer required for L1 methods
     )
 
@@ -134,6 +136,13 @@ async createOrDeriveApiKey(nonce?: number): Promise<ApiKeyCreds>
 
 ## Order Signing
 
+<Note>
+  In CLOB V2, `expiration` is still accepted in order payloads for GTD/order
+  expiry handling, but it is not part of the EIP-712 signed order struct. The
+  signed struct uses `timestamp`, `metadata`, and `builder` instead of the V1
+  `expiration`, `nonce`, `feeRateBps`, and `taker` fields.
+</Note>
+
 ### createOrder
 
 Create and sign a limit order locally without posting it to the CLOB. Use this when you want to sign orders in advance or implement custom submission logic. Submit via [`postOrder()`](/trading/clients/l2#postorder) or [`postOrders()`](/trading/clients/l2#postorders).
@@ -162,7 +171,8 @@ async createOrder(
 </ResponseField>
 
 <ResponseField name="expiration" type="number">
-  Optional expiration timestamp for the order. Optional.
+  Optional expiration timestamp included in the order payload for GTD/order
+  expiry handling. This is not part of the CLOB V2 EIP-712 signed order struct.
 </ResponseField>
 
 <ResponseField name="tickSize" type="TickSize">
@@ -202,7 +212,22 @@ async createOrder(
 </ResponseField>
 
 <ResponseField name="expiration" type="string">
-  The expiration timestamp as a string.
+  The expiration timestamp included in the order payload. This is not part of
+  the CLOB V2 EIP-712 signed order struct.
+</ResponseField>
+
+<ResponseField name="timestamp" type="string">
+  Order creation timestamp in milliseconds, used for order uniqueness in CLOB
+  V2.
+</ResponseField>
+
+<ResponseField name="metadata" type="string">
+  Reserved `bytes32` metadata field.
+</ResponseField>
+
+<ResponseField name="builder" type="string">
+  Builder code (`bytes32`) for attribution, or zero if no builder code is
+  attached.
 </ResponseField>
 
 <ResponseField name="signatureType" type="number">
@@ -275,7 +300,22 @@ async createMarketOrder(
 </ResponseField>
 
 <ResponseField name="expiration" type="string">
-  The expiration timestamp as a string.
+  The expiration timestamp included in the order payload. This is not part of
+  the CLOB V2 EIP-712 signed order struct.
+</ResponseField>
+
+<ResponseField name="timestamp" type="string">
+  Order creation timestamp in milliseconds, used for order uniqueness in CLOB
+  V2.
+</ResponseField>
+
+<ResponseField name="metadata" type="string">
+  Reserved `bytes32` metadata field.
+</ResponseField>
+
+<ResponseField name="builder" type="string">
+  Builder code (`bytes32`) for attribution, or zero if no builder code is
+  attached.
 </ResponseField>
 
 <ResponseField name="signatureType" type="number">

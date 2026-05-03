@@ -48,44 +48,45 @@ GET https://polymarket.com/api/geoblock
 
 ## Blocked Countries
 
-The following countries are restricted from placing orders on Polymarket. Countries marked as **close-only** can close existing positions but cannot open new ones:
+The following countries are restricted from placing orders on Polymarket. Countries marked as **close-only** can close existing positions but cannot open new ones. Countries marked as **frontend UI restricted** are blocked only on the Polymarket frontend; the API itself is not restricted:
 
-| Country Code | Country Name                         | Status     |
-| ------------ | ------------------------------------ | ---------- |
-| AU           | Australia                            | Blocked    |
-| BE           | Belgium                              | Blocked    |
-| BY           | Belarus                              | Blocked    |
-| BI           | Burundi                              | Blocked    |
-| CF           | Central African Republic             | Blocked    |
-| CD           | Congo (Kinshasa)                     | Blocked    |
-| CU           | Cuba                                 | Blocked    |
-| DE           | Germany                              | Blocked    |
-| ET           | Ethiopia                             | Blocked    |
-| FR           | France                               | Blocked    |
-| GB           | United Kingdom                       | Blocked    |
-| IR           | Iran                                 | Blocked    |
-| IQ           | Iraq                                 | Blocked    |
-| IT           | Italy                                | Blocked    |
-| KP           | North Korea                          | Blocked    |
-| LB           | Lebanon                              | Blocked    |
-| LY           | Libya                                | Blocked    |
-| MM           | Myanmar                              | Blocked    |
-| NI           | Nicaragua                            | Blocked    |
-| NL           | Netherlands                          | Blocked    |
-| PL           | Poland                               | Close-only |
-| RU           | Russia                               | Blocked    |
-| SG           | Singapore                            | Close-only |
-| SO           | Somalia                              | Blocked    |
-| SS           | South Sudan                          | Blocked    |
-| SD           | Sudan                                | Blocked    |
-| SY           | Syria                                | Blocked    |
-| TH           | Thailand                             | Close-only |
-| TW           | Taiwan                               | Close-only |
-| UM           | United States Minor Outlying Islands | Blocked    |
-| US           | United States                        | Blocked    |
-| VE           | Venezuela                            | Blocked    |
-| YE           | Yemen                                | Blocked    |
-| ZW           | Zimbabwe                             | Blocked    |
+| Country Code | Country Name                         | Status                 |
+| ------------ | ------------------------------------ | ---------------------- |
+| AU           | Australia                            | Blocked                |
+| BE           | Belgium                              | Blocked                |
+| BY           | Belarus                              | Blocked                |
+| BI           | Burundi                              | Blocked                |
+| CF           | Central African Republic             | Blocked                |
+| CD           | Congo (Kinshasa)                     | Blocked                |
+| CU           | Cuba                                 | Blocked                |
+| DE           | Germany                              | Blocked                |
+| ET           | Ethiopia                             | Blocked                |
+| FR           | France                               | Blocked                |
+| GB           | United Kingdom                       | Blocked                |
+| IR           | Iran                                 | Blocked                |
+| IQ           | Iraq                                 | Blocked                |
+| IT           | Italy                                | Blocked                |
+| JP           | Japan                                | Frontend UI restricted |
+| KP           | North Korea                          | Blocked                |
+| LB           | Lebanon                              | Blocked                |
+| LY           | Libya                                | Blocked                |
+| MM           | Myanmar                              | Blocked                |
+| NI           | Nicaragua                            | Blocked                |
+| NL           | Netherlands                          | Blocked                |
+| PL           | Poland                               | Close-only             |
+| RU           | Russia                               | Blocked                |
+| SG           | Singapore                            | Close-only             |
+| SO           | Somalia                              | Blocked                |
+| SS           | South Sudan                          | Blocked                |
+| SD           | Sudan                                | Blocked                |
+| SY           | Syria                                | Blocked                |
+| TH           | Thailand                             | Close-only             |
+| TW           | Taiwan                               | Close-only             |
+| UM           | United States Minor Outlying Islands | Blocked                |
+| US           | United States                        | Blocked                |
+| VE           | Venezuela                            | Blocked                |
+| YE           | Yemen                                | Blocked                |
+| ZW           | Zimbabwe                             | Blocked                |
 
 ***
 
@@ -166,9 +167,9 @@ The geoblocking system includes:
 
   <Tab title="Rust">
     ```rust theme={null}
-    use polymarket_client_sdk::clob::Client;
+    use polymarket_client_sdk_v2::clob::{Client, Config};
 
-    let client = Client::default();
+    let client = Client::new("https://clob.polymarket.com", Config::default())?;
     let geo = client.check_geoblock().await?;
 
     if geo.blocked {

@@ -27,11 +27,11 @@ Public methods require the client to initialize with the host URL and Polygon ch
 
   <Tab title="Python">
     ```python theme={null}
-    from py_clob_client.client import ClobClient
+    from py_clob_client_v2 import ClobClient
 
     client = ClobClient(
         host="https://clob.polymarket.com",
-        chain=137
+        chain_id=137
     )
 
     # Ready to call public methods
