@@ -12,7 +12,7 @@ Polymarket provides official open-source clients in TypeScript, Python, and Rust
 
 <CodeGroup>
   ```bash TypeScript theme={null}
-  npm install @polymarket/clob-client-v2 ethers@5
+  npm install @polymarket/clob-client-v2 viem
   ```
 
   ```bash Python theme={null}
@@ -20,7 +20,7 @@ Polymarket provides official open-source clients in TypeScript, Python, and Rust
   ```
 
   ```bash Rust theme={null}
-  cargo add polymarket-client-sdk
+  cargo add polymarket_client_sdk_v2 --features clob
   ```
 </CodeGroup>
 
@@ -41,12 +41,12 @@ Polymarket provides official open-source clients in TypeScript, Python, and Rust
   ```
 
   ```python Python theme={null}
-  from py_clob_client.client import ClobClient
+  from py_clob_client_v2 import ClobClient
 
   client = ClobClient(
       "https://clob.polymarket.com",
       key=private_key,
-      chain=137,
+      chain_id=137,
       creds=api_creds,
   )
 
@@ -54,7 +54,7 @@ Polymarket provides official open-source clients in TypeScript, Python, and Rust
   ```
 
   ```rust Rust theme={null}
-  use polymarket_client_sdk::clob::{Client, Config};
+  use polymarket_client_sdk_v2::clob::{Client, Config};
 
   let client = Client::new("https://clob.polymarket.com", Config::default())?
       .authentication_builder(&signer)
@@ -71,7 +71,7 @@ Polymarket provides official open-source clients in TypeScript, Python, and Rust
 | ---------- | ---------------------------- | ------------------------------------------------------------------------------------------ |
 | TypeScript | `@polymarket/clob-client-v2` | [github.com/Polymarket/clob-client-v2](https://github.com/Polymarket/clob-client-v2)       |
 | Python     | `py-clob-client-v2`          | [github.com/Polymarket/py-clob-client-v2](https://github.com/Polymarket/py-clob-client-v2) |
-| Rust       | `polymarket-client-sdk`      | [github.com/Polymarket/rs-clob-client-v2](https://github.com/Polymarket/rs-clob-client-v2) |
+| Rust       | `polymarket_client_sdk_v2`   | [github.com/Polymarket/rs-clob-client-v2](https://github.com/Polymarket/rs-clob-client-v2) |
 
 Each repository includes working examples in the `/examples` directory.
 

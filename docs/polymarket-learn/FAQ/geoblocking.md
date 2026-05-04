@@ -167,9 +167,9 @@ The geoblocking system includes:
 
   <Tab title="Rust">
     ```rust theme={null}
-    use polymarket_client_sdk::clob::Client;
+    use polymarket_client_sdk_v2::clob::{Client, Config};
 
-    let client = Client::default();
+    let client = Client::new("https://clob.polymarket.com", Config::default())?;
     let geo = client.check_geoblock().await?;
 
     if geo.blocked {
