@@ -169,14 +169,15 @@ Get up and running with the Polymarket API in minutes — fetch market data and 
 
     <Note>
       This example uses an EOA wallet (signature type `0`) — your wallet pays its
-      own gas. Proxy wallet users (types `1` and `2`) can use Polymarket's gasless
-      relayer instead. See [Authentication](/api-reference/authentication) for
-      details on signature types.
+      own gas. New API users should use deposit wallets with signature type `3`.
+      Existing Proxy and Safe users can keep using signature types `1` and `2`. See
+      [Authentication](/api-reference/authentication) for details on signature
+      types.
     </Note>
 
     <Warning>
-      Before trading, your funder address needs **pUSD** (for buying outcome
-      tokens) and **POL** (for gas, if using EOA type `0`).
+      Before trading, your funder address needs **pUSD** (for buying outcome tokens)
+      and **POL** (for gas, if using EOA type `0`).
     </Warning>
   </Step>
 

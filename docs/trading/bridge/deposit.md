@@ -81,10 +81,9 @@ Each asset has a minimum deposit amount. Deposits below the minimum will not be 
 
 ## Deposit Recovery
 
-If you deposited the wrong token on Ethereum or Polygon, use these tools to recover your funds:
+If you deposited the wrong token, use this tool to recover your funds:
 
-* **Ethereum deposits**: [recovery.polymarket.com](https://recovery.polymarket.com/)
-* **Polygon deposits**: [matic-recovery.polymarket.com](https://matic-recovery.polymarket.com/)
+[recovery.polymarket.com](https://recovery.polymarket.com/)
 
 <Warning>
   Sending unsupported tokens may cause **irrecoverable loss**. Always verify
