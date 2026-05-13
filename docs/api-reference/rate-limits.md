@@ -1,7 +1,6 @@
 > ## Documentation Index
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
-
 # Rate Limits
 
 > API rate limits for all Polymarket endpoints
@@ -9,7 +8,6 @@
 All API rate limits are enforced using Cloudflare's throttling system. When you exceed the limit for any endpoint, requests are throttled (delayed/queued) rather than immediately rejected. Limits reset on sliding time windows.
 
 ***
-
 ## General
 
 | Endpoint              | Limit            |
@@ -95,12 +93,12 @@ Trading endpoints have both **burst** limits (short spikes allowed) and **sustai
 
 | Endpoint                       | Burst Limit     | Sustained Limit     |
 | ------------------------------ | --------------- | ------------------- |
-| `POST /order`                  | 3,500 req / 10s | 36,000 req / 10 min |
-| `DELETE /order`                | 3,000 req / 10s | 30,000 req / 10 min |
-| `POST /orders`                 | 1,000 req / 10s | 15,000 req / 10 min |
+| `POST /order`                  | 5,000 req / 10s | 48,000 req / 10 min |
+| `DELETE /order`                | 5,000 req / 10s | 48,000 req / 10 min |
+| `POST /orders`                 | 1,500 req / 10s | 21,000 req / 10 min |
 | `DELETE /orders`               | 1,000 req / 10s | 15,000 req / 10 min |
 | `DELETE /cancel-all`           | 250 req / 10s   | 6,000 req / 10 min  |
-| `DELETE /cancel-market-orders` | 1,000 req / 10s | 1,500 req / 10 min  |
+| `DELETE /cancel-market-orders` | 1,500 req / 10s | 21,000 req / 10 min |
 
 ***
 

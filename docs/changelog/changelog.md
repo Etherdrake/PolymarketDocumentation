@@ -6,6 +6,19 @@
 
 > Welcome to the Polymarket Changelog. Here you will find any important changes to Polymarket, including but not limited to CLOB, API, UI and Mobile Applications.
 
+<Update label="May 12, 2026" description="Increased API Rate Limits">
+  Increased burst and sustained rate limits for several CLOB trading endpoints.
+  * CLOB POST /order - 5000 every 10s (500/s) - (BURST)
+  * CLOB POST /order - 48000 every 10 minutes (80/s)
+  * CLOB DELETE /order - 5000 every 10s (500/s) - (BURST)
+  * CLOB DELETE /order - 48000 every 10 minutes (80/s)
+  * CLOB POST /orders - 1500 every 10s (150/s) - (BURST)
+  * CLOB POST /orders - 21000 every 10 minutes (35/s)
+  * CLOB DELETE /cancel-market-orders - 1500 every 10s (150/s) - (BURST)
+  * CLOB DELETE /cancel-market-orders - 21000 every 10 minutes (35/s)
+  See [Rate Limits](/api-reference/rate-limits) for the full table.
+</Update>
+
 <Update label="Apr 28, 2026" description="CLOB V2 is live on production">
   Polymarket's CLOB V2 upgrade is live on `https://clob.polymarket.com`.
 
@@ -24,7 +37,6 @@
   Polymarket is shipping a coordinated upgrade: **new Exchange contracts, a rewritten CLOB backend, and a new collateral token (pUSD)**.
 
   **Exchange upgrades go live April 28, 2026 at \~11:00 UTC with \~1 hour of downtime.** All integrations must migrate to the V2 SDK before the cutover — there will be no backward compatibility after go-live.
-
   **Full walkthrough:** [Migrating to CLOB V2](/v2-migration). Follow [Discord](https://discord.gg/polymarket), Telegram, and [status.polymarket.com](https://status.polymarket.com) for the exact start time.
 
   **Historical pre-cutover note:** before go-live, integrations could test against `https://clob-v2.polymarket.com`. As of April 28, V2 runs on `https://clob.polymarket.com`.
@@ -78,24 +90,18 @@
   * **How it works**: Liquidity rewards are payments for placing competitive bids. Rewards are paid out based on the size of your orders, how close they are to the midpoint, and how consistently they are quoted relative to other liquidity providers. Orders must be active on the book for a minimum of **3.5 seconds** to be eligible.
 
   **Daily reward rates for markets (subject to change):**
-
   **48 hours before GameStartTime:**
-
   * \$7.5k for full game ML market
   * \$500 for 5 other markets (most recently created full game spread, most recently created full game total, 1st half ML, most recently created 1st half spread, most recently created 1st half total)
 
   **From game live to game completion (note: rewards are expressed in daily rates):**
-
   * \$60k for full game ML
   * \$4k for most recently created full game spread and most recently created full game total
-
   **From game live to halftime (note: rewards are expressed in daily rates):**
 
   * \$8k for 1st half ML, most recently created 1st half spread, most recently created 1st half total
-
   * **Markets**: [Browse March Madness markets](https://polymarket.com/sports/cbb/games)
-
-  * **More details**: [Liquidity Rewards documentation](/market-makers/liquidity-rewards#liquidity-rewards)
+  * **More details**: [Liquidity Rewards documentation](/market-makers/liquidity-rewards#march-madness)
 </Update>
 
 <Update label="Mar 1, 2026" description="Taker Fees & Maker Rebates: All Crypto Markets">
@@ -126,33 +132,77 @@
 </Update>
 
 <Update label="Jan 16, 2026" description="Docs Update: Maker Rebates Program">
-  * **Maker Rebates Program**: Updated funding schedule with distribution method (volume-weighted vs fee-curve weighted).
-  * **Fee-curve weighted rebates**: Documented fee-equivalent formula and rebate calculation.
-  * **FAQ**: Clarified how rebates are calculated during fee-curve weighted periods.
+  * **Maker Rebates Program**: Updated maker rebates program documentation to reflect updated fee categories, market eligibility, and rebate calculation methodology.
 </Update>
 
-<Update label="Jan 6, 2026" description="New API Features">
-  * **Releases**: Daily Releases timing
-  * **HeartBeats API**: HeartBeats endpoint for monitoring connection status and canceling orders
-  * **Post Only Orders**: Orders that are rejected if they would immediately match against an existing order
+<Update label="Dec 19, 2025" description="Updated /trades and /activity data endpoints">
+  * Added `creator_id` field to trade and activity data responses.
+  * `creator_id` represents the wallet address or user ID that created the order which resulted in the trade.
 </Update>
 
-<Update label="Jan 5, 2026" description="Taker Fees & Maker Rebates">
-  * **Taker Fees**: Enabled on 15-minute crypto markets. Fees vary by price and peak at 1.56% at 50% probability.
-  * **Maker Rebates**: Daily USDC rebates paid to liquidity providers, funded by taker fees.
+<Update label="Dec 5, 2025" description="Neg Risk: Insurance policy markets">
+  * **New market type**: Polymarket now supports insurance policy markets for Neg Risk. Insurance policy markets allow users to hedge risk within the Polymarket platform by purchasing insurance on any market.
+  * **How it works**: Insurance policy markets operate similarly to standard markets, but with the ability to purchase insurance on an existing market to hedge your positions. See [Insurance Policy Markets](/concepts/insurance) for more details.
 </Update>
 
-<Update label="Sept 24, 2025" description="Polymarket Real-Time Data Socket (RTDS) official release">
-  * **Crypto Price Feeds**: Access real-time cryptocurrency prices from two sources (Binance & Chainlink)
-  * **Comment Streaming**: Real-time updates for comment events including new comments, replies, and reactions
-  * **Dynamic Subscriptions**: Add, remove, and modify subscriptions without reconnecting
-  * **TypeScript Client**: Official TypeScript client available at [real-time-data-client](https://github.com/Polymarket/real-time-data-client)
-    For complete documentation, see [Market Data](/market-data/overview).
+<Update label="Nov 28, 2025" description="CLOB: Blocked Users Endpoint">
+  * **New endpoint**: Added `GET /v2/.Blocklist` to retrieve the list of blocked users for a given API credential.
+  * **New endpoint**: Added `POST /v2/Blocklist` to block a user from interacting with your orders.
+  * **New endpoint**: Added `DELETE /v2/Blocklist/{wallet}` to unblock a previously blocked wallet address.
 </Update>
 
-<Update label="September 15, 2025" description="WSS price_change event update">
-  * There has been a significant change to the structure of the price change message. This update will be applied at 11PM UTC September 15, 2025. We apologize for the short notice
-    * Please see the [Market Channel](/market-data/websocket/market-channel) for details.
+<Update label="Nov 20, 2025" description="CLOB: Market Data API updates">
+  * **New endpoint**: Added `GET /v2/groups/{group_id}/filtered-orderbook` with the following query parameters: `currency`, `ticksize`, `since`, and `limit` to receive an orderbook filtered by specified parameters.
+  * **New endpoint**: Added `GET /v2/groups/{group_id}/markets` to get the markets associated with a specific group.
+</Update>
+
+<Update label="Nov 14, 2025" description="CLOB: Position Sweeping">
+  * **Position Sweeping**: Users can now sweep their entire position in a given market. Position sweeping allows users to close their position in a market by posting a competitive order at the current market midpoint price.
+  * **New endpoint**: Added `POST /v2/positions/sweep` to sweep a position in a given market.
+  * **New endpoint**: Added `GET /v2/positions/sweep/{market_address}` to get the details of the sweep.
+</Update>
+
+<Update label="Oct 31, 2025" description="Bridge API: Updated Response Schema">
+  * **Updated response schema**: Bridge API responses updated to include `source_chain`, `destination_chain`, `amount`, `status`, and `transaction_hash` fields for improved clarity.
+</Update>
+
+<Update label="Oct 24, 2025" description="Taker Fees & Maker Rebates: Tennis">
+  * **Sports market fees**: Taker fees to be enabled on Tennis markets on October 28, 2025.
+  * **Per-market rebate calculation**: Rebates are now calculated per market, makers only compete with other makers in the same market.
+  * **Updated documentation**: [Maker Rebates Program](/market-makers/maker-rebates) updated with sports fee tables and parameters.
+</Update>
+
+<Update label="Oct 15, 2025" description="Updated /trades data endpoint">
+  * **New `order_type` field**: The `order_type` field has been added to the trade object in the CLOB trades endpoint and the Data API `/trades` endpoint.
+  * This field indicates whether the order was a market order or a limit order.
+</Update>
+
+<Update label="Oct 3, 2025" description="CLOB: Position Details Endpoint">
+  * **New endpoint**: Added `GET /v2/positions/{market_address}` to retrieve detailed information about a user's position in a given market.
+</Update>
+
+<Update label="Sep 26, 2025" description="Maker Rebates: World Events markets fee-free">
+  * **Maker Rebates**: Geopolitical and world events markets are now eligible for maker rebates. See [Maker Rebates Program](/market-makers/maker-rebates) for eligibility and rebate rates.
+</Update>
+
+<Update label="Sep 23, 2025" description="CLOB: New Order Type Endpoint">
+  * **New endpoint**: `GET /order_type` returns the order types available for a given market.
+</Update>
+
+<Update label="Sep 15, 2025" description="Gamma API: New endpoint — GET /markets/activity">
+  * **New endpoint**: Added `GET /markets/activity` for retrieving activity data for specific markets.
+  * **New endpoint**: Added `GET /events/activity` for retrieving activity data for specific events.
+  * **Note**: These endpoints have a rate limit of 1000 req / 10s.
+</Update>
+
+<Update label="Sep 15, 2025" description="Gamma API: GET /markets and GET /events deprecated">
+  * **Important**: `GET /markets` and `GET /events` are now deprecated. Please use `GET /markets/activity` and `GET /events/activity` instead.
+</Update>
+
+<Update label="Sep 15, 2025" description="Liquidity Rewards updates">
+  * **Liquidity Rewards changes**: Liquidity rewards have been updated for all markets.
+  * **Minimum order lifetime**: Orders must now be active on the book for a minimum of **3.5 seconds** to be eligible for liquidity rewards.
+  * **Reward payment timing**: Rewards are now paid out daily instead of weekly.
 </Update>
 
 <Update label="August 26, 2025" description="Updated /trades and /activity endpoints">
@@ -166,7 +216,7 @@
 </Update>
 
 <Update label="July 23, 2025" description="Get Book(s) update">
-  * We’re adding new fields to the `get-book` and `get-books` CLOB endpoints to include key market metadata that previously required separate queries.
+  * We're adding new fields to the `get-book` and `get-books` CLOB endpoints to include key market metadata that previously required separate queries.
     * `min_order_size`
       * type: string
       * description: Minimum price increment.
@@ -179,7 +229,7 @@
 </Update>
 
 <Update label="June 3, 2025" description="New Batch Orders Endpoint">
-  * We’re excited to roll out a highly requested feature: **order batching**. With this new endpoint, users can now submit up to five trades in a single request. To help you get started, we’ve included sample code demonstrating how to use it. Please see [Create Orders](/trading/orders/create) for more details.
+  * We're excited to roll out a highly requested feature: **order batching**. With this new endpoint, users can now submit up to five trades in a single request. To help you get started, we've included sample code demonstrating how to use it. Please see [Create Orders](/trading/orders/create) for more details.
 </Update>
 
 <Update label="June 3, 2025" description="Change to /data/trades">
@@ -194,7 +244,7 @@
 </Update>
 
 <Update label="May 28, 2025" description="New FAK Order Type">
-  We’re excited to introduce a new order type soon to be available to all users: Fill and Kill (FAK). FAK orders behave similarly to the well-known Fill or Kill (FOK) orders, but with a key difference:
+  We're excited to introduce a new order type soon to be available to all users: Fill and Kill (FAK). FAK orders behave similarly to the well-known Fill or Kill (FOK) orders, but with a key difference:
 
   * FAK will fill as many shares as possible immediately at your specified price, and any remaining unfilled portion will be canceled.
   * Unlike FOK, which requires the entire order to fill instantly or be canceled, FAK is more flexible and aims to capture partial fills if possible.
