@@ -1,6 +1,7 @@
 > ## Documentation Index
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
+
 # Rate Limits
 
 > API rate limits for all Polymarket endpoints
@@ -8,6 +9,7 @@
 All API rate limits are enforced using Cloudflare's throttling system. When you exceed the limit for any endpoint, requests are throttled (delayed/queued) rather than immediately rejected. Limits reset on sliding time windows.
 
 ***
+
 ## General
 
 | Endpoint              | Limit            |

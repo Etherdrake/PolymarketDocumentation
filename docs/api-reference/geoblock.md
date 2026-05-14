@@ -117,6 +117,13 @@ The geoblocking system includes:
 * **Primary Servers**: eu-west-2
 * **Closest Non-Georestricted Region**: eu-west-1
 
+<Tip>
+  **Direct co-location available.** Users who complete the [KYC/KYB
+  form](https://forms.gle/Qy39FtiizodXbdLNA) can get access to co-locate
+  directly in `eu-west-2` for the lowest possible latency to Polymarket's
+  primary servers.
+</Tip>
+
 ***
 
 ## Usage Examples

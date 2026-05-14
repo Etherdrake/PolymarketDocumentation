@@ -214,6 +214,24 @@ If you're using the REST API directly (without the SDK), you need to attach auth
 
 ***
 
+## Server Infrastructure
+
+The CLOB matching engine runs in the following regions:
+
+* **Primary Servers**: eu-west-2
+* **Closest Non-Georestricted Region**: eu-west-1
+
+<Tip>
+  **Direct co-location available.** Users who complete the [KYC/KYB
+  form](https://forms.gle/Qy39FtiizodXbdLNA) can get access to co-locate
+  directly in `eu-west-2` for the lowest possible latency to Polymarket's
+  primary servers. See [Geographic
+  Restrictions](/api-reference/geoblock#server-infrastructure) for full
+  geographic availability details.
+</Tip>
+
+***
+
 ## What Is in This Section
 
 <CardGroup cols={2}>

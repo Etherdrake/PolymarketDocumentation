@@ -12,7 +12,7 @@ Requires readonly or level 2 API key authentication.
 
 ## OpenAPI
 
-````yaml /api-spec/clob-openapi.yaml get /trades
+````yaml /api-spec/clob-openapi.yaml get /data/trades
 openapi: 3.1.0
 info:
   title: Polymarket CLOB API
@@ -41,7 +41,7 @@ tags:
   - name: Rebates
     description: Maker rebate endpoints
 paths:
-  /trades:
+  /data/trades:
     get:
       tags:
         - Trade

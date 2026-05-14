@@ -8,6 +8,13 @@
 
 The Sports WebSocket provides real-time sports results updates, including scores, periods, and game status. No authentication required.
 
+<Warning>
+  This feed is provided for informational purposes only. It may be delayed,
+  contain errors, or omit recent events. Polymarket does not provide trading or
+  investment advice, and this content should not be used as the basis for any
+  trading decision.
+</Warning>
+
 ## Endpoint
 
 ```

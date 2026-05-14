@@ -12,7 +12,7 @@ Builder-authenticated clients can also use this endpoint to retrieve orders attr
 
 ## OpenAPI
 
-````yaml /api-spec/clob-openapi.yaml get /order/{orderID}
+````yaml /api-spec/clob-openapi.yaml get /data/order/{orderID}
 openapi: 3.1.0
 info:
   title: Polymarket CLOB API
@@ -41,7 +41,7 @@ tags:
   - name: Rebates
     description: Maker rebate endpoints
 paths:
-  /order/{orderID}:
+  /data/order/{orderID}:
     get:
       tags:
         - Trade
