@@ -93,6 +93,12 @@ components:
         builder:
           type: string
           description: The builder name or identifier
+        builderCode:
+          type: string
+          description: >-
+            The builder's onchain attribution code as attached to orders via
+            `builderCode` (see CLOB V2). Empty string for legacy builders
+            without a registered code.
         volume:
           type: number
           description: Total trading volume attributed to this builder

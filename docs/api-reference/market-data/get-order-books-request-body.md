@@ -175,6 +175,12 @@ components:
         error:
           type: string
           description: Error message
+        code:
+          type: string
+          description: Machine-readable error code, when provided
+        retry_after_seconds:
+          type: integer
+          description: Number of seconds to wait before retrying, when provided
     OrderSummary:
       type: object
       required:

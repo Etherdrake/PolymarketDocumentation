@@ -104,6 +104,16 @@ Trading endpoints have both **burst** limits (short spikes allowed) and **sustai
 
 ***
 
+## Bridge API
+
+Base URL: `https://bridge.polymarket.com`
+
+| Endpoint | Limit        |
+| -------- | ------------ |
+| General  | 50 req / 10s |
+
+***
+
 ## Other
 
 | Endpoint          | Limit          |
