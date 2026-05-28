@@ -97,25 +97,25 @@ components:
       properties:
         address:
           type: object
-          description: Deposit addresses for different blockchain networks
+          description: Bridge addresses for different blockchain networks
           properties:
             evm:
               type: string
               description: >-
-                EVM-compatible deposit address (Ethereum, Polygon, Arbitrum,
+                EVM-compatible bridge address (Ethereum, Polygon, Arbitrum,
                 Base, etc.)
               example: '0x23566f8b2E82aDfCf01846E54899d110e97AC053'
             svm:
               type: string
-              description: Solana Virtual Machine deposit address
+              description: Solana Virtual Machine bridge address
               example: CrvTBvzryYxBHbWu2TiQpcqD5M7Le7iBKzVmEj3f36Jb
             btc:
               type: string
-              description: Bitcoin deposit address
+              description: Bitcoin bridge address
               example: bc1q8eau83qffxcj8ht4hsjdza3lha9r3egfqysj3g
         note:
           type: string
-          description: Additional information about the deposit addresses
+          description: Additional information about the bridge addresses
           example: >-
             Only certain chains and tokens are supported. See /supported-assets
             for details.

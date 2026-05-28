@@ -53,7 +53,7 @@ Most L2 chains (Polygon, Arbitrum, Base, Optimism) have low minimums of $2, whil
 
 <CardGroup cols={2}>
   <Card title="Create Deposit" icon="arrow-right-to-bracket" href="/trading/bridge/deposit">
-    Generate deposit addresses for your wallet.
+    Generate bridge addresses for your wallet.
   </Card>
 
   <Card title="Check Status" icon="clock" href="/trading/bridge/status">

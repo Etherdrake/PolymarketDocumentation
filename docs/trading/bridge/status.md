@@ -6,18 +6,18 @@
 
 > Track the progress of your bridge deposits
 
-After sending assets to your deposit address, use the status endpoint to track progress until funds arrive in your Polymarket wallet.
+After sending assets to your bridge address, use the status endpoint to track progress until funds arrive in your Polymarket wallet.
 
 ## Check Status
 
-Query the status of all deposits to a specific deposit address.
+Query the status of all deposits to a specific bridge address.
 
 ```bash theme={null}
 curl https://bridge.polymarket.com/status/0x23566f8b2E82aDfCf01846E54899d110e97AC053
 ```
 
 <Note>
-  Use the deposit address from the `/deposit` response (EVM, SVM, or BTC), not
+  Use the bridge address from the `/deposit` response (EVM, SVM, or BTC), not
   your Polymarket wallet address.
 </Note>
 
@@ -93,7 +93,7 @@ An empty `transactions` array means no deposits have been detected at this addre
 
 <CardGroup cols={2}>
   <Card title="Create Deposit" icon="arrow-right-to-bracket" href="/trading/bridge/deposit">
-    Generate deposit addresses for your wallet.
+    Generate bridge addresses for your wallet.
   </Card>
 
   <Card title="Supported Assets" icon="coins" href="/trading/bridge/supported-assets">

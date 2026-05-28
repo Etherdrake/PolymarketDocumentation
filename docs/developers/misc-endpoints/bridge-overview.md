@@ -10,14 +10,14 @@ Polymarket uses **pUSD** (Polymarket USD) on Polygon as collateral for all tradi
 
 ## How It Works
 
-1. Request deposit addresses for your Polymarket wallet
+1. Request bridge addresses for your Polymarket wallet
 2. Send assets to the appropriate address for your source chain
 3. Assets are bridged and swapped to pUSD automatically
 4. pUSD is credited to your wallet for trading
 
-## Create Deposit Addresses
+## Create Bridge Addresses
 
-Generate unique deposit addresses linked to your Polymarket wallet. See the [Bridge API Reference](/api-reference/introduction) for full request and response schemas.
+Generate unique bridge addresses linked to your Polymarket wallet. See the [Bridge API Reference](/api-reference/introduction) for full request and response schemas.
 
 ```bash theme={null}
 curl -X POST https://bridge.polymarket.com/deposit \
@@ -42,8 +42,8 @@ curl -X POST https://bridge.polymarket.com/deposit \
 ## Deposit Flow
 
 <Steps>
-  <Step title="Get Your Deposit Address">
-    Call `POST /deposit` with your Polymarket wallet address to get deposit
+  <Step title="Get Your Bridge Address">
+    Call `POST /deposit` with your Polymarket wallet address to get bridge
     addresses.
   </Step>
 
@@ -53,7 +53,7 @@ curl -X POST https://bridge.polymarket.com/deposit \
   </Step>
 
   <Step title="Send Assets">
-    Transfer tokens to the appropriate deposit address from your source chain.
+    Transfer tokens to the appropriate bridge address from your source chain.
   </Step>
 
   <Step title="Track Status">
@@ -73,7 +73,7 @@ For deposits over \$50,000 originating from a chain other than Polygon, we recom
 * [Across](https://app.across.to/bridge)
 * [Portal](https://portalbridge.com/)
 
-Bridge directly to your Polymarket USDC (Polygon) deposit address. Polymarket is not affiliated with or responsible for any third-party bridge.
+Bridge directly to your Polymarket USDC (Polygon) bridge address. Polymarket is not affiliated with or responsible for any third-party bridge.
 
 ## Minimum Deposits
 
