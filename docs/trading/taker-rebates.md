@@ -7,7 +7,7 @@
 > Climb the tiers and earn daily pUSD rebates as you trade
 
 <Note>
-  The Taker Rebate Program goes live on **Thursday, May 29, 2026**.
+  The Taker Rebate Program goes live on **Thursday, May 28, 2026**.
 </Note>
 
 Polymarket Tiers reward you for trading as a **taker**. The more taker volume you do, the higher your tier, the bigger the rebate you earn back on every trade you make from that point on. Every **taker** trade earns **Weighted Volume (wV)**. Your tier is based on your Weighted Volume over the last 30 days, and rebates are paid every day in pUSD.
