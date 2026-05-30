@@ -129,6 +129,7 @@ https://docs.polymarket.com/developers/CLOB/trades/trades.md
 ## Websocket
 https://docs.polymarket.com/market-data/websocket/overview.md
 https://docs.polymarket.com/market-data/websocket/market-channel.md
+https://docs.polymarket.com/market-data/websocket/user-channel.md
 https://docs.polymarket.com/developers/CLOB/websocket/wss-overview.md
 https://docs.polymarket.com/quickstart/websocket/WSS-Quickstart.md
 https://docs.polymarket.com/developers/CLOB/websocket/wss-auth.md
@@ -185,6 +186,8 @@ https://docs.polymarket.com/api-reference/markets/list-markets-keyset-pagination
 https://docs.polymarket.com/api-reference/markets/get-market-by-id.md
 https://docs.polymarket.com/api-reference/markets/get-market-tags-by-id.md
 https://docs.polymarket.com/api-reference/markets/get-market-by-slug.md
+https://docs.polymarket.com/api-reference/markets/get-clob-market-info.md
+https://docs.polymarket.com/api-reference/markets/get-market-by-token.md
 https://docs.polymarket.com/api-reference/markets/get-prices-history.md
 https://docs.polymarket.com/api-reference/markets/get-batch-prices-history.md
 https://docs.polymarket.com/api-reference/markets/get-sampling-markets.md
@@ -239,6 +242,7 @@ https://docs.polymarket.com/api-reference/bridge/get-a-quote.md
 https://docs.polymarket.com/api-reference/bridge/create-deposit-addresses.md
 https://docs.polymarket.com/api-reference/bridge/create-withdrawal-addresses.md
 https://docs.polymarket.com/api-reference/bridge/get-transaction-status.md
+https://docs.polymarket.com/api-reference/bridge/create-bridge-addresses.md
 https://docs.polymarket.com/trading/bridge/deposit.md
 https://docs.polymarket.com/trading/bridge/quote.md
 https://docs.polymarket.com/trading/bridge/status.md
@@ -328,6 +332,7 @@ https://docs.polymarket.com/concepts/order-lifecycle.md
 https://docs.polymarket.com/concepts/positions-tokens.md
 https://docs.polymarket.com/concepts/prices-orderbook.md
 https://docs.polymarket.com/concepts/resolution.md
+https://docs.polymarket.com/concepts/pusd.md
 
 ## Trading
 https://docs.polymarket.com/trading/fees.md
@@ -337,11 +342,14 @@ https://docs.polymarket.com/trading/clients/public.md
 https://docs.polymarket.com/trading/clients/l1.md
 https://docs.polymarket.com/trading/clients/l2.md
 https://docs.polymarket.com/trading/clients/builder.md
+https://docs.polymarket.com/trading/deposit-wallets.md
+https://docs.polymarket.com/trading/taker-rebates.md
 
 ## Index & Resources
 https://docs.polymarket.com/index.md
 https://docs.polymarket.com/resources/contract-addresses.md
 https://docs.polymarket.com/resources/error-codes.md
+https://docs.polymarket.com/resources/contracts.md
 
 ## NEW - API Reference - Rebates (2026-03-27)
 https://docs.polymarket.com/api-reference/rebates/get-current-rebated-fees-for-a-maker.md
@@ -349,6 +357,7 @@ https://docs.polymarket.com/api-reference/rebates/get-current-rebated-fees-for-a
 ## NEW - API Reference - Relayer
 https://docs.polymarket.com/api-reference/relayer-api-keys/get-all-relayer-api-keys.md
 https://docs.polymarket.com/api-reference/relayer/check-if-a-safe-is-deployed.md
+https://docs.polymarket.com/api-reference/relayer/check-if-a-wallet-is-deployed.md
 https://docs.polymarket.com/api-reference/relayer/get-a-transaction-by-id.md
 https://docs.polymarket.com/api-reference/relayer/get-current-nonce-for-a-user.md
 https://docs.polymarket.com/api-reference/relayer/get-recent-transactions-for-a-user.md
@@ -370,3 +379,11 @@ https://docs.polymarket.com/resources/referral-program.md
 
 ## NEW - Trading
 https://docs.polymarket.com/trading/matching-engine.md
+
+## Dev Tooling
+https://docs.polymarket.com/dev-tooling.md
+https://docs.polymarket.com/dev-tooling/python.md
+https://docs.polymarket.com/dev-tooling/typescript.md
+
+## NEW - Builders
+https://docs.polymarket.com/builders/fees.md
