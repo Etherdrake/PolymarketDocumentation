@@ -387,3 +387,15 @@ https://docs.polymarket.com/dev-tooling/typescript.md
 
 ## NEW - Builders
 https://docs.polymarket.com/builders/fees.md
+
+## NEW - API Reference - Combo Markets (2026-06-17)
+https://docs.polymarket.com/api-reference/combo-markets/get-combo-markets.md
+
+## NEW - API Reference - Core (Combo) (2026-06-17)
+https://docs.polymarket.com/api-reference/core/get-user-combo-activity.md
+https://docs.polymarket.com/api-reference/core/get-user-combo-positions.md
+
+## NEW - API Reference - Maker (RFQ) (2026-06-17)
+https://docs.polymarket.com/api-reference/maker/cancel-a-quote.md
+https://docs.polymarket.com/api-reference/maker/confirm-or-decline-last-look.md
+https://docs.polymarket.com/api-reference/maker/submit-a-quote.md
