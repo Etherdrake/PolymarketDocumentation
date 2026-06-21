@@ -7,7 +7,7 @@ https://docs.polymarket.com/quickstart.md
 https://docs.polymarket.com/quickstart/overview.md
 https://docs.polymarket.com/quickstart/fetching-data.md
 https://docs.polymarket.com/quickstart/first-order.md
-https://docs.polymarket.com/quickstart/reference/glossary.md
+
 https://docs.polymarket.com/quickstart/introduction/rate-limits.md
 https://docs.polymarket.com/quickstart/reference/endpoints.md
 
@@ -18,6 +18,7 @@ https://docs.polymarket.com/market-makers/trading.md
 https://docs.polymarket.com/market-makers/liquidity-rewards.md
 https://docs.polymarket.com/market-makers/maker-rebates.md
 https://docs.polymarket.com/market-makers/inventory.md
+https://docs.polymarket.com/market-makers/combos.md
 https://docs.polymarket.com/developers/market-makers/introduction.md
 https://docs.polymarket.com/developers/market-makers/setup.md
 https://docs.polymarket.com/developers/market-makers/data-feeds.md
@@ -78,18 +79,10 @@ https://docs.polymarket.com/api-reference/market-data/get-tick-size-by-path-para
 https://docs.polymarket.com/api-reference/data/get-server-time.md
 
 ## API Reference - Orderbook
-https://docs.polymarket.com/api-reference/orderbook/get-order-book-summary.md
-https://docs.polymarket.com/api-reference/orderbook/get-multiple-order-books-summaries-by-request.md
 
-## API Reference - Pricing (Legacy)
-https://docs.polymarket.com/api-reference/pricing/get-market-price.md
-https://docs.polymarket.com/api-reference/pricing/get-multiple-market-prices.md
-https://docs.polymarket.com/api-reference/pricing/get-multiple-market-prices-by-request.md
-https://docs.polymarket.com/api-reference/pricing/get-midpoint-price.md
-https://docs.polymarket.com/api-reference/pricing/get-price-history-for-a-traded-token.md
 
-## API Reference - Spreads
-https://docs.polymarket.com/api-reference/spreads/get-bid-ask-spreads.md
+## API Reference - WSS RFQ
+https://docs.polymarket.com/api-reference/wss/rfq.md
 
 ## API Reference - Trade (CLOB)
 https://docs.polymarket.com/api-reference/trade/post-a-new-order.md
@@ -157,7 +150,6 @@ https://docs.polymarket.com/developers/gamma-markets-api/gamma-structure.md
 https://docs.polymarket.com/developers/gamma-markets-api/fetch-markets-guide.md
 
 ## Gamma Endpoints - Status
-https://docs.polymarket.com/api-reference/gamma-status/gamma-api-health-check.md
 
 ## API Reference - Sports
 https://docs.polymarket.com/api-reference/sports/list-teams.md
@@ -210,7 +202,6 @@ https://docs.polymarket.com/api-reference/profiles/get-public-profile-by-wallet-
 https://docs.polymarket.com/api-reference/search/search-markets-events-and-profiles.md
 
 ## API Reference - Data API Status
-https://docs.polymarket.com/api-reference/data-api-status/data-api-health-check.md
 
 ## API Reference - Misc
 https://docs.polymarket.com/api-reference/misc/download-an-accounting-snapshot-zip-of-csvs.md
@@ -233,13 +224,13 @@ https://docs.polymarket.com/api-reference/builders/get-aggregated-builder-leader
 https://docs.polymarket.com/api-reference/builders/get-daily-builder-volume-time-series.md
 
 ## Bridge & Swap - Overview
-https://docs.polymarket.com/trading/bridge/overview.md
+
 https://docs.polymarket.com/developers/misc-endpoints/bridge-overview.md
 
 ## API Reference - Bridge
 https://docs.polymarket.com/api-reference/bridge/get-supported-assets.md
 https://docs.polymarket.com/api-reference/bridge/get-a-quote.md
-https://docs.polymarket.com/api-reference/bridge/create-deposit-addresses.md
+
 https://docs.polymarket.com/api-reference/bridge/create-withdrawal-addresses.md
 https://docs.polymarket.com/api-reference/bridge/get-transaction-status.md
 https://docs.polymarket.com/api-reference/bridge/create-bridge-addresses.md
@@ -250,8 +241,7 @@ https://docs.polymarket.com/trading/bridge/supported-assets.md
 https://docs.polymarket.com/trading/bridge/withdraw.md
 
 ## Subgraph
-https://docs.polymarket.com/market-data/subgraph.md
-https://docs.polymarket.com/developers/subgraph/overview.md
+
 
 ## Resolution
 https://docs.polymarket.com/developers/resolution/UMA.md
