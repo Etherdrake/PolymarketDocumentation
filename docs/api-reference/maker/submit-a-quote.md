@@ -1,9 +1,14 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Submit a quote
 
 > Submit a signed maker quote for an active RFQ. Requires CLOB L2
 authentication for the maker role.
 
 REST does not assign a quote ID — generate `quote_id` client-side.
+
 
 
 
@@ -147,9 +152,9 @@ components:
           example: '450000'
         size_e6:
           type: string
-          description: >-
+          description: >
             Fillable share count in six-decimal fixed-point units (must be
-            positive.
+            positive).
 
             Note this differs from the request's size field, which may be
             notional or shares.

@@ -89,6 +89,7 @@ paths:
                 - REWARD
                 - CONVERSION
                 - MAKER_REBATE
+                - TAKER_REBATE
                 - REFERRAL_REWARD
         - in: query
           name: start
@@ -183,6 +184,7 @@ components:
             - REWARD
             - CONVERSION
             - MAKER_REBATE
+            - TAKER_REBATE
             - REFERRAL_REWARD
         size:
           type: number

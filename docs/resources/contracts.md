@@ -21,6 +21,25 @@ All Polymarket contracts are deployed on **Polygon mainnet** (Chain ID: 137). Th
 
 ***
 
+## Combos Contracts
+
+| Contract                    | Address                                                                                                                    |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| PositionManager (proxy)     | [`0x006F54F7f9A22e0000CC2AB60031000000ae9fEF`](https://polygonscan.com/address/0x006F54F7f9A22e0000CC2AB60031000000ae9fEF) |
+| PositionManager (impl)      | [`0x30c038F0Dae8dcC3E6AD51D016F50821D32Cb87e`](https://polygonscan.com/address/0x30c038F0Dae8dcC3E6AD51D016F50821D32Cb87e) |
+| BinaryModule (proxy)        | [`0x1000008dD9001B968442c1000017eaE6E0dA00Ba`](https://polygonscan.com/address/0x1000008dD9001B968442c1000017eaE6E0dA00Ba) |
+| BinaryModule (impl)         | [`0x492FEc596eC347459E1Ebe30b9245EB3B49B1BBa`](https://polygonscan.com/address/0x492FEc596eC347459E1Ebe30b9245EB3B49B1BBa) |
+| NegRiskModule (proxy)       | [`0x200000900045e3B6259600682756002200028933`](https://polygonscan.com/address/0x200000900045e3B6259600682756002200028933) |
+| NegRiskModule (impl)        | [`0xA61e7ca374F721D5b9FD5b0FEe6Fb90f27d448d7`](https://polygonscan.com/address/0xA61e7ca374F721D5b9FD5b0FEe6Fb90f27d448d7) |
+| CombinatorialModule (proxy) | [`0x30000034706C7d8e12009DAB006Be20000c031A8`](https://polygonscan.com/address/0x30000034706C7d8e12009DAB006Be20000c031A8) |
+| CombinatorialModule (impl)  | [`0xb529b2430d78868422C47934d9d61cC9D0C53dBb`](https://polygonscan.com/address/0xb529b2430d78868422C47934d9d61cC9D0C53dBb) |
+| Exchange (proxy)            | [`0xe3333700cA9d93003F00f0F71f8515005F6c00Aa`](https://polygonscan.com/address/0xe3333700cA9d93003F00f0F71f8515005F6c00Aa) |
+| Exchange (impl)             | [`0x7345C6842b244926125ed4054905cAc49620B5dc`](https://polygonscan.com/address/0x7345C6842b244926125ed4054905cAc49620B5dc) |
+| AutoRedeemer (proxy)        | [`0xa1200000d0002264C9a1698e001292D00E1b00af`](https://polygonscan.com/address/0xa1200000d0002264C9a1698e001292D00E1b00af) |
+| AutoRedeemer (impl)         | [`0x64860bFD14fCcaAc09cd36f347784a9616AfB66C`](https://polygonscan.com/address/0x64860bFD14fCcaAc09cd36f347784a9616AfB66C) |
+
+***
+
 ## Collateral Contracts
 
 | Contract                       | Address                                                                                                                    |

@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Get user combo positions
 
 > Combinatorial (multi-market) positions held by a user, with per-leg breakdown. Also available at /v1/data/user/{address}/positions/combos (address from the path).

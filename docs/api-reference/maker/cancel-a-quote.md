@@ -1,8 +1,13 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Cancel a quote
 
 > Cancel an active maker quote before it is selected. Requires CLOB L2
 authentication for the maker role. `signer_address` and `maker_address`
 must match the authenticated identity.
+
 
 
 
@@ -307,7 +312,7 @@ components:
             - shares
         value_e6:
           type: string
-          description: Six-decimal fixed-point value encoded as a String.
+          description: Six-decimal fixed-point value encoded as a string.
           example: '1000000'
       required:
         - unit

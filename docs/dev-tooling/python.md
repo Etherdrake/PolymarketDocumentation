@@ -1033,7 +1033,7 @@ Secure clients read account-scoped data for the authenticated wallet by default.
                     ...
                 case _:
                     # SPLIT / MERGE / REDEEM / CONVERSION / MAKER_REBATE
-                    # / REFERRAL_REWARD / YIELD
+                    # / TAKER_REBATE / REFERRAL_REWARD / YIELD
                     ...
     ```
   </Tab>
@@ -1101,6 +1101,16 @@ Secure clients expose the API credentials created for the authenticated session.
 </Tabs>
 
 ## Changelog
+
+### `0.1.0b8`
+
+* Added `parent_event_id` to `Event` so child events can link back to their parent event.
+* Added `max_price` and `min_price` protection fields to market order requests.
+* Handle legacy multi-outcome market listings more safely by omitting markets that cannot be represented by the binary market model.
+* Normalize empty-string trade and position market icons to `None`.
+* Parse Combo trade activity rows correctly.
+* Support new Combos RFQ error codes for balance, allowance, and pre-execution reservation failures.
+* Broad user websocket subscriptions now omit market filters so all-market streams receive trade events.
 
 ### `0.1.0b7`
 

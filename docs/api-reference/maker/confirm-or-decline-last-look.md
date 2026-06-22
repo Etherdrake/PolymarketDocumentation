@@ -1,8 +1,13 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Confirm or decline last look
 
 > Respond to a last-look confirmation request for a selected quote. Requires
 CLOB L2 authentication for the maker role. `decision` must be `CONFIRM` or
 `DECLINE`.
+
 
 
 
@@ -136,7 +141,7 @@ components:
         - decision
     MakerConfirmationResult:
       type: object
-      description: >-
+      description: >
         Result of a maker confirmation. Includes a snapshot, an execution
         handoff,
 
@@ -227,6 +232,7 @@ components:
         - quote_id
         - bundle
         - requester_acceptance
+        - maker_quotes
     ErrorResponse:
       type: object
       properties:
@@ -391,9 +397,9 @@ components:
           example: '450000'
         size_e6:
           type: string
-          description: >-
+          description: >
             Fillable share count in six-decimal fixed-point units (must be
-            positive.
+            positive).
 
             Note this differs from the request's size field, which may be
             notional or shares.
