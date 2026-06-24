@@ -1103,6 +1103,11 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0-beta.8`
+
+* RFQ quoter sessions now emit typed `trade` events for confirmed Combos fills.
+* RFQ rejection errors now expose `errorId` values and parse `INVALID_SIGNATURE` and `INTERNAL_ERROR` codes.
+
 ### `0.1.0-beta.7`
 
 * Added `parentEventId` to `Event` so child events can link back to their parent event.
