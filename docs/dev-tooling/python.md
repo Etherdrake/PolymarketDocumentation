@@ -1102,6 +1102,10 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0b10`
+
+* Preserve `group_item_title` on market responses so grouped market titles remain available after normalization.
+
 ### `0.1.0b9`
 
 * RFQ quoter sessions now emit typed `RfqTradeEvent` events for confirmed Combos fills.

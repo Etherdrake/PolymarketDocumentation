@@ -88,6 +88,9 @@ paths:
                 - REDEEM
                 - REWARD
                 - CONVERSION
+                - DEPOSIT
+                - WITHDRAWAL
+                - YIELD
                 - MAKER_REBATE
                 - TAKER_REBATE
                 - REFERRAL_REWARD
@@ -96,6 +99,10 @@ paths:
           schema:
             type: integer
             minimum: 0
+          description: >-
+            Lower-bound timestamp (epoch seconds) for the activity window. Omit
+            or pass `0` for the default window (most recent ~3 years); pass a
+            positive epoch (e.g. `1`) to retrieve full history.
         - in: query
           name: end
           schema:
@@ -183,6 +190,9 @@ components:
             - REDEEM
             - REWARD
             - CONVERSION
+            - DEPOSIT
+            - WITHDRAWAL
+            - YIELD
             - MAKER_REBATE
             - TAKER_REBATE
             - REFERRAL_REWARD

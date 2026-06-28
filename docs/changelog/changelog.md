@@ -6,6 +6,10 @@
 
 > Welcome to the Polymarket Changelog. Here you will find any important changes to Polymarket, including but not limited to CLOB, API, UI and Mobile Applications.
 
+<Update label="Jun 25, 2026" description="Bridge API: optional X-Builder-Code header">
+  * **New optional header**: `POST /deposit` and `POST /withdraw` now accept an `X-Builder-Code` header (bytes32 hex) for builder attribution. Without it, requests still succeed but return a `missing_builder_code` warning; a malformed code returns `400`. See [Deposit](/trading/bridge/deposit) and [Withdraw](/trading/bridge/withdraw).
+</Update>
+
 <Update label="Jun 15, 2026" description="CLOB DELETE /orders maximum batch size reduced to 1000">
   * **`DELETE /orders` limit**: The maximum number of order IDs per cancel request is now `1000`. Split larger cancellation batches across multiple requests.
 </Update>

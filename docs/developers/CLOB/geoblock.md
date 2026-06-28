@@ -56,6 +56,7 @@ The following countries are restricted from placing orders on Polymarket. Countr
 | BE           | Belgium                              | Blocked                |
 | BY           | Belarus                              | Blocked                |
 | BI           | Burundi                              | Blocked                |
+| BR           | Brazil                               | Blocked                |
 | CF           | Central African Republic             | Blocked                |
 | CD           | Congo (Kinshasa)                     | Blocked                |
 | CU           | Cuba                                 | Blocked                |

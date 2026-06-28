@@ -172,6 +172,11 @@ Your tier shows on your Polymarket profile and on the leaderboards. As you climb
     table above. Geopolitical and world events markets are free to trade and
     earn no Weighted Volume.
   </Accordion>
+
+  <Accordion title="Are third-party integrations using omnibus wallets eligible">
+    No. Third-party integrations using omnibus wallets are not eligible for the
+    Taker Rebate Program.
+  </Accordion>
 </AccordionGroup>
 
 ***

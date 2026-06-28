@@ -85,6 +85,13 @@ A **builder** is a person, group, or organization that routes orders from users 
   </Step>
 </Steps>
 
+<Note>
+  Bridging user funds in or out via the Bridge API? Also pass your code via the
+  optional `X-Builder-Code` header on [`/deposit`](/trading/bridge/deposit) and
+  [`/withdraw`](/trading/bridge/withdraw) so bridge traffic is attributed to your
+  integration.
+</Note>
+
 ## SDKs and Libraries
 
 <CardGroup cols={2}>

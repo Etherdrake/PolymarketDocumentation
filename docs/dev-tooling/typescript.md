@@ -1103,6 +1103,10 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0-beta.9`
+
+* Added `PriceHistoryInterval` and `SearchSort` exports, preserved `groupItemTitle` on normalized markets, and published `expectPrivateKey` from `@polymarket/types`.
+
 ### `0.1.0-beta.8`
 
 * RFQ quoter sessions now emit typed `trade` events for confirmed Combos fills.

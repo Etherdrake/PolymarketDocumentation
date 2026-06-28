@@ -27,6 +27,8 @@ paths:
       tags:
         - Bridge
       summary: Create bridge addresses
+      parameters:
+        - $ref: '#/components/parameters/BuilderCodeHeader'
       requestBody:
         required: true
         content:
@@ -43,7 +45,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/DepositResponse'
         '400':
-          description: Bad Request - Invalid address or request body
+          description: >-
+            Bad Request - Invalid address, request body, or malformed
+            X-Builder-Code
           content:
             application/json:
               schema:
@@ -55,6 +59,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
+  parameters:
+    BuilderCodeHeader:
+      name: X-Builder-Code
+      in: header
+      required: false
+      description: >
+        Optional builder code (bytes32 hex) attributing this request to your
+        integration so transfer issues can be traced to your app. Omitting it
+        still succeeds but returns a `missing_builder_code` warning; a malformed
+        code returns 400. Get your code at
+        https://polymarket.com/settings?tab=builder
+      schema:
+        type: string
+        pattern: ^0x[a-fA-F0-9]{64}$
+        example: '0x00000000000000000000000000000000000000000000000000000000abcd1234'
   schemas:
     DepositRequest:
       type: object
