@@ -302,6 +302,10 @@ See [Cancel Orders](/trading/orders/cancel) for full details.
 
 Your order price must conform to the market's tick size, or it will be rejected. Look it up with the SDK before quoting:
 
+<Note>
+  World Cup *to advance*, *moneyline*, *spreads*, and *totals* markets are decimalized to a finer `0.0025` (0.25¢) tick size. This applies only to those markets, so always fetch the tick size rather than assuming a value.
+</Note>
+
 <CodeGroup>
   ```typescript TypeScript theme={null}
   const tickSize = await client.getTickSize(tokenID);

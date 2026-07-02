@@ -6,6 +6,10 @@
 
 > Welcome to the Polymarket Changelog. Here you will find any important changes to Polymarket, including but not limited to CLOB, API, UI and Mobile Applications.
 
+<Update label="Jul 2, 2026" description="World Cup markets decimalized to a 0.0025 (0.25¢) tick size">
+  * **Finer tick size for World Cup markets**: All World Cup *to advance*, *moneyline*, *spreads*, and *totals* markets are now decimalized to a **0.0025 (0.25¢)** tick size. This lets you execute at smaller ticks and tighter spreads for the most competitive prices. Applies only to those World Cup markets — see [Tick Sizes](/trading/orders/overview#tick-sizes).
+</Update>
+
 <Update label="Jun 25, 2026" description="Bridge API: optional X-Builder-Code header">
   * **New optional header**: `POST /deposit` and `POST /withdraw` now accept an `X-Builder-Code` header (bytes32 hex) for builder attribution. Without it, requests still succeed but return a `missing_builder_code` warning; a malformed code returns `400`. See [Deposit](/trading/bridge/deposit) and [Withdraw](/trading/bridge/withdraw).
 </Update>

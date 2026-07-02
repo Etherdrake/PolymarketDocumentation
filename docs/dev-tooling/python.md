@@ -1102,6 +1102,16 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0b12`
+
+* Support CLOB order tick sizes `0.005` and `0.0025`.
+
+### `0.1.0b11`
+
+* Preserve already-deployed legacy UUPS Deposit Wallets when secure clients resolve the default wallet, while new Deposit Wallet deployments use the beacon factory path.
+* Retry rejected JSON-RPC batches by splitting them into smaller batches.
+* Added typed Gamma search sort fields for search requests.
+
 ### `0.1.0b10`
 
 * Preserve `group_item_title` on market responses so grouped market titles remain available after normalization.

@@ -1103,6 +1103,11 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0-beta.11`
+
+* Support CLOB order tick sizes `0.005` and `0.0025`.
+* Pagination request cursors now infer the branded pagination cursor type.
+
 ### `0.1.0-beta.10`
 
 * Preserve already-deployed legacy UUPS Deposit Wallets when `createSecureClient` resolves the default wallet, while new Deposit Wallet deployments use the beacon factory path.

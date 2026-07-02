@@ -46,7 +46,7 @@ A simple market might be:
 This creates two outcome tokens:
 
 * **Yes token** - Redeemable for `$1` if Bitcoin reaches `$150k`
-* **No token** - Redeemable for `$1` if Bitcoin doesn't reach `$100k`
+* **No token** - Redeemable for `$1` if Bitcoin doesn't reach `$150k`
 
 ## Events
 
