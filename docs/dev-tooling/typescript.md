@@ -1103,6 +1103,10 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0-beta.12`
+
+* Require GTD limit order expirations to be at least 3 minutes in the future.
+
 ### `0.1.0-beta.11`
 
 * Support CLOB order tick sizes `0.005` and `0.0025`.

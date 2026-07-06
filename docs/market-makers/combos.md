@@ -636,9 +636,9 @@ RFQ system. Quoters should respond within the **400 ms** submission window.
 
         * `notional`: the target value of the request in collateral currency. For
           example, `"3"` means the user wants roughly 3 pUSD worth of the Combo, with the
-          resulting share size derived from the quote price.
+          resulting share size derived from the quote price. `notional` is always and only used by BUY requests.
         * `shares`: the target number of Combo outcome tokens. For example, `"10"` means
-          the user wants 10 shares, or 10,000,000 base units.
+          the user wants 10 shares, or 10,000,000 base units. `shares` is always and only used by SELL requests.
 
         In both cases, `value` is a normalized decimal string.
       </Step>
@@ -716,9 +716,10 @@ RFQ system. Quoters should respond within the **400 ms** submission window.
         * `RfqRequestedSizeUnit.NOTIONAL`: the target value of the request in collateral
           currency. For example, `Decimal("3")` means the user wants roughly 3 pUSD worth
           of the Combo, with the resulting share size derived from the quote price.
+          BUY RFQs will always use `NOTIONAL`.
         * `RfqRequestedSizeUnit.SHARES`: the target number of Combo outcome tokens. For
           example, `Decimal("10")` means the user wants 10 shares, or 10,000,000 base
-          units.
+          units. SELL RFQs will always use `SHARES`.
 
         In both cases, `value` is a `Decimal`.
       </Step>
@@ -765,7 +766,7 @@ RFQ system. Quoters should respond within the **400 ms** submission window.
             "condition_id": "<condition_id>",
             "yes_position_id": "<yes_position_id>",
             "no_position_id": "<no_position_id>",
-            "direction": "SELL",
+            "direction": "BUY",
             "side": "YES",
             "requested_size": {
               "unit": "notional",
@@ -795,9 +796,10 @@ RFQ system. Quoters should respond within the **400 ms** submission window.
           ```
         </CodeGroup>
 
-        A `notional` request specifies a target pUSD amount; the fillable share size is
-        derived from the quote price. A `shares` request specifies the exact number of
-        Combo outcome tokens requested.
+        A `BUY` request always uses `notional` sizing, which specifies a target pUSD
+        amount and derives the fillable share size from the quote price. A `SELL`
+        request always uses `shares` sizing, which specifies the exact number of Combo
+        outcome tokens requested to sell.
       </Step>
 
       <Step title="Build the Order">
