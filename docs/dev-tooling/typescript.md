@@ -1103,6 +1103,13 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0-beta.13`
+
+* Added `listMarketClarifications` for reading market clarification text with SDK-owned pagination and market, event, state, question, and transaction filters.
+* Fixed legacy Proxy wallet gasless execution and added live Safe and Proxy wallet coverage.
+* Resolve closed markets when preparing market position redemptions.
+* Gasless transaction handles now wait for relayer transactions to reach confirmed state before resolving.
+
 ### `0.1.0-beta.12`
 
 * Require GTD limit order expirations to be at least 3 minutes in the future.

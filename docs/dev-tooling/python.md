@@ -1102,6 +1102,18 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0b15`
+
+* Added support for Perps.
+
+### `0.1.0b14`
+
+* Added builder API key management for creating, fetching, and revoking builder API keys.
+* Added support for merging multiple positions in one request.
+* Added runnable Python SDK examples for common integration workflows.
+* Resolve closed markets when redeeming positions.
+* Gasless transaction handles now wait for relayer transactions to reach confirmed state before resolving.
+
 ### `0.1.0b13`
 
 * Require GTD limit order expirations to be at least 3 minutes in the future.

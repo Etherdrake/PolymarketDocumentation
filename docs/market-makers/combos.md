@@ -102,7 +102,8 @@ need a Polymarket account; create one at [polymarket.com](https://polymarket.com
 
         <Note>
           This page uses Viem for wallet signing. See the [TypeScript tooling
-          guide](/dev-tooling/typescript) for other wallet library integrations.
+          guide](/dev-tooling/typescript#wallet-integrations) for other wallet library
+          integrations.
         </Note>
       </Step>
 
@@ -126,7 +127,7 @@ need a Polymarket account; create one at [polymarket.com](https://polymarket.com
 
         The Relayer API key is necessary for setting up trading approvals in the next
         step. Create a [Relayer API key](https://polymarket.com/settings?tab=api-keys)
-        from Settings > API Keys.
+        from polymarket.com → Settings → API Keys.
       </Step>
 
       <Step title="Set Up Trading Approvals">
@@ -208,7 +209,7 @@ need a Polymarket account; create one at [polymarket.com](https://polymarket.com
 
         The Relayer API key is necessary for setting up trading approvals in the next
         step. Create a [Relayer API key](https://polymarket.com/settings?tab=api-keys)
-        from Settings > API Keys.
+        from polymarket.com → Settings → API Keys.
       </Step>
 
       <Step title="Set Up Trading Approvals">
