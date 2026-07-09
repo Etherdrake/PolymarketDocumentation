@@ -62,6 +62,7 @@ paths:
               - first_entry_desc
               - entry_cost_desc
               - resolved_at_desc
+              - updated_asc
             default: current_value_desc
         - in: query
           name: market_id
@@ -81,14 +82,43 @@ paths:
             type: integer
             default: 20
             minimum: 0
-            maximum: 100
+            maximum: 1000
         - in: query
           name: offset
           schema:
             type: integer
             default: 0
             minimum: 0
-            maximum: 10000
+            maximum: 100000
+        - in: query
+          name: updatedAfter
+          schema:
+            type: integer
+          description: >-
+            Incremental-sync watermark (epoch seconds, inclusive): only rows
+            whose updated_at is at or after this time. Positions mutate on
+            resolution and redemption, so this catches changes a creation-time
+            filter cannot. In sync mode
+            (updatedAfter/updatedBefore/sort=updated_asc) every live row is
+            returned regardless of balance, and the effective upper bound is
+            clamped ~90s behind now (commit-visibility safety lag) — very recent
+            rows appear on the next poll. Rows at the boundary may re-deliver:
+            upsert by (combo_condition_id, combo_position_id).
+        - in: query
+          name: updatedBefore
+          schema:
+            type: integer
+          description: >-
+            Optional upper bound (epoch seconds, inclusive) for updated_at;
+            clamped to the safety lag. Must be >= updatedAfter.
+        - in: query
+          name: cursor
+          schema:
+            type: string
+          description: >-
+            Opaque continuation token from a previous response's
+            pagination.next_cursor. When present it supersedes offset (which is
+            ignored). Invalid, tampered, or cross-endpoint tokens return 400.
       responses:
         '200':
           description: Success
@@ -193,6 +223,13 @@ components:
         resolved_at:
           type: string
           nullable: true
+        updated_at:
+          type: string
+          description: >-
+            Last-modified time (UTC, ISO 8601). Bumps on any recompute of the
+            row (trade, redemption, resolution classification) — the
+            incremental-sync watermark field. Omitted on responses served by the
+            legacy backend.
         legs_total:
           type: integer
         legs_resolved:
@@ -218,7 +255,12 @@ components:
         next_cursor:
           type: string
           nullable: true
-          description: Opaque cursor for the next page; null when has_more is false.
+          description: >-
+            Opaque signed cursor for the next page; null when has_more is false.
+            Pass it back verbatim as ?cursor= on the next request (keep the same
+            sort where the endpoint has one). Never parse or construct it. On
+            cursor-enabled endpoints this makes deep pagination O(page) and
+            stable against concurrent inserts.
     ComboLeg:
       type: object
       properties:

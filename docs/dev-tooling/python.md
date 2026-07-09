@@ -1102,6 +1102,10 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0b16`
+
+* Fixed Deposit Wallet trading setup approvals to use the current Protocol V2 auto-redeem operator.
+
 ### `0.1.0b15`
 
 * Added support for Perps.

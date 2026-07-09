@@ -271,6 +271,10 @@ These errors are returned when an order passes initial validation but fails duri
   `the market is not yet ready to process new orders`
 </ResponseField>
 
+<ResponseField name="500" type="Internal Server Error">
+  `order timed out` — The exchange could not process the order before the request deadline. This typically happens during bursts of concurrent order submissions from the same account. The order was rejected before reaching the order book and can be safely resubmitted.
+</ResponseField>
+
 ***
 
 ## Matching Engine Errors
