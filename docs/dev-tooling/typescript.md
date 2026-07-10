@@ -1103,6 +1103,24 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0-beta.14`
+
+* Added SDK pagination for Combo lifecycle activity and server-cursor pagination for Combo positions.
+* Added Combo position sync request fields and exposed `outcome` and `redeemable` on Combo positions.
+* Branded Combo activity row IDs.
+* Breaking beta change: Combo activity and position fields now use `wallet`, `amount`, and `payout`; Combo activity rows no longer expose `moduleKind`.
+
+```diff theme={null}
+-activity.userAddress
+-activity.amountUsdc
+-redeemActivity.payoutUsdc
+-position.userAddress
++activity.wallet
++activity.amount
++redeemActivity.payout
++position.wallet
+```
+
 ### `0.1.0-beta.13`
 
 * Added `listMarketClarifications` for reading market clarification text with SDK-owned pagination and market, event, state, question, and transaction filters.

@@ -108,6 +108,9 @@ paths:
           schema:
             type: integer
             minimum: 0
+          description: >-
+            Upper-bound timestamp (epoch seconds) for the activity window. Omit
+            for the default (current time); rows newer than `end` are excluded.
         - in: query
           name: sortBy
           schema:

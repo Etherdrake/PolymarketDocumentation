@@ -6,6 +6,12 @@
 
 > Welcome to the Polymarket Changelog. Here you will find any important changes to Polymarket, including but not limited to CLOB, API, UI and Mobile Applications.
 
+<Update label="Jul 10, 2026" description="Sports taker fee and maker rebate update">
+  * **Sports fee coefficient**: The sports taker fee rate increases from `0.03` to `0.05` at midnight UTC.
+  * **Sports maker rebate**: The sports maker rebate decreases from 25% to 15% of collected taker fees.
+  * **Updated documentation**: [Fees](/trading/fees) and [Maker Rebates Program](/market-makers/maker-rebates).
+</Update>
+
 <Update label="Jul 2, 2026" description="World Cup markets decimalized to a 0.0025 (0.25¢) tick size">
   * **Finer tick size for World Cup markets**: All World Cup *to advance*, *moneyline*, *spreads*, and *totals* markets are now decimalized to a **0.0025 (0.25¢)** tick size. This lets you execute at smaller ticks and tighter spreads for the most competitive prices. Applies only to those World Cup markets — see [Tick Sizes](/trading/orders/overview#tick-sizes).
 </Update>

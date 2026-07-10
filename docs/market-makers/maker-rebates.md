@@ -38,7 +38,7 @@ Maker Rebates are funded by taker fees collected in eligible markets. A percenta
 | Category        | Maker Rebate | Distribution Method |
 | --------------- | ------------ | ------------------- |
 | Crypto          | 20%          | Fee-curve weighted  |
-| Sports          | 25%          | Fee-curve weighted  |
+| Sports          | 15%          | Fee-curve weighted  |
 | Finance         | 25%          | Fee-curve weighted  |
 | Politics        | 25%          | Fee-curve weighted  |
 | Economics       | 25%          | Fee-curve weighted  |
@@ -72,7 +72,7 @@ Where **C** = number of shares traded and **p** = price of the shares. The fee p
 | Category        | Taker Fee Rate | Maker Fee Rate |
 | --------------- | -------------- | -------------- |
 | Crypto          | 0.07           | 0              |
-| Sports          | 0.03           | 0              |
+| Sports          | 0.05           | 0              |
 | Finance         | 0.04           | 0              |
 | Politics        | 0.04           | 0              |
 | Economics       | 0.05           | 0              |
@@ -99,7 +99,7 @@ Taker fees are calculated in pUSD and vary based on the share price. The fee amo
 
 <Frame>
   <div className="p-3 bg-white rounded-xl">
-    <iframe title="Fee Curves" aria-label="Line chart" id="datawrapper-chart-cY9H4" src="https://datawrapper.dwcdn.net/cY9H4/" scrolling="no" frameborder="0" width={700} style={{ width: "0", minWidth: "100% !important", border: "none" }} height="450" data-external="1" />
+    <iframe title="Fee Curves" aria-label="Line chart" id="datawrapper-chart-dJ74e" src="https://datawrapper.dwcdn.net/dJ74e/" scrolling="no" frameborder="0" width={700} style={{ width: "0", minWidth: "100% !important", border: "none" }} height="450" data-external="1" />
   </div>
 </Frame>
 

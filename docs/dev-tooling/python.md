@@ -1102,6 +1102,25 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0b17`
+
+* Added SDK pagination for Combo lifecycle activity and server-cursor pagination for Combo positions.
+* Added typed overloads for market, event, and tag lookups, mutually-exclusive lookup arguments, and `redeem_positions`.
+* Added trade time filters.
+* Hardened Combo pagination filters and branded Combo activity IDs.
+* Breaking beta change: Combo activity and position fields now use `wallet`, `amount`, and `payout`; Combo activity rows no longer expose `module_kind`.
+
+```diff theme={null}
+-activity.user_address
+-activity.amount_usdc
+-redeem_activity.payout_usdc
+-position.user_address
++activity.wallet
++activity.amount
++redeem_activity.payout
++position.wallet
+```
+
 ### `0.1.0b16`
 
 * Fixed Deposit Wallet trading setup approvals to use the current Protocol V2 auto-redeem operator.
