@@ -6,7 +6,13 @@
 
 > Welcome to the Polymarket Changelog. Here you will find any important changes to Polymarket, including but not limited to CLOB, API, UI and Mobile Applications.
 
-<Update label="Jul 10, 2026" description="Sports taker fee and maker rebate update">
+<Update label="Jul 14, 2026" description="Relayer: deprecating CLOB v1 Neg Risk Adapter">
+  * **Old adapter retired**: Relayer calls to the CLOB v1 Neg Risk Adapter (`0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296`) are being deprecated. CLOB v2 integrations should use the current Neg Risk Adapter at `0xadA2005600Dec949baf300f4C6120000bDB6eAab` for all pUSD-collateral actions.
+  * **Grace period for redeems**: Relayer redeems targeting the old adapter remain available until **Friday, July 17, 2026 at 00:00 UTC**. After that, relayer calls to the old address are fully retired.
+  * **Updated documentation**: See [Contracts](/resources/contracts).
+</Update>
+
+<Update label="Jul 10, 2026"> description="Sports taker fee and maker rebate update">
   * **Sports fee coefficient**: The sports taker fee rate increases from `0.03` to `0.05` at midnight UTC.
   * **Sports maker rebate**: The sports maker rebate decreases from 25% to 15% of collected taker fees.
   * **Updated documentation**: [Fees](/trading/fees) and [Maker Rebates Program](/market-makers/maker-rebates).
