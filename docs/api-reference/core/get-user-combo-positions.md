@@ -4,7 +4,7 @@
 
 # Get user combo positions
 
-> Combinatorial (multi-market) positions held by a user, with per-leg breakdown. Also available at /v1/data/user/{address}/positions/combos (address from the path).
+> Combinatorial (multi-market) positions held by a user, with per-leg breakdown. Also available at /v1/data/user/{address}/positions/combos (address from the path). Open positions with shares_balance below 0.001 are omitted (dust floor — e.g. sub-0.001 remainders left by "sell all" cashouts); resolved positions are served regardless of balance.
 
 
 
@@ -37,7 +37,9 @@ paths:
       description: >-
         Combinatorial (multi-market) positions held by a user, with per-leg
         breakdown. Also available at /v1/data/user/{address}/positions/combos
-        (address from the path).
+        (address from the path). Open positions with shares_balance below 0.001
+        are omitted (dust floor — e.g. sub-0.001 remainders left by "sell all"
+        cashouts); resolved positions are served regardless of balance.
       parameters:
         - in: query
           name: user
@@ -46,13 +48,24 @@ paths:
             $ref: '#/components/schemas/Address'
         - in: query
           name: status
+          style: form
+          explode: false
           schema:
-            type: string
-            enum:
-              - OPEN
-              - PARTIAL
-              - RESOLVED_WIN
-              - RESOLVED_LOSS
+            type: array
+            items:
+              type: string
+              enum:
+                - OPEN
+                - PARTIAL
+                - RESOLVED_PARTIAL
+                - RESOLVED_WIN
+                - RESOLVED_LOSS
+          description: >-
+            One or more statuses, comma-separated (e.g.
+            status=RESOLVED_WIN,RESOLVED_PARTIAL,RESOLVED_LOSS). Values are
+            case-insensitive; any invalid member is a 400. Omit for the default
+            listing (open positions plus resolved positions with a recorded
+            resolution).
         - in: query
           name: sort
           schema:
@@ -210,13 +223,31 @@ components:
             Original cost basis = entry_avg_price × (shares_balance +
             realized_payout). Survives redemption burning the shares; equals
             entry_cost_usdc while OPEN.
+        gross_entry_cost_usdc:
+          type: string
+          description: >-
+            Exact gross entry basis including attributed BUY fees, as a
+            six-decimal precision-preserving string (e.g. "8999.997488") — parse
+            it as a decimal, never through a float. Tracks the remaining basis
+            while the position is live and freezes once it is terminal. Exact
+            net basis = gross_entry_cost_usdc − entry_fees_usdc.
+        entry_fees_usdc:
+          type: string
+          description: >-
+            BUY-fee portion of the same basis, as a six-decimal
+            precision-preserving string. SELL fees are excluded; always ≤
+            gross_entry_cost_usdc.
         status:
           type: string
           enum:
             - OPEN
             - PARTIAL
+            - RESOLVED_PARTIAL
             - RESOLVED_WIN
             - RESOLVED_LOSS
+          description: >-
+            RESOLVED_PARTIAL = the combo resolved at a fractional payout (e.g. a
+            leg voided 50/50) — redemption pays the fractional value per share.
         first_entry_at:
           type: string
           description: RFC3339 UTC
@@ -277,13 +308,27 @@ components:
           type: string
         leg_status:
           type: string
-          description: Placeholder (OPEN) until leg-resolution integration ships.
+          enum:
+            - OPEN
+            - RESOLVED_PARTIAL
+            - RESOLVED_WIN
+            - RESOLVED_LOSS
+          description: >-
+            Live per-leg resolution state, derived from the leg market's
+            on-chain payout vector. Markets resolved with a fractional payout
+            (e.g. a 50/50 void) surface as RESOLVED_PARTIAL with leg_resolved_at
+            set.
         leg_resolved_at:
           type: string
           nullable: true
+          description: >-
+            RFC3339 UTC. Set once the leg's market resolves on-chain, including
+            fractional resolutions that still report leg_status OPEN.
         leg_current_price:
           type: string
-          description: Placeholder ("0") until live-price integration ships.
+          description: >-
+            Live price for the leg outcome (decimal string, 0–1). "0" when no
+            price is available.
         market:
           $ref: '#/components/schemas/ComboMarket'
     ComboMarket:

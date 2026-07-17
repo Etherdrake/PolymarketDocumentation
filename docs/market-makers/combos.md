@@ -1883,6 +1883,13 @@ Use Combo position workflows to manage inventory throughout the quote lifecycle.
 List Combo positions as part of your background inventory sync. Keep this state
 fresh outside the quote path.
 
+<Note>
+  Default listings omit open positions with a share balance below 0.001, such
+  as dust left after a sell-all cashout. Resolved positions are always
+  returned, and incremental sync requests return every position regardless of
+  balance.
+</Note>
+
 <Tabs>
   <Tab title="TypeScript">
     Use `client.listComboPositions(...)` to page through Combo positions for the
@@ -2139,9 +2146,15 @@ fresh outside the quote path.
       ```
 
       ```bash Status theme={null}
+      # One status, or several comma-separated. Valid values: OPEN, PARTIAL,
+      # RESOLVED_PARTIAL, RESOLVED_WIN, RESOLVED_LOSS (case-insensitive).
       curl -G "https://data-api.polymarket.com/v1/positions/combos" \
         --data-urlencode "user=<maker_address>" \
         --data-urlencode "status=OPEN"
+
+      curl -G "https://data-api.polymarket.com/v1/positions/combos" \
+        --data-urlencode "user=<maker_address>" \
+        --data-urlencode "status=RESOLVED_WIN,RESOLVED_PARTIAL,RESOLVED_LOSS"
       ```
     </CodeGroup>
 
@@ -2159,6 +2172,8 @@ fresh outside the quote path.
           "shares_balance": "10",
           "entry_avg_price_usdc": "0.45",
           "entry_cost_usdc": "4.5",
+          "gross_entry_cost_usdc": "4.590000",
+          "entry_fees_usdc": "0.090000",
           "realized_payout_usdc": "0.00",
           "total_cost_usdc": "4.50",
           "status": "OPEN",
@@ -2190,6 +2205,13 @@ fresh outside the quote path.
       }
     }
     ```
+
+    `gross_entry_cost_usdc` and `entry_fees_usdc` carry the exact six-decimal entry
+    basis: gross includes attributed BUY fees (SELL fees are excluded), and the
+    exact net basis is `gross_entry_cost_usdc − entry_fees_usdc`. Parse both as
+    decimal strings — converting through a float loses the precision they exist to
+    preserve. The 2-decimal `entry_cost_usdc` / `total_cost_usdc` remain the
+    rounded display-basis fields.
 
     Use `cursor` from `pagination.next_cursor` to fetch the next page. Keep the same
     filters and `sort`; `cursor` supersedes `offset`. A `null` cursor means there
@@ -2572,9 +2594,7 @@ positions for current inventory state.
       "activity": [
         {
           "id": "<tx_hash>-<log_index>",
-          "event_kind": "PositionsSplit",
-          "side": "Split",
-          "module_kind": "Combinatorial",
+          "type": "SPLIT",
           "user_address": "<maker_address>",
           "combo_condition_id": "<combo_condition_id>",
           "combo_position_id": "<combo_position_id>",
@@ -3776,6 +3796,11 @@ In this section, we will talk you through how to handle errors with the RFQ syst
       if (!OpenRfqSessionError.isError(error)) throw error;
 
       switch (error.name) {
+        case "ConnectionLostError":
+          // error: ConnectionLostError
+          // error.code: WebSocketCloseCode
+          // error.reason: string
+          break;
         case "TransportError":
           // error: TransportError
           break;
@@ -3800,6 +3825,11 @@ In this section, we will talk you through how to handle errors with the RFQ syst
           // error: RfqQuoteRejectedError
           // error.rfqId: RfqId
           // error.code: RfqErrorCode | undefined
+          break;
+        case "ConnectionLostError":
+          // error: ConnectionLostError
+          // error.code: WebSocketCloseCode
+          // error.reason: string
           break;
         case "SigningError":
           // error: SigningError
@@ -3836,6 +3866,11 @@ In this section, we will talk you through how to handle errors with the RFQ syst
           // error.quoteId: RfqQuoteId
           // error.code: RfqErrorCode | undefined
           break;
+        case "ConnectionLostError":
+          // error: ConnectionLostError
+          // error.code: WebSocketCloseCode
+          // error.reason: string
+          break;
         case "TimeoutError":
           // error: TimeoutError
           break;
@@ -3868,6 +3903,11 @@ In this section, we will talk you through how to handle errors with the RFQ syst
           // error.quoteId: RfqQuoteId
           // error.code: RfqErrorCode | undefined
           break;
+        case "ConnectionLostError":
+          // error: ConnectionLostError
+          // error.code: WebSocketCloseCode
+          // error.reason: string
+          break;
         case "TimeoutError":
           // error: TimeoutError
           break;
@@ -3885,13 +3925,17 @@ In this section, we will talk you through how to handle errors with the RFQ syst
     Wrap `client.open_rfq_session()` in `try`/`except` and catch SDK exception types.
 
     ```python theme={null}
-    from polymarket import TimeoutError, TransportError
+    from polymarket import ConnectionLostError, TimeoutError, TransportError
 
 
     try:
         async with client.open_rfq_session() as session:
             async for event in session:
                 ...
+    except ConnectionLostError as error:
+        # error.code: int
+        # error.reason: str
+        ...
     except TimeoutError as error:
         # error: TimeoutError
         ...
@@ -3908,14 +3952,23 @@ In this section, we will talk you through how to handle errors with the RFQ syst
     ```python theme={null}
     from decimal import Decimal
 
-    from polymarket import RfqQuoteRejectedError, TimeoutError, TransportError
+    from polymarket import (
+        ConnectionLostError,
+        RfqQuoteRejectedError,
+        TimeoutError,
+        TransportError,
+    )
 
 
     try:
         reference = await event.quote(price=Decimal("0.45"))
     except RfqQuoteRejectedError as error:
         # error.rfq_id: RfqId
-        # error.code: RfqErrorCode | None
+        # error.code: RfqErrorCode | str | None
+        ...
+    except ConnectionLostError as error:
+        # error.code: int
+        # error.reason: str
         ...
     except TimeoutError as error:
         # error: TimeoutError
@@ -3931,7 +3984,12 @@ In this section, we will talk you through how to handle errors with the RFQ syst
     cancellation rejection, timeout, and transport errors.
 
     ```python theme={null}
-    from polymarket import RfqCancelQuoteRejectedError, TimeoutError, TransportError
+    from polymarket import (
+        ConnectionLostError,
+        RfqCancelQuoteRejectedError,
+        TimeoutError,
+        TransportError,
+    )
 
 
     try:
@@ -3939,7 +3997,11 @@ In this section, we will talk you through how to handle errors with the RFQ syst
     except RfqCancelQuoteRejectedError as error:
         # error.rfq_id: RfqId
         # error.quote_id: RfqQuoteId
-        # error.code: RfqErrorCode | None
+        # error.code: RfqErrorCode | str | None
+        ...
+    except ConnectionLostError as error:
+        # error.code: int
+        # error.reason: str
         ...
     except TimeoutError as error:
         # error: TimeoutError
@@ -3955,7 +4017,12 @@ In this section, we will talk you through how to handle errors with the RFQ syst
     RFQ confirmation rejection, timeout, and transport errors.
 
     ```python theme={null}
-    from polymarket import RfqConfirmationRejectedError, TimeoutError, TransportError
+    from polymarket import (
+        ConnectionLostError,
+        RfqConfirmationRejectedError,
+        TimeoutError,
+        TransportError,
+    )
 
 
     try:
@@ -3966,7 +4033,11 @@ In this section, we will talk you through how to handle errors with the RFQ syst
     except RfqConfirmationRejectedError as error:
         # error.rfq_id: RfqId
         # error.quote_id: RfqQuoteId
-        # error.code: RfqErrorCode | None
+        # error.code: RfqErrorCode | str | None
+        ...
+    except ConnectionLostError as error:
+        # error.code: int
+        # error.reason: str
         ...
     except TimeoutError as error:
         # error: TimeoutError
@@ -4030,9 +4101,11 @@ In this section, we will talk you through how to handle errors with the RFQ syst
     | `INVALID_CONFIRMATION`                     | Last Look confirmation payload is invalid                      |
     | `MAKER_NOT_REQUIRED`                       | This quote maker is not required for last-look confirmation    |
     | `MAKER_ALREADY_RESPONDED`                  | This quote maker already responded to the confirmation request |
+    | `MAKER_QUOTE_LIMITED`                      | Quote submissions from this maker are temporarily limited      |
     | `SERVICE_UNAVAILABLE`                      | RFQ service dependency is temporarily unavailable              |
 
-    Treat these errors as command-level failures. Keep the WebSocket session alive
-    unless the connection itself closes or authentication fails.
+    Treat these errors as command-level failures, including new codes introduced
+    after this list was written. Keep the WebSocket session alive unless the
+    connection itself closes or authentication fails.
   </Tab>
 </Tabs>

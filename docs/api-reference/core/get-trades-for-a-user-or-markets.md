@@ -40,6 +40,7 @@ paths:
             default: 100
             minimum: 0
             maximum: 10000
+          description: Page size. Values above the maximum are clamped to 10000.
         - in: query
           name: offset
           schema:
@@ -47,6 +48,11 @@ paths:
             default: 0
             minimum: 0
             maximum: 10000
+          description: >-
+            Starting index for pagination. Requests past the cap are rejected
+            with a 400 (never silently clamped). To read history deeper than
+            offset 10000, page inside `start`/`end` windows — each window has
+            its own offset budget.
         - in: query
           name: takerOnly
           schema:
@@ -106,7 +112,9 @@ paths:
           description: >-
             Lower-bound timestamp (epoch seconds) for the trade window. Omit or
             pass `0` for the default window (most recent ~3 years); pass a
-            positive epoch (e.g. `1`) to retrieve full history.
+            positive epoch (e.g. `1`) to retrieve full history on user-scoped
+            requests. Market/event-scoped requests keep the ~3-year floor —
+            `start` can only narrow their window, not extend it.
         - in: query
           name: end
           schema:

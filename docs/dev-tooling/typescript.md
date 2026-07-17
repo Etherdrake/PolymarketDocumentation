@@ -1103,6 +1103,29 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0-beta.17`
+
+* RFQ quoter sessions now keep running when the server introduces new error codes. `RfqErrorCode` is an open type: known codes are enumerated in `RfqKnownErrorCode`, and unrecognized codes flow through rejection errors as plain strings.
+* Deprecated the `RfqErrorCode` value alias; migrate enum member access:
+
+```diff theme={null}
+-if (error.code === RfqErrorCode.RateLimited) {
++if (error.code === RfqKnownErrorCode.RateLimited) {
+```
+
+* Added `ConnectionLostError` carrying the WebSocket close `code` and `reason`. Losing an RFQ session connection now rejects in-flight operations and fails the session iterator with it, instead of ending the event loop silently. Closing the session still ends iteration cleanly.
+* Streamed market and user events normalize empty-string optional decimal fields (for example a trade's `feeRateBps` or a price change's `bestBid` and `bestAsk`) to `null`.
+* Batch price reads (`fetchPrices`, `fetchMidpoints`, `fetchSpreads`) return `TokenId`-keyed records of branded decimal strings.
+* Perps sessions handle fills and trades frames that batch multiple entries.
+
+### `0.1.0-beta.16`
+
+* Added `RESOLVED_PARTIAL` to `ComboPositionStatus` so Combo positions that resolve at a fractional payout (for example a voided leg) parse correctly instead of failing validation.
+
+### `0.1.0-beta.15`
+
+* Combo activity now parses the canonical `type` field returned by the Data API, instead of deriving lifecycle actions from legacy fields.
+
 ### `0.1.0-beta.14`
 
 * Added SDK pagination for Combo lifecycle activity and server-cursor pagination for Combo positions.

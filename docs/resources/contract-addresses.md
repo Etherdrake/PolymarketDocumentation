@@ -12,12 +12,25 @@ All Polymarket contracts are deployed on **Polygon mainnet** (Chain ID: 137). Th
 
 ## Core Trading Contracts
 
-| Contract                 | Address                                                                                                                    |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| CTF Exchange             | [`0xE111180000d2663C0091e4f400237545B87B996B`](https://polygonscan.com/address/0xE111180000d2663C0091e4f400237545B87B996B) |
-| Neg Risk CTF Exchange    | [`0xe2222d279d744050d28e00520010520000310F59`](https://polygonscan.com/address/0xe2222d279d744050d28e00520010520000310F59) |
-| Neg Risk Adapter         | [`0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296`](https://polygonscan.com/address/0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296) |
-| Conditional Tokens (CTF) | [`0x4D97DCd97eC945f40cF65F87097ACe5EA0476045`](https://polygonscan.com/address/0x4D97DCd97eC945f40cF65F87097ACe5EA0476045) |
+| Contract                               | Address                                                                                                                    |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| CTF Exchange                           | [`0xE111180000d2663C0091e4f400237545B87B996B`](https://polygonscan.com/address/0xE111180000d2663C0091e4f400237545B87B996B) |
+| Neg Risk CTF Exchange                  | [`0xe2222d279d744050d28e00520010520000310F59`](https://polygonscan.com/address/0xe2222d279d744050d28e00520010520000310F59) |
+| Neg Risk Adapter (CLOB v1, deprecated) | [`0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296`](https://polygonscan.com/address/0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296) |
+| Conditional Tokens (CTF)               | [`0x4D97DCd97eC945f40cF65F87097ACe5EA0476045`](https://polygonscan.com/address/0x4D97DCd97eC945f40cF65F87097ACe5EA0476045) |
+
+<Warning>
+  **CLOB v1 Neg Risk Adapter is being retired.** Relayer calls to
+  [`0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296`](https://polygonscan.com/address/0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296)
+  are from CLOB v1 and should not be used on CLOB v2. All CLOB v2 neg risk
+  actions use pUSD collateral via
+  [`NegRiskCtfCollateralAdapter`](https://polygonscan.com/address/0xadA2005600Dec949baf300f4C6120000bDB6eAab)
+  at `0xadA2005600Dec949baf300f4C6120000bDB6eAab`.
+
+  Relayer redeems to the old adapter remain available until **Friday, July 17,
+  2026 at 00:00 UTC**, after which calls to that address are fully retired.
+  Migrate any flows that still depend on the old address.
+</Warning>
 
 ***
 

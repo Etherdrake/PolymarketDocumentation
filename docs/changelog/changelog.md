@@ -12,7 +12,7 @@
   * **Updated documentation**: See [Contracts](/resources/contracts).
 </Update>
 
-<Update label="Jul 10, 2026"> description="Sports taker fee and maker rebate update">
+<Update label="Jul 10, 2026" description="Sports taker fee and maker rebate update">
   * **Sports fee coefficient**: The sports taker fee rate increases from `0.03` to `0.05` at midnight UTC.
   * **Sports maker rebate**: The sports maker rebate decreases from 25% to 15% of collected taker fees.
   * **Updated documentation**: [Fees](/trading/fees) and [Maker Rebates Program](/market-makers/maker-rebates).
