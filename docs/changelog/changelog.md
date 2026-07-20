@@ -6,6 +6,12 @@
 
 > Welcome to the Polymarket Changelog. Here you will find any important changes to Polymarket, including but not limited to CLOB, API, UI and Mobile Applications.
 
+<Update label="Jul 17, 2026" description="Latency improvements and order response changes — Friday July 24, 04:00 UTC">
+  * **Rollout Friday, July 24 at 04:00 UTC**: An async commit pipeline cuts matching latency. `POST /order` and `POST /orders` will no longer return `transactionHashes` on successful FAK/FOK matches — you get `tradeIDs` instead. `tradeIDs` behavior is unchanged; websocket fills are unaffected.
+  * **SDK users**: Bump to the latest CLOB client (TypeScript, Python, Rust) before rollout — it resolves hashes from `tradeIDs` for you.
+  * **Custom REST integrations**: If you depend on inline `transactionHashes`, poll trades by `tradeID` until each has a hash or returns `FAILED`. See [TypeScript](https://github.com/Polymarket/clob-client-v2/pull/89), [Python](https://github.com/Polymarket/py-clob-client-v2/pull/101), and [Rust](https://github.com/Polymarket/rs-clob-client-v2/pull/83).
+</Update>
+
 <Update label="Jul 14, 2026" description="Relayer: deprecating CLOB v1 Neg Risk Adapter">
   * **Old adapter retired**: Relayer calls to the CLOB v1 Neg Risk Adapter (`0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296`) are being deprecated. CLOB v2 integrations should use the current Neg Risk Adapter at `0xadA2005600Dec949baf300f4C6120000bDB6eAab` for all pUSD-collateral actions.
   * **Grace period for redeems**: Relayer redeems targeting the old adapter remain available until **Friday, July 17, 2026 at 00:00 UTC**. After that, relayer calls to the old address are fully retired.
