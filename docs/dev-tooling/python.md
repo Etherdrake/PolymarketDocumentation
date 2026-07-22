@@ -1102,6 +1102,10 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0b21`
+
+* `setup_trading_approvals` no longer requests approvals for the retired CLOB v1 Neg Risk Adapter.
+
 ### `0.1.0b20`
 
 * RFQ quoter sessions now keep running when the server introduces new error codes: unrecognized codes are carried on rejection errors as plain strings, while known codes stay typed through the `RfqErrorCode` enum.
@@ -1192,12 +1196,12 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ### `0.1.0b6`
 
-* Added `list_combo_markets` for fetching the Combo market catalog with SDK pagination. See [Combos](/market-makers/combos).
+* Added `list_combo_markets` for fetching the Combo market catalog with SDK pagination. See [Combos](/trading/combos/overview).
 * Parse RFQ quote rejections that use the `SUBMISSION_WINDOW_CLOSED` gateway error code.
 
 ### `0.1.0b5`
 
-* Added Combos support for multi-leg RFQ positions. See [Combos](/market-makers/combos).
+* Added Combos support for multi-leg RFQ positions. See [Combos](/trading/combos/overview).
 * Added notebook-friendly model display for Jupyter workflows.
 * `ConditionId` is now deprecated in favor of `CtfConditionId`; existing
   `ConditionId` exports remain available as deprecated aliases.

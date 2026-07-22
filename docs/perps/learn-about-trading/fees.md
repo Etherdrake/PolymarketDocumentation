@@ -32,7 +32,7 @@ to a fill is set by the account's current volume tier.
 | \$1B            | 0.0200% | -0.0050% |
 
 New accounts start at the \$0 tier and move up as trailing 30-day volume crosses
-each threshold.
+each threshold. Fee tiers are re-evaluated every UTC day.
 
 A negative maker fee is a rebate: the maker receives the rebate amount, and the
 fee recipient's internal ledger is debited by the same amount.

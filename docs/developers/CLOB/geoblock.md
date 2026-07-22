@@ -113,9 +113,10 @@ Close-only on the Polymarket frontend; the API itself is not restricted.
 
 | Jurisdiction        | Code |
 | ------------------- | ---- |
+| Ireland             | IE   |
 | Japan               | JP   |
-| Netherlands         | NL   |
 | Malta (Sports Only) | MT   |
+| Netherlands         | NL   |
 
 ***
 

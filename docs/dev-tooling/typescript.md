@@ -1103,6 +1103,12 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ## Changelog
 
+### `0.1.0-beta.18`
+
+* `setupTradingApprovals` and `prepareTradingApprovals` no longer request approvals for the retired CLOB v1 Neg Risk Adapter.
+* Streams drop unknown or unreadable WebSocket frames instead of closing the connection. RFQ quoter sessions no longer fail with `TransportError` on an unrecognized frame; a caller waiting on an unreadable acknowledgement fails through its acknowledgement timeout instead.
+* Removed `RfqKnownInboundMessageSchema` from `@polymarket/bindings`; each RFQ inbound message schema declares its own object shape directly.
+
 ### `0.1.0-beta.17`
 
 * RFQ quoter sessions now keep running when the server introduces new error codes. `RfqErrorCode` is an open type: known codes are enumerated in `RfqKnownErrorCode`, and unrecognized codes flow through rejection errors as plain strings.
@@ -1190,12 +1196,12 @@ Secure clients expose the API credentials created for the authenticated session.
 
 ### `0.1.0-beta.5`
 
-* Added `listComboMarkets` for fetching the Combo market catalog with typed bindings and SDK-owned pagination. See [Combos](/market-makers/combos).
+* Added `listComboMarkets` for fetching the Combo market catalog with typed bindings and SDK-owned pagination. See [Combos](/trading/combos/overview).
 * Parse RFQ quote rejections that use the `SUBMISSION_WINDOW_CLOSED` gateway error code.
 
 ### `0.1.0-beta.4`
 
-* Added Combos support for multi-leg RFQ positions. See [Combos](/market-makers/combos).
+* Added Combos support for multi-leg RFQ positions. See [Combos](/trading/combos/overview).
 * Reject whitespace-only search queries and trim leading or trailing search input.
 * `ConditionId` is now deprecated in favor of `CtfConditionId`; existing
   `ConditionId` exports remain available as deprecated aliases.
