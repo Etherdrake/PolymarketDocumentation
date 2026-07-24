@@ -63,7 +63,9 @@ Event: Will Bitcoin reach $100,000 by December 2024?
 
 ### Multi-Market Events
 
-When an event contains two or more markets, it creates a grouped market pair. This enables mutually exclusive multi-outcome predictions.
+When an event contains two or more markets, it groups related binary questions under one event. Some multi-market events represent mutually exclusive outcomes.
+
+Polymarket links these mutually exclusive markets as a [negative-risk group](/concepts/negative-risk). Exactly one market in the group resolves Yes, while every other market resolves No.
 
 ```
 Event: Who will win the 2024 Presidential Election?

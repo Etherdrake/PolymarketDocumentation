@@ -128,7 +128,7 @@ Your tier shows on your Polymarket profile and on the leaderboards. As you climb
 
 ## Notes
 
-* Only **taker** trades earn Weighted Volume and count toward your tier. Maker trades (resting orders that add liquidity) do not. Makers are rewarded separately through the [Maker Rebates Program](/market-makers/maker-rebates).
+* Only **taker** trades earn Weighted Volume and count toward your tier. Maker trades (resting orders that add liquidity) do not. Makers are rewarded separately through the [Maker Rebates Program](/programs/maker-rebates).
 * Your rebate applies only to your trades going forward, starting the moment you reach a tier.
 * Some markets are free to trade, including Geopolitical and world events markets. These markets earn no Weighted Volume and no rebate.
 * Your tier is based on your **last 30 days** of Weighted Volume and is updated every day at midnight UTC.
@@ -145,7 +145,7 @@ Your tier shows on your Polymarket profile and on the leaderboards. As you climb
   <Accordion title="Do maker trades count toward my tier">
     No. Only taker trades earn Weighted Volume and count toward your tier.
     Maker fills are rewarded separately through the
-    [Maker Rebates Program](/market-makers/maker-rebates).
+    [Maker Rebates Program](/programs/maker-rebates).
   </Accordion>
 
   <Accordion title="When does my rebate start applying">
@@ -180,17 +180,3 @@ Your tier shows on your Polymarket profile and on the leaderboards. As you climb
     Taker Rebate Program.
   </Accordion>
 </AccordionGroup>
-
-***
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Maker Rebates" icon="hand-holding-dollar" href="/market-makers/maker-rebates">
-    Earn daily pUSD rebates by providing liquidity.
-  </Card>
-
-  <Card title="Fee Structure" icon="receipt" href="/trading/fees">
-    See how taker fees are calculated across market categories.
-  </Card>
-</CardGroup>

@@ -117,10 +117,8 @@ Fees are rounded to 5 decimal places. The smallest fee charged is 0.00001 pUSD. 
 
 The following market categories have taker fees enabled and are eligible for maker rebates: Crypto, Sports, Finance, Politics, Economics, Culture, Weather, Tech, Mentions, and Other / General.
 
-<Note>
-  Markets with fees enabled have `feesEnabled` set to `true` on the market
-  object. Query per-market fee parameters via `getClobMarketInfo(conditionID)`.
-</Note>
+To confirm whether fees apply to a specific market, see [Trading
+Fees](/market-data/market-details#trading-fees) in Market Details.
 
 ***
 
@@ -148,22 +146,4 @@ The following market categories have taker fees enabled and are eligible for mak
   <Accordion title="Which markets have fees enabled">
     Crypto, Sports, Finance, Politics, Economics, Culture, Weather, Tech, Mentions, and Other / General markets.
   </Accordion>
-
-  <Accordion title="Is Polymarket charging fees on all markets">
-    Fees apply to markets in fee-enabled categories. Markets with fees enabled have `feesEnabled` set to `true` on the market object — check it per-market via `getClobMarketInfo(conditionID)`.
-  </Accordion>
 </AccordionGroup>
-
-***
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Fee Structure" icon="receipt" href="/trading/fees">
-    Full fee handling guide for SDK and REST API users.
-  </Card>
-
-  <Card title="Taker Rebate Program" icon="trophy" href="/trading/taker-rebates">
-    Climb the tiers and earn daily pUSD rebates on taker trades.
-  </Card>
-</CardGroup>

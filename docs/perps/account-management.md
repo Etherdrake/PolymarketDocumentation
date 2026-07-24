@@ -33,7 +33,7 @@ Use balances to show collateral by asset and account value.
 
     <Accordion title="Output: PerpsBalance[]">
       <CodeGroup>
-        ```ts Type theme={null}
+        ```ts PerpsBalance Type theme={null}
         type PerpsBalance = {
           asset: string;
           balance: string;
@@ -43,7 +43,7 @@ Use balances to show collateral by asset and account value.
         type Output = PerpsBalance[];
         ```
 
-        ```json Example theme={null}
+        ```json PerpsBalance Example theme={null}
         [
           {
             "asset": "pUSD",
@@ -114,7 +114,7 @@ and liquidation state.
 
     <Accordion title="Output: PerpsPortfolio">
       <CodeGroup>
-        ```ts Type theme={null}
+        ```ts PerpsPortfolio Type theme={null}
         type PerpsPortfolio = {
           positions: Array<{
             instrumentId: number;
@@ -145,7 +145,7 @@ and liquidation state.
         type Output = PerpsPortfolio;
         ```
 
-        ```json Example theme={null}
+        ```json PerpsPortfolio Example theme={null}
         {
           "positions": [
             {
@@ -281,7 +281,7 @@ means.
 
     <Accordion title="Output: PerpsAccountStats">
       <CodeGroup>
-        ```ts Type theme={null}
+        ```ts PerpsAccountStats Type theme={null}
         type PerpsAccountStats = {
           volume7d: string;
           takerVolume7d: string;
@@ -293,7 +293,7 @@ means.
         };
         ```
 
-        ```json Example theme={null}
+        ```json PerpsAccountStats Example theme={null}
         {
           "volume7d": "5000000",
           "takerVolume7d": "3500000",

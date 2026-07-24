@@ -2,180 +2,170 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Overview
+# Place Your First Order
 
-> Real-time market data and trading updates via WebSocket
+> Learn how to authenticate with the CLOB and submit your first market order.
 
-Polymarket provides WebSocket channels for near real-time streaming of orderbook data, trades, and personal order activity. There are four available channels: `market`, `user`, `sports`, and `RTDS` (Real-Time Data Socket).
+This guide shows you how to place your first order using an existing Polymarket account. For this guide, we recommend having at least 10 pUSD available. Create or fund an account at [polymarket.com](https://polymarket.com/) before you start.
 
-## Channels
+Find your Polymarket wallet address in your profile menu:
 
-| Channel                             | Endpoint                                               | Auth     |
-| ----------------------------------- | ------------------------------------------------------ | -------- |
-| Market                              | `wss://ws-subscriptions-clob.polymarket.com/ws/market` | No       |
-| User                                | `wss://ws-subscriptions-clob.polymarket.com/ws/user`   | Yes      |
-| Sports                              | `wss://sports-api.polymarket.com/ws`                   | No       |
-| [RTDS](/market-data/websocket/rtds) | `wss://ws-live-data.polymarket.com`                    | Optional |
+<Frame>
+  <img className="hidden lg:block" src="https://mintcdn.com/polymarket-292d1b1b/1lJ_npwaE_MShiVL/images/deposit-wallet-desktop.png?fit=max&auto=format&n=1lJ_npwaE_MShiVL&q=85&s=6be3b87c53d6718f973db37e134ee944" alt="Polymarket profile menu showing the account wallet address on desktop" width="1280" height="274" data-path="images/deposit-wallet-desktop.png" />
 
-### Market Channel
+  <img className="block lg:hidden" src="https://mintcdn.com/polymarket-292d1b1b/1lJ_npwaE_MShiVL/images/deposit-wallet-mobile.png?fit=max&auto=format&n=1lJ_npwaE_MShiVL&q=85&s=4d6f87ed5440c5297e60d6331c47dc73" alt="Polymarket profile menu showing the account wallet address on mobile" width="529" height="274" data-path="images/deposit-wallet-mobile.png" />
+</Frame>
 
-| Type               | Description             | Custom Feature |
-| ------------------ | ----------------------- | -------------- |
-| `book`             | Full orderbook snapshot | No             |
-| `price_change`     | Price level updates     | No             |
-| `tick_size_change` | Tick size changes       | No             |
-| `last_trade_price` | Trade executions        | No             |
-| `best_bid_ask`     | Best prices update      | Yes            |
-| `new_market`       | New market created      | Yes            |
-| `market_resolved`  | Market resolution       | Yes            |
+<Steps>
+  <Step title="Authenticate">
+    First, authenticate with the CLOB.
 
-Types marked "Custom Feature" require `custom_feature_enabled: true` in your subscription.
+    <Tabs>
+      <Tab title="TypeScript">
+        Pass the signer and wallet address to `createSecureClient`.
 
-### User Channel
+        ```ts theme={null}
+        import { createSecureClient, OrderSide } from "@polymarket/client";
+        import { privateKey } from "@polymarket/client/viem";
 
-| Type    | Description                                   |
-| ------- | --------------------------------------------- |
-| `trade` | Trade lifecycle updates (MATCHED → CONFIRMED) |
-| `order` | Order placements, updates, and cancellations  |
+        const client = await createSecureClient({
+          wallet: process.env.POLYMARKET_WALLET_ADDRESS,
+          signer: privateKey(process.env.POLYMARKET_PRIVATE_KEY),
+        });
+        ```
 
-### Sports
+        <Note>
+          This example uses Viem. See [Wallet
+          Integrations](/getting-started/typescript#wallet-integrations) to connect a
+          signer from another supported wallet library.
+        </Note>
+      </Tab>
 
-| Type           | Description                           |
-| -------------- | ------------------------------------- |
-| `sport_result` | Live game scores, periods, and status |
+      <Tab title="Python">
+        Pass the private key and wallet address to `AsyncSecureClient.create`.
 
-## Subscribing
+        ```python theme={null}
+        import os
 
-Send a subscription message after connecting to specify which data you want to receive.
+        from polymarket import AsyncSecureClient
 
-### Market Channel
+        client = await AsyncSecureClient.create(
+            private_key=os.environ["POLYMARKET_PRIVATE_KEY"],
+            wallet=os.environ["POLYMARKET_WALLET_ADDRESS"],
+        )
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
 
-```json theme={null}
-{
-  "assets_ids": [
-    "21742633143463906290569050155826241533067272736897614950488156847949938836455",
-    "48331043336612883890938759509493159234755048973500640148014422747788308965732"
-  ],
-  "type": "market",
-  "custom_feature_enabled": true
-}
-```
+  <Step title="Choose an Outcome">
+    Then, fetch the market and select the outcome you want to buy. Orders identify each outcome by its token ID. See [Market Data](/market-data/overview) to find a different market.
 
-| Field                    | Type      | Description                                                       |
-| ------------------------ | --------- | ----------------------------------------------------------------- |
-| `assets_ids`             | string\[] | Token IDs to subscribe to                                         |
-| `type`                   | string    | Channel identifier                                                |
-| `custom_feature_enabled` | boolean   | Enable `best_bid_ask`, `new_market`, and `market_resolved` events |
+    <Tabs>
+      <Tab title="TypeScript">
+        ```ts theme={null}
+        const market = await client.fetchMarket({
+          slug: "will-the-us-confirm-that-aliens-exist-before-2027-789-924-249",
+        });
 
-### User Channel
+        const tokenId = market.outcomes.yes.tokenId!;
+        ```
+      </Tab>
 
-```json theme={null}
-{
-  "auth": {
-    "apiKey": "your-api-key",
-    "secret": "your-api-secret",
-    "passphrase": "your-passphrase"
-  },
-  "markets": ["0x1234...condition_id"],
-  "type": "user"
-}
-```
+      <Tab title="Python">
+        ```python theme={null}
+        market = await client.get_market(
+            slug="will-the-us-confirm-that-aliens-exist-before-2027-789-924-249",
+        )
 
-<Note>
-  The `auth` fields (`apiKey`, `secret`, `passphrase`) are **only required for
-  the user channel**. For the market channel, these fields are optional and can
-  be omitted.
-</Note>
+        token_id = market.outcomes.yes.token_id
+        assert token_id is not None
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
 
-| Field     | Type      | Description                                        |
-| --------- | --------- | -------------------------------------------------- |
-| `auth`    | object    | API credentials (`apiKey`, `secret`, `passphrase`) |
-| `markets` | string\[] | Condition IDs to receive events for                |
-| `type`    | string    | Channel identifier                                 |
+  <Step title="Place a Market Order">
+    Then, submit a small market buy. The order fills against available liquidity, and any unfilled amount is canceled instead of remaining open.
 
-<Note>
-  The user channel subscribes by **condition IDs** (market identifiers), not
-  asset IDs. Each market has one condition ID but two asset IDs (Yes and No
-  tokens).
-</Note>
+    <Tabs>
+      <Tab title="TypeScript">
+        Use `placeMarketOrder` to place the market order.
 
-### Sports Channel
+        ```ts theme={null}
+        const response = await client.placeMarketOrder({
+          tokenId,
+          side: OrderSide.BUY,
+          amount: "10", // Spend up to 10 pUSD
+        });
 
-No subscription message required. Connect and start receiving data for all active sports events.
+        if (!response.ok) {
+          throw new Error(response.message);
+        }
 
-## Dynamic Subscription
+        // response.orderId: string
+        ```
+      </Tab>
 
-Modify subscriptions without reconnecting.
+      <Tab title="Python">
+        Use `place_market_order` to place the market order.
 
-### Subscribe to more assets
+        ```python theme={null}
+        response = await client.place_market_order(
+            token_id=token_id,
+            side="BUY",
+            amount="10",  # Spend up to 10 pUSD
+        )
 
-```json theme={null}
-{
-  "assets_ids": ["new_asset_id_1", "new_asset_id_2"],
-  "operation": "subscribe",
-  "custom_feature_enabled": true
-}
-```
+        if not response.ok:
+            raise RuntimeError(response.message)
 
-### Unsubscribe from assets
+        # response.order_id: str
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
 
-```json theme={null}
-{
-  "assets_ids": ["asset_id_to_remove"],
-  "operation": "unsubscribe"
-}
-```
+  <Step title="Check Your Position">
+    Finally, after the trade settles, list your positions for the selected market and find the outcome you bought.
 
-For the user channel, use `markets` instead of `assets_ids`:
+    <Tabs>
+      <Tab title="TypeScript">
+        ```ts theme={null}
+        const page = await client
+          .listPositions({
+            market: [market.conditionId!],
+          })
+          .firstPage();
 
-```json theme={null}
-{
-  "markets": ["0x1234...condition_id"],
-  "operation": "subscribe"
-}
-```
+        const position = page.items.find((item) => item.tokenId === tokenId);
+        if (!position) {
+          throw new Error("Position not found.");
+        }
 
-## Heartbeats
+        const positionSize = position.size; // Outcome shares held
+        ```
+      </Tab>
 
-### Market and User Channels
+      <Tab title="Python">
+        ```python theme={null}
+        condition_id = market.condition_id
+        assert condition_id is not None
 
-Send `PING` every 10 seconds. The server responds with `PONG`.
+        page = await client.list_positions(market=[condition_id]).first_page()
 
-```
-PING
-```
+        position = next(
+            (item for item in page.items if item.token_id == token_id),
+            None,
+        )
+        if position is None:
+            raise RuntimeError("Position not found.")
 
-### Sports Channel
+        position_size = position.size  # Outcome shares held
+        ```
+      </Tab>
+    </Tabs>
 
-The server sends `ping` every 5 seconds. Respond with `pong` within 10 seconds.
-
-```
-pong
-```
-
-<Warning>
-  If you don't respond to the server's ping within 10 seconds, the connection
-  will be closed.
-</Warning>
-
-## Troubleshooting
-
-<Accordion title="Connection closes immediately after opening">
-  Send a valid subscription message immediately after connecting. The server may
-  close connections that don't subscribe within a timeout period.
-</Accordion>
-
-<Accordion title="Connection drops after about 10 seconds">
-  You're not sending heartbeats. Send `PING` every 10 seconds for market/user
-  channels, or respond to server `ping` with `pong` for the sports channel.
-</Accordion>
-
-<Accordion title="Not receiving any messages">
-  1. Verify your asset IDs or condition IDs are correct 2. Check that the
-     markets are active (not resolved) 3. Set `custom_feature_enabled: true` if
-     expecting `best_bid_ask`, `new_market`, or `market_resolved` events
-</Accordion>
-
-<Accordion title="Authentication failed - user channel">
-  Verify your API credentials are correct and haven't expired.
-</Accordion>
+    That's it—you placed your first market order on Polymarket.
+  </Step>
+</Steps>

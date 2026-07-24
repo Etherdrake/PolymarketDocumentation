@@ -15,7 +15,7 @@ In a standard multi-outcome event, each market is independent. If you want to be
 Negative risk changes this. In a neg risk event:
 
 * A **No share** in any market can be converted into **1 Yes share in every other market**
-* This conversion happens through the Neg Risk Adapter contract
+* This conversion happens through the [Neg Risk Adapter contract](https://github.com/Polymarket/neg-risk-ctf-adapter)
 
 ### Example
 
@@ -36,36 +36,6 @@ With negative risk, that 1 No on "Other" can be converted into:
 | Other   | —                |
 
 This is capital-efficient because betting against one outcome is economically equivalent to betting *for* all other outcomes.
-
-## Identifying Neg Risk Markets
-
-The Gamma API includes a `negRisk` boolean on events and markets:
-
-```json theme={null}
-{
-  "id": "123",
-  "title": "Who will win the 2024 Presidential Election?",
-  "negRisk": true,
-  "markets": [...]
-}
-```
-
-When placing orders on neg risk markets, you must specify this in your order options:
-
-```typescript theme={null}
-const response = await client.createAndPostOrder(
-  {
-    tokenID: "TOKEN_ID",
-    price: 0.5,
-    size: 100,
-    side: Side.BUY,
-  },
-  {
-    tickSize: "0.01",
-    negRisk: true, // Required for neg risk markets
-  },
-);
-```
 
 ## Contract Addresses
 
@@ -102,21 +72,6 @@ Standard negative risk requires the complete set of outcomes to be known at mark
 * If the correct outcome at resolution is not named, the market resolves to "Other"
 * The "Other" outcome's definition changes as placeholders are clarified—avoid trading it directly
 
-### Identifying Augmented Neg Risk
-
-An event is augmented neg risk when both flags are true:
-
-```json theme={null}
-{
-  "enableNegRisk": true,
-  "negRiskAugmented": true
-}
-```
-
-<Note>
-  The Gamma API includes a boolean field `negRisk` on events and markets, which indicates whether the event uses negative risk. For augmented neg risk events, an additional `enableNegRisk` field is also `true`. When placing orders, the SDK option is always `negRisk: true` / `neg_risk: True` regardless of whether the market is standard or augmented neg risk.
-</Note>
-
 ## Technical Details
 
 ### Conversion Mechanics
@@ -126,11 +81,6 @@ The conversion operation is atomic and happens through the Neg Risk Adapter:
 1. You hold 1 No token for Outcome A
 2. Call the convert function on the adapter
 3. You receive 1 Yes token for every other outcome in the event
-
-## Resources
-
-* [Neg Risk Adapter Source Code](https://github.com/Polymarket/neg-risk-ctf-adapter)
-* [Gamma API Documentation](/market-data/overview)
 
 ## Next Steps
 

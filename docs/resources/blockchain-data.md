@@ -6,7 +6,7 @@
 
 > Access Polymarket on-chain activity for data & analytics
 
-Polymarket data that lands on the blockchain, such as trades, balances, positions, and redeems, is available through various on-chain analytics platforms and blockchain data providers. Polymarket also provides its own APIs and WebSockets. See the [API Endpoints reference](/quickstart/reference/endpoints) for more information.
+Polymarket data that lands on the blockchain, such as trades, balances, positions, and redeems, is available through various on-chain analytics platforms and blockchain data providers. Polymarket also provides its own APIs and WebSockets. See the [API Reference](/api-reference/predictions/overview) for more information.
 
 The purpose of this page is to serve as a public good for Polymarket builders, researches, and analysts alike.
 
@@ -43,7 +43,7 @@ Here are a few simple queries to get started:
 Third-party blockchain analytics platforms that aggregate and visualize Polymarket data:
 
 <CardGroup cols={4}>
-  <Card title="Blockworks" img="https://pbs.twimg.com/profile_images/1651677302634483712/7s2FxV2K_400x400.jpg" href="https://blockworks.com/analytics/polymarket" />
+  <Card title="Blockworks" img="https://blockworks.com/apple-touch.png" href="https://blockworks.com/analytics/polymarket" />
 
   <Card title="Artemis" img="https://pbs.twimg.com/profile_images/1896982195723546624/2XeO9mPb_400x400.png" href="https://app.artemisanalytics.com/asset/polymarket?from=assets" />
 

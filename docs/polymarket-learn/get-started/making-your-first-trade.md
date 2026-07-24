@@ -2,705 +2,1657 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Create Order
+# Place Orders
 
-> Build, sign, and submit orders
+> Learn how to place orders and control how they execute
 
-All orders on Polymarket are expressed as **limit orders**. Market orders are supported by submitting a limit order with a marketable price — your order executes immediately at the best available price on the book.
+Place a market order to trade against available liquidity immediately, or use a limit order to specify a price and wait for a match.
 
-<Info>
-  The SDK handles EIP-712 signing and submission for you. If you prefer the REST
-  API directly, see [Authentication](/api-reference/authentication) for
-  constructing the required headers and the [API
-  Reference](/api-reference/introduction) for full endpoint documentation
-  including the raw order object fields and request/response schemas.
-</Info>
+Before placing an order, choose an outcome token and confirm that the market is [accepting orders](/market-data/market-details#market-status). The examples below assume you already have a market object; to find or fetch one, see [Discover Markets](/market-data/discover-markets).
 
-***
+<Tabs>
+  <Tab title="TypeScript">
+    Given a market, read its outcome token IDs:
 
-## Order Types
+    ```ts theme={null}
+    const yesTokenId = market.outcomes.yes.tokenId!;
+    const noTokenId = market.outcomes.no.tokenId!;
+    ```
+  </Tab>
 
-| Type    | Behavior                                                             | Use Case                        |
-| ------- | -------------------------------------------------------------------- | ------------------------------- |
-| **GTC** | Good-Til-Cancelled — rests on the book until filled or cancelled     | Default for limit orders        |
-| **GTD** | Good-Til-Date — active until a specified expiration time             | Auto-expire before known events |
-| **FOK** | Fill-Or-Kill — must fill immediately and entirely, or cancel         | All-or-nothing market orders    |
-| **FAK** | Fill-And-Kill — fills what's available immediately, cancels the rest | Partial-fill market orders      |
+  <Tab title="Python">
+    Given a market, read its outcome token IDs:
 
-* **GTC** and **GTD** are limit order types — they rest on the book at your specified price.
-* **FOK** and **FAK** are market order types — they execute against resting liquidity immediately.
-  * **BUY**: specify the dollar amount you want to spend
-  * **SELL**: specify the number of shares you want to sell
+    ```python theme={null}
+    if market.outcomes.yes.token_id is None or market.outcomes.no.token_id is None:
+        raise RuntimeError("Market token IDs not found")
 
-***
+    yes_token_id = market.outcomes.yes.token_id
+    no_token_id = market.outcomes.no.token_id
+    ```
+  </Tab>
+
+  <Tab title="API">
+    Given a market object, its outcome token IDs are stored as a JSON-encoded
+    array:
+
+    ```json theme={null}
+    {
+      "clobTokenIds": "[\"<yes_token_id>\", \"<no_token_id>\"]"
+    }
+    ```
+
+    Parse the array, then select the outcome you want to trade:
+
+    ```bash theme={null}
+    TOKEN_ID="<yes_token_id>"
+    ```
+  </Tab>
+</Tabs>
 
 ## Limit Orders
 
-The simplest way to place a limit order — create, sign, and submit in one call:
+A limit order specifies the price at which you are willing to trade and can
+rest on the book until it fills, expires, or you cancel it. Use one when price
+control matters more than immediate execution.
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  import { ClobClient, Side, OrderType } from "@polymarket/clob-client-v2";
+A limit order also defines how long any unfilled amount remains active:
 
-  const response = await client.createAndPostOrder(
-    {
-      tokenID: "TOKEN_ID",
-      price: 0.5,
-      size: 10,
-      side: Side.BUY,
-    },
-    {
-      tickSize: "0.01",
-      negRisk: false,
-    },
-    OrderType.GTC,
-  );
-
-  console.log("Order ID:", response.orderID);
-  console.log("Status:", response.status);
-  ```
-
-  ```python Python theme={null}
-  from py_clob_client_v2 import OrderArgs, OrderType, PartialCreateOrderOptions
-  from py_clob_client_v2.order_builder.constants import BUY
-
-  response = client.create_and_post_order(
-      OrderArgs(
-          token_id="TOKEN_ID",
-          price=0.50,
-          size=10,
-          side=BUY,
-      ),
-      options=PartialCreateOrderOptions(tick_size="0.01", neg_risk=False),
-      order_type=OrderType.GTC
-  )
-
-  print("Order ID:", response["orderID"])
-  print("Status:", response["status"])
-  ```
-
-  ```rust Rust theme={null}
-  use polymarket_client_sdk_v2::clob::types::Side;
-  use polymarket_client_sdk_v2::types::dec;
-
-  let token_id = "TOKEN_ID".parse()?;
-  let order = client
-      .limit_order()
-      .token_id(token_id)
-      .price(dec!(0.50))
-      .size(dec!(10))
-      .side(Side::Buy)
-      .build()
-      .await?;
-  let signed = client.sign(&signer, order).await?;
-  let response = client.post_order(signed).await?;
-
-  println!("Order ID: {}", response.order_id);
-  println!("Status: {:?}", response.status);
-  ```
-</CodeGroup>
-
-### Two-Step Sign Then Submit
-
-For more control, you can separate signing from submission. This is useful for batch orders or custom submission logic:
-
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  // Step 1: Create and sign locally
-  const signedOrder = await client.createOrder(
-    {
-      tokenID: "TOKEN_ID",
-      price: 0.5,
-      size: 10,
-      side: Side.BUY,
-    },
-    { tickSize: "0.01", negRisk: false },
-  );
-
-  // Step 2: Submit to the CLOB
-  const response = await client.postOrder(signedOrder, OrderType.GTC);
-  ```
-
-  ```python Python theme={null}
-  # Step 1: Create and sign locally
-  signed_order = client.create_order(
-      OrderArgs(
-          token_id="TOKEN_ID",
-          price=0.50,
-          size=10,
-          side=BUY,
-      ),
-      options=PartialCreateOrderOptions(tick_size="0.01", neg_risk=False)
-  )
-
-  # Step 2: Submit to the CLOB
-  response = client.post_order(signed_order, OrderType.GTC)
-  ```
-
-  ```rust Rust theme={null}
-  // Step 1: Create order (auto-fetches tick size, neg risk, fee rate)
-  let order = client
-      .limit_order()
-      .token_id("TOKEN_ID".parse()?)
-      .price(dec!(0.50))
-      .size(dec!(10))
-      .side(Side::Buy)
-      .build()
-      .await?;
-
-  // Step 2: Sign and submit separately
-  let signed = client.sign(&signer, order).await?;
-  let response = client.post_order(signed).await?;
-  ```
-</CodeGroup>
-
-***
-
-## GTD Orders
-
-GTD orders auto-expire at a specified time. Useful for quoting around known events.
-
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  // Expire in 1 hour (+ 60s security threshold buffer)
-  const expiration = Math.floor(Date.now() / 1000) + 60 + 3600;
-
-  const response = await client.createAndPostOrder(
-    {
-      tokenID: "TOKEN_ID",
-      price: 0.5,
-      size: 10,
-      side: Side.BUY,
-      expiration,
-    },
-    { tickSize: "0.01", negRisk: false },
-    OrderType.GTD,
-  );
-  ```
-
-  ```python Python theme={null}
-  import time
-
-  # Expire in 1 hour (+ 60s security threshold buffer)
-  expiration = int(time.time()) + 60 + 3600
-
-  response = client.create_and_post_order(
-      OrderArgs(
-          token_id="TOKEN_ID",
-          price=0.50,
-          size=10,
-          side=BUY,
-          expiration=expiration,
-      ),
-      options=PartialCreateOrderOptions(tick_size="0.01", neg_risk=False),
-      order_type=OrderType.GTD
-  )
-  ```
-
-  ```rust Rust theme={null}
-  use chrono::{TimeDelta, Utc};
-  use polymarket_client_sdk_v2::clob::types::OrderType;
-
-  let order = client
-      .limit_order()
-      .token_id("TOKEN_ID".parse()?)
-      .price(dec!(0.50))
-      .size(dec!(10))
-      .side(Side::Buy)
-      .order_type(OrderType::GTD)
-      .expiration(Utc::now() + TimeDelta::minutes(1) + TimeDelta::hours(1))
-      .build()
-      .await?;
-  let signed = client.sign(&signer, order).await?;
-  let response = client.post_order(signed).await?;
-  ```
-</CodeGroup>
+| Lifetime                  | Behavior                                              | Use when                                      |
+| ------------------------- | ----------------------------------------------------- | --------------------------------------------- |
+| Good Till Cancelled (GTC) | Remains active until it fills or you cancel it.       | The order has no deadline.                    |
+| Good Till Date (GTD)      | Remains active until the expiration time you specify. | The order should expire before a known event. |
 
 <Note>
   GTD orders expire one minute before their stated expiration as a security
-  threshold. To set an effective lifetime of N seconds, use `now + 60 + N`.
-  In addition, the expiration must be at least three minutes in the future —
-  orders expiring sooner are rejected — so the minimum effective lifetime is
-  about two minutes.
+  threshold. To set an effective lifetime of N seconds, use `now + 60 + N`. In
+  addition, the expiration must be at least **3 minutes** in the future — orders
+  expiring sooner are rejected — so the minimum effective lifetime is about two
+  minutes.
 </Note>
 
-***
+### Place a Limit Order
+
+<Tabs>
+  <Tab title="TypeScript">
+    Given a `SecureClient`, place the limit order and check its
+    response:
+
+    <Steps>
+      <Step title="Place the Order">
+        First, call `placeLimitOrder()` with the price and number of shares. The
+        price must follow the market's minimum price increment, and the size must
+        meet its minimum order size. Omit `expiration` for a GTC order or provide a
+        Unix timestamp in seconds for a GTD order.
+
+        <CodeGroup>
+          ```ts GTC theme={null}
+          import { OrderSide } from "@polymarket/client";
+
+          const response = await client.placeLimitOrder({
+            tokenId: yesTokenId,
+            side: OrderSide.BUY,
+            price: "0.52",
+            size: "10",
+          });
+
+          // response: OrderResponse
+          ```
+
+          ```ts GTD theme={null}
+          import { OrderSide } from "@polymarket/client";
+
+          const expiration = Math.floor(Date.now() / 1000) + 60 + 60 * 60;
+          const response = await client.placeLimitOrder({
+            tokenId: yesTokenId,
+            side: OrderSide.BUY,
+            price: "0.52",
+            size: "10",
+            expiration,
+          });
+
+          // response: OrderResponse
+          ```
+        </CodeGroup>
+
+        Both examples buy `10` shares at a price of `0.52` USD per share. The GTD
+        order has an effective lifetime of one hour.
+      </Step>
+
+      <Step title="Check the Response">
+        Then, check `response.ok` to determine whether the CLOB accepted the order:
+
+        ```ts theme={null}
+        if (response.ok) {
+          console.log(response.orderId, response.status);
+          console.log(response.tradeIds, response.transactionsHashes);
+        } else {
+          console.error(response.code, response.message);
+        }
+        ```
+
+        An accepted response includes the order ID and one of these statuses. If
+        the order fills fully or partially, the `tradeIds` collection identifies
+        the resulting trades. When available, `transactionsHashes` contains their
+        transaction hashes:
+
+        | Status    | Description                                              |
+        | --------- | -------------------------------------------------------- |
+        | `live`    | The order is resting on the book.                        |
+        | `matched` | The order matched immediately with resting liquidity.    |
+        | `delayed` | The order is marketable but subject to a matching delay. |
+
+        A rejected order returns `ok: false` with a code and message.
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="Python">
+    Given an `AsyncSecureClient`, place the limit order and check
+    its response. The synchronous `SecureClient` provides the same method.
+
+    <Steps>
+      <Step title="Place the Order">
+        First, call `place_limit_order()` with the price and number of shares. The
+        price must follow the market's minimum price increment, and the size must
+        meet its minimum order size. Omit `expiration` for a GTC order or provide a
+        Unix timestamp in seconds for a GTD order.
+
+        <CodeGroup>
+          ```python GTC theme={null}
+          response = await client.place_limit_order(
+              token_id=yes_token_id,
+              side="BUY",
+              price="0.52",
+              size="10",
+          )
+
+          # response: OrderResponse
+          ```
+
+          ```python GTD theme={null}
+          import time
+
+          expiration = int(time.time()) + 60 + 60 * 60
+          response = await client.place_limit_order(
+              token_id=yes_token_id,
+              side="BUY",
+              price="0.52",
+              size="10",
+              expiration=expiration,
+          )
+
+          # response: OrderResponse
+          ```
+        </CodeGroup>
+
+        Both examples buy `10` shares at a price of `0.52` USD per share. The GTD
+        order has an effective lifetime of one hour.
+      </Step>
+
+      <Step title="Check the Response">
+        Then, check `response.ok` to determine whether the CLOB accepted the order:
+
+        ```python theme={null}
+        if response.ok:
+            print(response.order_id, response.status)
+            print(response.trade_ids, response.transactions_hashes)
+        else:
+            print(response.code, response.message)
+        ```
+
+        An accepted response includes the order ID and one of these statuses. If
+        the order fills fully or partially, the `trade_ids` collection identifies
+        the resulting trades. When available, `transactions_hashes` contains their
+        transaction hashes:
+
+        | Status    | Description                                              |
+        | --------- | -------------------------------------------------------- |
+        | `live`    | The order is resting on the book.                        |
+        | `matched` | The order matched immediately with resting liquidity.    |
+        | `delayed` | The order is marketable but subject to a matching delay. |
+
+        A rejected order returns `ok=False` with a code and message.
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="API">
+    Build the limit order from its price and size, then sign and submit it:
+
+    <Steps>
+      <Step title="Read the Market Context">
+        First, fetch the current order book to read the market's trading
+        constraints and exchange type:
+
+        ```bash theme={null}
+        curl "https://clob.polymarket.com/book?token_id=$TOKEN_ID"
+        ```
+
+        ```json theme={null}
+        {
+          "asset_id": "<yes_token_id>",
+          "bids": [{ "price": "0.50", "size": "40" }],
+          "asks": [{ "price": "0.54", "size": "30" }],
+          "min_order_size": "5",
+          "tick_size": "0.01",
+          "neg_risk": false
+        }
+        ```
+
+        Where:
+
+        * `min_order_size` is the minimum number of shares the CLOB accepts for an
+          order.
+        * `neg_risk` indicates whether the market belongs to a [negative-risk
+          group](/concepts/negative-risk) and therefore uses the
+          Neg Risk Exchange contract when signing and submitting the order.
+      </Step>
+
+      <Step title="Calculate the Order Amounts">
+        Then, choose a price that conforms to `tick_size` and a share quantity that
+        meets `min_order_size`. Use the tick size to select the required precision:
+
+        | Tick size | Price decimals | Size decimals | Amount decimals |
+        | --------- | -------------: | ------------: | --------------: |
+        | `0.1`     |              1 |             2 |               3 |
+        | `0.01`    |              2 |             2 |               4 |
+        | `0.005`   |              3 |             2 |               5 |
+        | `0.0025`  |              4 |             2 |               6 |
+        | `0.001`   |              3 |             2 |               5 |
+        | `0.0001`  |              4 |             2 |               6 |
+
+        <Note>
+          If your integration stores `tick_size` for later orders, listen for the
+          `tick_size_change` event on the [market
+          stream](/market-data/realtime-data#market-stream) and replace the stored value
+          when it changes. The CLOB rejects an order whose price does not conform to the
+          market's current tick size.
+        </Note>
+
+        The two sides map the price and size differently:
+
+        * For a BUY, `makerAmount` is `price × size` USD and `takerAmount` is the
+          number of shares.
+        * For a SELL, `makerAmount` is the number of shares and `takerAmount` is
+          `price × size` USD.
+
+        Apply the table's precision in this order:
+
+        1. Express the price using no more than **Price decimals**.
+        2. Round the share quantity down to **Size decimals**.
+        3. Calculate the USD amount. If it exceeds **Amount decimals**, round it up
+           first to **Amount decimals + 4**, then down to **Amount decimals**.
+      </Step>
+
+      <Step title="Validate and Encode the Amounts">
+        Next, verify that the rounded share quantity still meets `min_order_size`,
+        then convert both amounts to six-decimal integers.
+
+        For a BUY of `10` shares at `0.52`, the USD amount is `5.20` and the share
+        quantity is above the minimum of `5`. The encoded values are:
+
+        ```json theme={null}
+        {
+          "makerAmount": "5200000",
+          "takerAmount": "10000000"
+        }
+        ```
+      </Step>
+
+      <Step title="Select the Exchange and Signing Path">
+        Then, use the `neg_risk` value returned by the order book in the first step
+        to select the Exchange contract used as the EIP-712 verifying contract:
+
+        | Market        | `exchange_address`                           |
+        | ------------- | -------------------------------------------- |
+        | Standard      | `0xE111180000d2663C0091e4f400237545B87B996B` |
+        | Negative risk | `0xe2222d279d744050d28e00520010520000310F59` |
+
+        Then resolve the remaining placeholders for the account's wallet:
+
+        | Wallet         | `signature_type` | `maker_address`        | `order_signer_address` |
+        | -------------- | ---------------: | ---------------------- | ---------------------- |
+        | Deposit Wallet |              `3` | Deposit Wallet address | Deposit Wallet address |
+        | Proxy Wallet   |              `1` | Proxy Wallet address   | Account signer address |
+        | Safe Wallet    |              `2` | Safe Wallet address    | Account signer address |
+        | EOA            |              `0` | EOA address            | EOA address            |
+      </Step>
+
+      <Step title="Create the Order Typed Data">
+        Next, create the EIP-712 typed data for the selected wallet:
+
+        <CodeGroup>
+          ```json Deposit Wallet Typed Data theme={null}
+          {
+            "domain": {
+              "name": "Polymarket CTF Exchange",
+              "version": "2",
+              "chainId": 137,
+              "verifyingContract": "<exchange_address>"
+            },
+            "types": {
+              "Order": [
+                { "name": "salt", "type": "uint256" },
+                { "name": "maker", "type": "address" },
+                { "name": "signer", "type": "address" },
+                { "name": "tokenId", "type": "uint256" },
+                { "name": "makerAmount", "type": "uint256" },
+                { "name": "takerAmount", "type": "uint256" },
+                { "name": "side", "type": "uint8" },
+                { "name": "signatureType", "type": "uint8" },
+                { "name": "timestamp", "type": "uint256" },
+                { "name": "metadata", "type": "bytes32" },
+                { "name": "builder", "type": "bytes32" }
+              ],
+              "TypedDataSign": [
+                { "name": "contents", "type": "Order" },
+                { "name": "name", "type": "string" },
+                { "name": "version", "type": "string" },
+                { "name": "chainId", "type": "uint256" },
+                { "name": "verifyingContract", "type": "address" },
+                { "name": "salt", "type": "bytes32" }
+              ]
+            },
+            "primaryType": "TypedDataSign",
+            "message": {
+              "contents": {
+                "salt": "479249096354",
+                "maker": "<maker_address>",
+                "signer": "<order_signer_address>",
+                "tokenId": "<yes_token_id>",
+                "makerAmount": "5200000",
+                "takerAmount": "10000000",
+                "side": 0,
+                "signatureType": 3,
+                "timestamp": "<unix_milliseconds>",
+                "metadata": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "builder": "0x0000000000000000000000000000000000000000000000000000000000000000"
+              },
+              "name": "DepositWallet",
+              "version": "1",
+              "chainId": 137,
+              "verifyingContract": "<maker_address>",
+              "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          }
+          ```
+
+          ```json Proxy, Safe, or EOA Typed Data theme={null}
+          {
+            "domain": {
+              "name": "Polymarket CTF Exchange",
+              "version": "2",
+              "chainId": 137,
+              "verifyingContract": "<exchange_address>"
+            },
+            "types": {
+              "Order": [
+                { "name": "salt", "type": "uint256" },
+                { "name": "maker", "type": "address" },
+                { "name": "signer", "type": "address" },
+                { "name": "tokenId", "type": "uint256" },
+                { "name": "makerAmount", "type": "uint256" },
+                { "name": "takerAmount", "type": "uint256" },
+                { "name": "side", "type": "uint8" },
+                { "name": "signatureType", "type": "uint8" },
+                { "name": "timestamp", "type": "uint256" },
+                { "name": "metadata", "type": "bytes32" },
+                { "name": "builder", "type": "bytes32" }
+              ]
+            },
+            "primaryType": "Order",
+            "message": {
+              "salt": "479249096354",
+              "maker": "<maker_address>",
+              "signer": "<order_signer_address>",
+              "tokenId": "<yes_token_id>",
+              "makerAmount": "5200000",
+              "takerAmount": "10000000",
+              "side": 0,
+              "signatureType": 1,
+              "timestamp": "<unix_milliseconds>",
+              "metadata": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "builder": "0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          }
+          ```
+        </CodeGroup>
+
+        Where:
+
+        * `side` is `0` for a BUY and `1` for a SELL.
+        * `salt` is a fresh random value for each order. Because the request body
+          serializes it as a JSON number, JavaScript integrations should keep it
+          within `Number.MAX_SAFE_INTEGER`.
+      </Step>
+
+      <Step title="Sign the Order">
+        Then, sign the typed data with the account signer. Deposit Wallets require
+        the raw signature to be wrapped for ERC-7739 validation. Proxy Wallets,
+        Safe Wallets, and EOAs submit the standard signature returned by signing
+        the Exchange `Order` typed data directly.
+
+        See the example below using Viem:
+
+        <CodeGroup>
+          ```js Deposit Wallet theme={null}
+          import { privateKeyToAccount } from "viem/accounts";
+
+          const signer = privateKeyToAccount(process.env.SIGNER_PRIVATE_KEY);
+          const innerSignature = await signer.signTypedData(typedData);
+          const signature = wrapDepositWalletSignature(typedData, innerSignature);
+          ```
+
+          ```js Proxy, Safe, or EOA theme={null}
+          import { privateKeyToAccount } from "viem/accounts";
+
+          const signer = privateKeyToAccount(process.env.SIGNER_PRIVATE_KEY);
+          const signature = await signer.signTypedData(typedData);
+          ```
+
+          ```js wrapDepositWalletSignature() theme={null}
+          import { concatHex, encodeAbiParameters, keccak256, toHex } from "viem";
+
+          const ORDER_TYPE =
+            "Order(uint256 salt,address maker,address signer,uint256 tokenId,uint256 makerAmount,uint256 takerAmount,uint8 side,uint8 signatureType,uint256 timestamp,bytes32 metadata,bytes32 builder)";
+          const EIP712_DOMAIN_TYPE =
+            "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)";
+
+          function wrapDepositWalletSignature(typedData, innerSignature) {
+            const order = typedData.message.contents;
+            const exchangeDomain = typedData.domain;
+
+            const appDomainSeparator = keccak256(
+              encodeAbiParameters(
+                [
+                  { type: "bytes32" },
+                  { type: "bytes32" },
+                  { type: "bytes32" },
+                  { type: "uint256" },
+                  { type: "address" },
+                ],
+                [
+                  keccak256(toHex(EIP712_DOMAIN_TYPE)),
+                  keccak256(toHex(exchangeDomain.name)),
+                  keccak256(toHex(exchangeDomain.version)),
+                  BigInt(exchangeDomain.chainId),
+                  exchangeDomain.verifyingContract,
+                ],
+              ),
+            );
+            const contentsHash = keccak256(
+              encodeAbiParameters(
+                [
+                  { type: "bytes32" },
+                  { type: "uint256" },
+                  { type: "address" },
+                  { type: "address" },
+                  { type: "uint256" },
+                  { type: "uint256" },
+                  { type: "uint256" },
+                  { type: "uint8" },
+                  { type: "uint8" },
+                  { type: "uint256" },
+                  { type: "bytes32" },
+                  { type: "bytes32" },
+                ],
+                [
+                  keccak256(toHex(ORDER_TYPE)),
+                  BigInt(order.salt),
+                  order.maker,
+                  order.signer,
+                  BigInt(order.tokenId),
+                  BigInt(order.makerAmount),
+                  BigInt(order.takerAmount),
+                  order.side,
+                  order.signatureType,
+                  BigInt(order.timestamp),
+                  order.metadata,
+                  order.builder,
+                ],
+              ),
+            );
+
+            return concatHex([
+              innerSignature,
+              appDomainSeparator,
+              contentsHash,
+              toHex(ORDER_TYPE),
+              toHex(ORDER_TYPE.length, { size: 2 }),
+            ]);
+          }
+          ```
+        </CodeGroup>
+      </Step>
+
+      <Step title="Submit the Order">
+        Choose how long the unfilled order should remain active in the final request
+        body. For a GTC order, set `orderType` to `"GTC"` and `expiration` to
+        `"0"`. For a GTD order, set `orderType` to `"GTD"` and `expiration` to a
+        Unix timestamp in seconds.
+
+        <CodeGroup>
+          ```bash GTC theme={null}
+          curl -X POST "https://clob.polymarket.com/order" \
+            -H "Content-Type: application/json" \
+            -H "POLY_ADDRESS: <signer_address>" \
+            -H "POLY_API_KEY: <clob_api_key>" \
+            -H "POLY_PASSPHRASE: <clob_api_passphrase>" \
+            -H "POLY_SIGNATURE: <clob_l2_signature>" \
+            -H "POLY_TIMESTAMP: <clob_request_timestamp>" \
+            --data '{
+              "deferExec": false,
+              "order": {
+                "builder": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "expiration": "0",
+                "maker": "<maker_address>",
+                "makerAmount": "5200000",
+                "metadata": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "salt": 479249096354,
+                "side": "BUY",
+                "signature": "<signature>",
+                "signatureType": 3,
+                "signer": "<order_signer_address>",
+                "takerAmount": "10000000",
+                "timestamp": "<unix_milliseconds>",
+                "tokenId": "<yes_token_id>"
+              },
+              "orderType": "GTC",
+              "owner": "<clob_api_key>"
+            }'
+          ```
+
+          ```bash GTD theme={null}
+          curl -X POST "https://clob.polymarket.com/order" \
+            -H "Content-Type: application/json" \
+            -H "POLY_ADDRESS: <signer_address>" \
+            -H "POLY_API_KEY: <clob_api_key>" \
+            -H "POLY_PASSPHRASE: <clob_api_passphrase>" \
+            -H "POLY_SIGNATURE: <clob_l2_signature>" \
+            -H "POLY_TIMESTAMP: <clob_request_timestamp>" \
+            --data '{
+              "deferExec": false,
+              "order": {
+                "builder": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "expiration": "<unix_timestamp_seconds>",
+                "maker": "<maker_address>",
+                "makerAmount": "5200000",
+                "metadata": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "salt": 479249096354,
+                "side": "BUY",
+                "signature": "<signature>",
+                "signatureType": 3,
+                "signer": "<order_signer_address>",
+                "takerAmount": "10000000",
+                "timestamp": "<unix_milliseconds>",
+                "tokenId": "<yes_token_id>"
+              },
+              "orderType": "GTD",
+              "owner": "<clob_api_key>"
+            }'
+          ```
+        </CodeGroup>
+
+        Using the signer address and CLOB API credentials from [API
+        Authentication](/getting-started/api#authentication), create a fresh
+        `<clob_request_timestamp>` and generate `<clob_l2_signature>` from the exact
+        serialized body sent over the wire:
+
+        ```text theme={null}
+        body = <exact_serialized_request_body>
+        message = <clob_request_timestamp> + "POST" + "/order" + body
+
+        clob_l2_signature = urlsafeBase64WithPadding(
+          HMAC-SHA256(base64Decode(<clob_api_secret>), message)
+        )
+        ```
+      </Step>
+
+      <Step title="Check the Response">
+        Finally, check `success` to determine whether the CLOB accepted the order.
+        A successful response includes the order ID and its insertion status; a
+        failed response includes the reason in `errorMsg`:
+
+        <CodeGroup>
+          ```json Success theme={null}
+          {
+            "success": true,
+            "errorMsg": "",
+            "orderID": "<order_id>",
+            "status": "live",
+            "makingAmount": "<making_amount>",
+            "takingAmount": "<taking_amount>",
+            "transactionsHashes": ["<transaction_hash>"],
+            "tradeIDs": ["<trade_id>"]
+          }
+          ```
+
+          ```json Failure theme={null}
+          {
+            "success": false,
+            "errorMsg": "not enough balance / allowance",
+            "orderID": "",
+            "status": "",
+            "makingAmount": "",
+            "takingAmount": ""
+          }
+          ```
+        </CodeGroup>
+
+        A successful response has one of the following statuses. When the order
+        fills fully or partially, the `tradeIDs` collection identifies the
+        resulting trades. When available, `transactionsHashes` contains their
+        transaction hashes:
+
+        | Status      | Description                                                             |
+        | ----------- | ----------------------------------------------------------------------- |
+        | `live`      | The order is resting on the book.                                       |
+        | `matched`   | The order matched immediately with resting liquidity.                   |
+        | `delayed`   | The order is marketable but subject to a matching delay.                |
+        | `unmatched` | The order is marketable but failed to delay; placement still succeeded. |
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+### Post-Only Orders
+
+A post-only order adds liquidity only: if it would match immediately against the
+book, it is rejected instead of taking. Use it to guarantee you quote as a
+maker.
+
+<Tip>
+  Market makers use post-only orders to add liquidity with resting orders.
+</Tip>
+
+<Tabs>
+  <Tab title="TypeScript">
+    Given a `SecureClient`, set `postOnly` when placing the
+    limit order:
+
+    ```ts theme={null}
+    const response = await client.placeLimitOrder({
+      tokenId: yesTokenId,
+      side: OrderSide.BUY,
+      price: "0.52",
+      size: "10",
+      postOnly: true,
+    });
+
+    // response: OrderResponse
+    ```
+  </Tab>
+
+  <Tab title="Python">
+    Given an `AsyncSecureClient`, set `post_only` when placing
+    the limit order. The synchronous `SecureClient` provides the same method.
+
+    ```python theme={null}
+    response = await client.place_limit_order(
+        token_id=yes_token_id,
+        side="BUY",
+        price="0.52",
+        size="10",
+        post_only=True,
+    )
+
+    # response: OrderResponse
+    ```
+  </Tab>
+
+  <Tab title="API">
+    Follow the API workflow in [Place a Limit Order](#place-a-limit-order), then
+    add `postOnly: true` to the final request alongside a GTC or GTD
+    `orderType`. For example, submit a GTC post-only order:
+
+    ```bash theme={null}
+    curl -X POST "https://clob.polymarket.com/order" \
+      -H "Content-Type: application/json" \
+      -H "POLY_ADDRESS: <signer_address>" \
+      -H "POLY_API_KEY: <clob_api_key>" \
+      -H "POLY_PASSPHRASE: <clob_api_passphrase>" \
+      -H "POLY_SIGNATURE: <clob_l2_signature>" \
+      -H "POLY_TIMESTAMP: <clob_request_timestamp>" \
+      --data '{
+        "deferExec": false,
+        "order": {
+          "builder": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "expiration": "0",
+          "maker": "<maker_address>",
+          "makerAmount": "5200000",
+          "metadata": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "salt": 479249096354,
+          "side": "BUY",
+          "signature": "<signature>",
+          "signatureType": 3,
+          "signer": "<order_signer_address>",
+          "takerAmount": "10000000",
+          "timestamp": "<unix_milliseconds>",
+          "tokenId": "<yes_token_id>"
+        },
+        "orderType": "GTC",
+        "owner": "<clob_api_key>",
+        "postOnly": true
+      }'
+    ```
+  </Tab>
+</Tabs>
 
 ## Market Orders
 
-Market orders execute immediately against resting liquidity using FOK or FAK types:
+A market order uses the same underlying order as a limit order but derives a
+marketable price from current order-book liquidity. This allows it to execute
+immediately instead of resting on the book. Use a market order when execution
+matters more than setting an exact price.
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  import { Side, OrderType } from "@polymarket/clob-client-v2";
+Read the market's [trading
+constraints](/market-data/market-details#trading-constraints) before deciding
+how much to buy or sell.
 
-  // FOK BUY: spend exactly $100 or cancel entirely
-  const buyOrder = await client.createMarketOrder(
-    {
-      tokenID: "TOKEN_ID",
-      side: Side.BUY,
-      amount: 100, // dollar amount
-      price: 0.5, // worst-price limit (slippage protection)
-    },
-    { tickSize: "0.01", negRisk: false },
-  );
-  await client.postOrder(buyOrder, OrderType.FOK);
+### Place a Market Order
 
-  // FOK SELL: sell exactly 200 shares or cancel entirely
-  const sellOrder = await client.createMarketOrder(
-    {
-      tokenID: "TOKEN_ID",
-      side: Side.SELL,
-      amount: 200, // number of shares
-      price: 0.45, // worst-price limit (slippage protection)
-    },
-    { tickSize: "0.01", negRisk: false },
-  );
-  await client.postOrder(sellOrder, OrderType.FOK);
-  ```
+The examples below use Fill and Kill (FAK), which fills available liquidity
+immediately and cancels any remainder. See [Market Order
+Types](#market-order-types) for Fill or Kill (FOK).
 
-  ```python Python theme={null}
-  from py_clob_client_v2.order_builder.constants import BUY, SELL
-  from py_clob_client_v2 import MarketOrderArgs, OrderType, PartialCreateOrderOptions
+<Tabs>
+  <Tab title="TypeScript">
+    Given a `SecureClient`, estimate the price and place the
+    market order:
 
-  # FOK BUY: spend exactly $100 or cancel entirely
-  buy_order = client.create_market_order(
-      order_args=MarketOrderArgs(
-          token_id="TOKEN_ID",
-          side=BUY,
-          amount=100,  # dollar amount
-          price=0.50,  # worst-price limit (slippage protection)
-      ),
-      options=PartialCreateOrderOptions(tick_size="0.01", neg_risk=False),
-  )
-  client.post_order(buy_order, OrderType.FOK)
+    <Steps>
+      <Step title="Estimate the Price">
+        First, call `estimateMarketPrice()` to discover the price level the order
+        would reach at the current order-book depth. For a BUY, `amount` is the USD
+        notional to spend. For a SELL, `shares` is the number of shares to sell,
+        rather than their USD value.
 
-  # FOK SELL: sell exactly 200 shares or cancel entirely
-  sell_order = client.create_market_order(
-      order_args=MarketOrderArgs(
-          token_id="TOKEN_ID",
-          side=SELL,
-          amount=200,  # number of shares
-          price=0.45,  # worst-price limit (slippage protection)
-      ),
-      options=PartialCreateOrderOptions(tick_size="0.01", neg_risk=False),
-  )
-  client.post_order(sell_order, OrderType.FOK)
-  ```
+        <CodeGroup>
+          ```ts Buy theme={null}
+          import { OrderSide, OrderType } from "@polymarket/client";
 
-  ```rust Rust theme={null}
-  use polymarket_client_sdk_v2::clob::types::{Amount, OrderType, Side};
+          const estimatedBuyPrice = await client.estimateMarketPrice({
+            tokenId: yesTokenId,
+            side: OrderSide.BUY,
+            amount: "10",
+            orderType: OrderType.FAK,
+          });
 
-  let token_id = "TOKEN_ID".parse()?;
+          // estimatedBuyPrice: number
+          ```
 
-  // FOK BUY: spend exactly $100 or cancel entirely
-  let buy = client
-      .market_order()
-      .token_id(token_id)
-      .amount(Amount::usdc(dec!(100))?)
-      .price(dec!(0.50)) // worst-price limit (slippage protection)
-      .side(Side::Buy)
-      .order_type(OrderType::FOK)
-      .build()
-      .await?;
-  let signed = client.sign(&signer, buy).await?;
-  client.post_order(signed).await?;
+          ```ts Sell theme={null}
+          import { OrderSide, OrderType } from "@polymarket/client";
 
-  // FOK SELL: sell exactly 200 shares or cancel entirely
-  let sell = client
-      .market_order()
-      .token_id(token_id)
-      .amount(Amount::shares(dec!(200))?)
-      .price(dec!(0.45)) // worst-price limit (slippage protection)
-      .side(Side::Sell)
-      .order_type(OrderType::FOK)
-      .build()
-      .await?;
-  let signed = client.sign(&signer, sell).await?;
-  client.post_order(signed).await?;
-  ```
-</CodeGroup>
+          const estimatedSellPrice = await client.estimateMarketPrice({
+            tokenId: yesTokenId,
+            side: OrderSide.SELL,
+            shares: "10",
+            orderType: OrderType.FAK,
+          });
 
-* **FOK** — fill entirely or cancel the whole order
-* **FAK** — fill what's available, cancel the rest
+          // estimatedSellPrice: number
+          ```
+        </CodeGroup>
 
-The `price` field on market orders acts as a **worst-price limit** (slippage protection), not a target execution price.
+        In these examples, `amount: "10"` means spending \$10, while `shares: "10"`
+        means selling 10 shares.
 
-### One-Step Market Order
+        The estimate is a snapshot of the current order book. The available price
+        can change before you submit the order.
+      </Step>
 
-For convenience, `createAndPostMarketOrder` handles creation, signing, and submission in one call:
+      <Step title="Place the Order">
+        Then, if the estimated price is acceptable, pass it as the maximum price
+        for a BUY or the minimum price for a SELL, and place the market order:
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  const response = await client.createAndPostMarketOrder(
-    {
-      tokenID: "TOKEN_ID",
-      side: Side.BUY,
-      amount: 100,
-      price: 0.5,
-    },
-    { tickSize: "0.01", negRisk: false },
-    OrderType.FOK,
-  );
-  ```
+        <CodeGroup>
+          ```ts Buy theme={null}
+          const response = await client.placeMarketOrder({
+            tokenId: yesTokenId,
+            side: OrderSide.BUY,
+            amount: "10",
+            maxPrice: estimatedBuyPrice,
+            orderType: OrderType.FAK,
+          });
 
-  ```python Python theme={null}
-  from py_clob_client_v2 import MarketOrderArgs, OrderType, PartialCreateOrderOptions
-  from py_clob_client_v2.order_builder.constants import BUY
+          // response: OrderResponse
+          ```
 
-  response = client.create_and_post_market_order(
-      order_args=MarketOrderArgs(
-          token_id="TOKEN_ID",
-          side=BUY,
-          amount=100,
-          price=0.50,
-      ),
-      options=PartialCreateOrderOptions(tick_size="0.01", neg_risk=False),
-      order_type=OrderType.FOK,
-  )
-  ```
+          ```ts Sell theme={null}
+          const response = await client.placeMarketOrder({
+            tokenId: yesTokenId,
+            side: OrderSide.SELL,
+            shares: "10",
+            minPrice: estimatedSellPrice,
+            orderType: OrderType.FAK,
+          });
 
-  ```rust Rust theme={null}
-  let order = client
-      .market_order()
-      .token_id("TOKEN_ID".parse()?)
-      .amount(Amount::usdc(dec!(100))?)
-      .price(dec!(0.50))
-      .side(Side::Buy)
-      .order_type(OrderType::FOK)
-      .build()
-      .await?;
-  let signed = client.sign(&signer, order).await?;
-  let response = client.post_order(signed).await?;
-  ```
-</CodeGroup>
+          // response: OrderResponse
+          ```
+        </CodeGroup>
 
-***
+        `maxPrice` prevents a BUY from crossing a higher price, while `minPrice`
+        prevents a SELL from crossing a lower one. If the book moves before
+        submission, the order may fill only partially or not at all.
+      </Step>
 
-## Post-Only Orders
+      <Step title="Check the Response">
+        Finally, check `response.ok` to determine whether the CLOB accepted the
+        order:
 
-Post-only orders guarantee you're always the maker. If the order would match immediately (cross the spread), it's rejected instead of executed.
+        ```ts theme={null}
+        if (response.ok) {
+          console.log(response.orderId, response.status);
+          console.log(response.tradeIds, response.transactionsHashes);
+        } else {
+          console.error(response.code, response.message);
+        }
+        ```
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  const response = await client.postOrder(signedOrder, OrderType.GTC, true);
-  ```
+        An accepted response includes the order ID and one of these statuses. If
+        the order fills fully or partially, `tradeIds` identifies the resulting
+        trades. When available, `transactionsHashes` contains their transaction
+        hashes:
 
-  ```python Python theme={null}
-  response = client.post_order(signed_order, OrderType.GTC, post_only=True)
-  ```
+        | Status    | Description                                              |
+        | --------- | -------------------------------------------------------- |
+        | `live`    | The order is resting on the book.                        |
+        | `matched` | The order matched immediately with resting liquidity.    |
+        | `delayed` | The order is marketable but subject to a matching delay. |
 
-  ```rust Rust theme={null}
-  let order = client
-      .limit_order()
-      .token_id("TOKEN_ID".parse()?)
-      .price(dec!(0.50))
-      .size(dec!(10))
-      .side(Side::Buy)
-      .post_only(true)
-      .build()
-      .await?;
-  let signed = client.sign(&signer, order).await?;
-  let response = client.post_order(signed).await?;
-  ```
-</CodeGroup>
+        A rejected order returns `ok: false` with a code and message.
+      </Step>
+    </Steps>
+  </Tab>
 
-* Only works with **GTC** and **GTD** order types
-* Rejected if combined with FOK or FAK
+  <Tab title="Python">
+    Given an `AsyncSecureClient`, estimate the price and place
+    the market order. The synchronous `SecureClient` provides the same methods.
 
-***
+    <Steps>
+      <Step title="Estimate the Price">
+        First, call `estimate_market_price()` to discover the price level the order
+        would reach at the current order-book depth. For a BUY, `amount` is the USD
+        notional to spend. For a SELL, `shares` is the number of shares to sell,
+        rather than their USD value.
 
-## Batch Orders
+        <CodeGroup>
+          ```python Buy theme={null}
+          estimated_buy_price = await client.estimate_market_price(
+              token_id=yes_token_id,
+              side="BUY",
+              amount="10",
+              order_type="FAK",
+          )
 
-Place up to **15 orders** in a single request:
+          # estimated_buy_price: Decimal
+          ```
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  import { OrderType, Side, PostOrdersArgs } from "@polymarket/clob-client-v2";
+          ```python Sell theme={null}
+          estimated_sell_price = await client.estimate_market_price(
+              token_id=yes_token_id,
+              side="SELL",
+              shares="10",
+              order_type="FAK",
+          )
 
-  const orders: PostOrdersArgs[] = [
-    {
-      order: await client.createOrder(
+          # estimated_sell_price: Decimal
+          ```
+        </CodeGroup>
+
+        In these examples, `amount="10"` means spending \$10, while `shares="10"`
+        means selling 10 shares.
+
+        The estimate is a snapshot of the current order book. The available price
+        can change before you submit the order.
+      </Step>
+
+      <Step title="Place the Order">
+        Then, if the estimated price is acceptable, pass it as the maximum price
+        for a BUY or the minimum price for a SELL, and place the market order:
+
+        <CodeGroup>
+          ```python Buy theme={null}
+          response = await client.place_market_order(
+              token_id=yes_token_id,
+              side="BUY",
+              amount="10",
+              max_price=estimated_buy_price,
+              order_type="FAK",
+          )
+
+          # response: OrderResponse
+          ```
+
+          ```python Sell theme={null}
+          response = await client.place_market_order(
+              token_id=yes_token_id,
+              side="SELL",
+              shares="10",
+              min_price=estimated_sell_price,
+              order_type="FAK",
+          )
+
+          # response: OrderResponse
+          ```
+        </CodeGroup>
+
+        `max_price` prevents a BUY from crossing a higher price, while `min_price`
+        prevents a SELL from crossing a lower one. If the book moves before
+        submission, the order may fill only partially or not at all.
+      </Step>
+
+      <Step title="Check the Response">
+        Finally, check `response.ok` to determine whether the CLOB accepted the
+        order:
+
+        ```python theme={null}
+        if response.ok:
+            print(response.order_id, response.status)
+            print(response.trade_ids, response.transactions_hashes)
+        else:
+            print(response.code, response.message)
+        ```
+
+        An accepted response includes the order ID and one of these statuses. If
+        the order fills fully or partially, `trade_ids` identifies the resulting
+        trades. When available, `transactions_hashes` contains their transaction
+        hashes:
+
+        | Status    | Description                                              |
+        | --------- | -------------------------------------------------------- |
+        | `live`    | The order is resting on the book.                        |
+        | `matched` | The order matched immediately with resting liquidity.    |
+        | `delayed` | The order is marketable but subject to a matching delay. |
+
+        A rejected order returns `ok=False` with a code and message.
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="API">
+    Market orders reuse the construction and signing flow from [Place a Limit
+    Order](#place-a-limit-order). Start from the current order book, calculate
+    market-order amounts, then build and sign the same Exchange order with
+    those values. The steps below call out what changes when the order should
+    execute against current liquidity:
+
+    <Steps>
+      <Step title="Estimate the Price">
+        First, fetch the current order book:
+
+        ```bash theme={null}
+        curl "https://clob.polymarket.com/book?token_id=$TOKEN_ID"
+        ```
+
+        ```json theme={null}
         {
-          tokenID: "TOKEN_ID",
-          price: 0.48,
-          side: Side.BUY,
-          size: 500,
-        },
-        { tickSize: "0.01", negRisk: false },
-      ),
-      orderType: OrderType.GTC,
-    },
-    {
-      order: await client.createOrder(
+          "asset_id": "<yes_token_id>",
+          "bids": [{ "price": "0.50", "size": "40" }],
+          "asks": [
+            { "price": "0.54", "size": "30" },
+            { "price": "0.52", "size": "25" }
+          ],
+          "min_order_size": "5",
+          "tick_size": "0.01",
+          "neg_risk": false
+        }
+        ```
+
+        Estimate the price according to the order side:
+
+        * For a BUY, walk the asks from the best price upward and accumulate
+          `price × size` until the total reaches the USD amount you want to spend.
+          Use the final price as the maximum price.
+        * For a SELL, walk the bids from the best price downward until their
+          cumulative size reaches the number of shares you want to sell. Use the
+          final price as the minimum price.
+
+        In this example, a 10 USD BUY can fill entirely at `0.52`, so its maximum
+        price is `0.52`. Recalculate the estimate if the order book changes before
+        submission.
+      </Step>
+
+      <Step title="Calculate the Order Amounts">
+        Use the precision table in the limit-order workflow above, but map the
+        amounts according to the side:
+
+        * For a BUY, `makerAmount` is the USD amount to spend and `takerAmount`
+          is `makerAmount ÷ maximum price` shares.
+        * For a SELL, `makerAmount` is the number of shares and `takerAmount` is
+          `makerAmount × minimum price` USD.
+
+        Round the price and input amount down to the table's **Price decimals** and
+        **Size decimals**. After calculating `takerAmount`, round it up first to
+        **Amount decimals + 4**, then to **Amount decimals**. This preserves the
+        maximum price for a BUY or the minimum price for a SELL.
+
+        A 10 USD BUY with a maximum price of `0.52` produces `19.2308` shares at a
+        tick size of `0.01`. This exceeds the five-share minimum in the order book.
+        Converted to six-decimal integers, the amounts are:
+
+        ```json theme={null}
         {
-          tokenID: "TOKEN_ID",
-          price: 0.52,
-          side: Side.SELL,
-          size: 500,
+          "makerAmount": "10000000",
+          "takerAmount": "19230800"
+        }
+        ```
+      </Step>
+
+      <Step title="Build and Sign the Order">
+        Use the order book's `neg_risk` value to select the Exchange contract, then
+        resolve the maker, signer, and signature type for the wallet as shown in
+        the limit-order workflow. Build the same EIP-712 order typed data, replacing
+        `makerAmount` and `takerAmount` with the market-order amounts calculated
+        above.
+
+        Sign with the account signer. Deposit Wallets use the `TypedDataSign`
+        payload and wrap the resulting signature for ERC-7739 validation; Proxy
+        Wallets, Safe Wallets, and EOAs sign the Exchange `Order` directly.
+      </Step>
+
+      <Step title="Submit the Market Order">
+        Set `orderType` to `"FAK"` and submit the order:
+
+        ```bash theme={null}
+        curl -X POST "https://clob.polymarket.com/order" \
+          -H "Content-Type: application/json" \
+          -H "POLY_ADDRESS: <signer_address>" \
+          -H "POLY_API_KEY: <clob_api_key>" \
+          -H "POLY_PASSPHRASE: <clob_api_passphrase>" \
+          -H "POLY_SIGNATURE: <clob_l2_signature>" \
+          -H "POLY_TIMESTAMP: <clob_request_timestamp>" \
+          --data '{
+            "deferExec": false,
+            "order": {
+              "builder": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "expiration": "0",
+              "maker": "<maker_address>",
+              "makerAmount": "10000000",
+              "metadata": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "salt": 479249096354,
+              "side": "BUY",
+              "signature": "<signature>",
+              "signatureType": 3,
+              "signer": "<order_signer_address>",
+              "takerAmount": "19230800",
+              "timestamp": "<unix_milliseconds>",
+              "tokenId": "<yes_token_id>"
+            },
+            "orderType": "FAK",
+            "owner": "<clob_api_key>"
+          }'
+        ```
+
+        Using the signer address and CLOB API credentials from [API
+        Authentication](/getting-started/api#authentication), create a fresh
+        `<clob_request_timestamp>` and generate `<clob_l2_signature>` from the exact
+        serialized body sent over the wire:
+
+        ```text theme={null}
+        body = <exact_serialized_request_body>
+        message = <clob_request_timestamp> + "POST" + "/order" + body
+
+        clob_l2_signature = urlsafeBase64WithPadding(
+          HMAC-SHA256(base64Decode(<clob_api_secret>), message)
+        )
+        ```
+
+        Market orders must use an `expiration` of `"0"`.
+      </Step>
+
+      <Step title="Check the Response">
+        Finally, check `success`. A FAK order may fill fully or partially; any
+        unfilled remainder is canceled. Successful fills are identified by
+        `tradeIDs`; `transactionsHashes` contains any transaction hashes available
+        when the response is returned. A rejected order explains the failure in
+        `errorMsg`:
+
+        <CodeGroup>
+          ```json Success theme={null}
+          {
+            "success": true,
+            "errorMsg": "",
+            "orderID": "<order_id>",
+            "status": "matched",
+            "makingAmount": "<making_amount>",
+            "takingAmount": "<taking_amount>",
+            "transactionsHashes": ["<transaction_hash>"],
+            "tradeIDs": ["<trade_id>"]
+          }
+          ```
+
+          ```json Failure theme={null}
+          {
+            "success": false,
+            "errorMsg": "not enough balance / allowance",
+            "orderID": "",
+            "status": "",
+            "makingAmount": "",
+            "takingAmount": ""
+          }
+          ```
+        </CodeGroup>
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+### Cap Market Buy Spending
+
+A market BUY's amount is the pre-fee USD notional. Applicable [platform
+fees](/market-data/market-details#trading-fees) and [builder taker
+fees](/programs/builders/fees) are charged on top. Set an all-in spending limit
+when the complete cost must remain within a fixed budget.
+
+<Tabs>
+  <Tab title="TypeScript">
+    Set `maxSpend` to the most you want to spend, including fees:
+
+    ```ts theme={null}
+    const response = await client.placeMarketOrder({
+      tokenId: yesTokenId,
+      side: OrderSide.BUY,
+      amount: "10",
+      maxSpend: "10",
+      maxPrice: estimatedBuyPrice,
+      orderType: OrderType.FAK,
+    });
+    ```
+
+    Here, `amount: "10"` requests a 10 USD pre-fee buy, while `maxSpend: "10"`
+    caps the total spend at 10 USD. The SDK reduces the signed buy amount so
+    the order and its fees fit within the cap. Omit `maxSpend` to pay fees on
+    top of `amount`.
+  </Tab>
+
+  <Tab title="Python">
+    Set `max_spend` to the most you want to spend, including fees:
+
+    ```python theme={null}
+    response = await client.place_market_order(
+        token_id=yes_token_id,
+        side="BUY",
+        amount="10",
+        max_spend="10",
+        max_price=estimated_buy_price,
+        order_type="FAK",
+    )
+    ```
+
+    Here, `amount="10"` requests a 10 USD pre-fee buy, while `max_spend="10"`
+    caps the total spend at 10 USD. The SDK reduces the signed buy amount so
+    the order and its fees fit within the cap. Omit `max_spend` to pay fees on
+    top of `amount`.
+  </Tab>
+
+  <Tab title="API">
+    Before signing, reduce `makerAmount` so the order notional plus applicable
+    platform and builder taker fees does not exceed the intended limit. Then
+    use the fee-adjusted value when calculating the market-order amounts above.
+  </Tab>
+</Tabs>
+
+### Market Order Types
+
+A market order uses one of two execution types, depending on whether a partial
+fill is acceptable:
+
+| Type                | Behavior                                                                              |
+| ------------------- | ------------------------------------------------------------------------------------- |
+| Fill and Kill (FAK) | Fills against the available liquidity immediately and cancels any unfilled remainder. |
+| Fill or Kill (FOK)  | Fills the entire order immediately or does not fill any of it.                        |
+
+<Tabs>
+  <Tab title="TypeScript">
+    Set `orderType` when calling `placeMarketOrder()` on a `SecureClient`.
+    Fill and Kill is the default.
+
+    <CodeGroup>
+      ```ts FAK theme={null}
+      import { OrderSide, OrderType } from "@polymarket/client";
+
+      const response = await client.placeMarketOrder({
+        tokenId: yesTokenId,
+        side: OrderSide.BUY,
+        amount: "10",
+        orderType: OrderType.FAK,
+      });
+
+      // response: OrderResponse
+      ```
+
+      ```ts FOK theme={null}
+      import { OrderSide, OrderType } from "@polymarket/client";
+
+      const response = await client.placeMarketOrder({
+        tokenId: yesTokenId,
+        side: OrderSide.BUY,
+        amount: "10",
+        orderType: OrderType.FOK,
+      });
+
+      // response: OrderResponse
+      ```
+    </CodeGroup>
+  </Tab>
+
+  <Tab title="Python">
+    Set `order_type` when calling `place_market_order()` on an
+    `AsyncSecureClient`. Fill and Kill is the default, and the synchronous
+    `SecureClient` provides the same method.
+
+    <CodeGroup>
+      ```python FAK theme={null}
+      response = await client.place_market_order(
+          token_id=yes_token_id,
+          side="BUY",
+          amount="10",
+          order_type="FAK",
+      )
+
+      # response: OrderResponse
+      ```
+
+      ```python FOK theme={null}
+      response = await client.place_market_order(
+          token_id=yes_token_id,
+          side="BUY",
+          amount="10",
+          order_type="FOK",
+      )
+
+      # response: OrderResponse
+      ```
+    </CodeGroup>
+  </Tab>
+
+  <Tab title="API">
+    `orderType` is not part of the signed EIP-712 order typed data. Set it to
+    `FAK` or `FOK` alongside the signed order in the top-level `/order` body:
+
+    ```json theme={null}
+    {
+      "deferExec": false,
+      "order": { "…": "…" },
+      "orderType": "FOK",
+      "owner": "<clob_api_key>"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Create and Post Separately
+
+Create and sign an order without submitting it when you need to inspect it,
+store it temporarily, or include it in a later batch.
+
+<Tabs>
+  <Tab title="TypeScript">
+    Given a `SecureClient`, create the signed order locally,
+    then post it when ready:
+
+    ```ts theme={null}
+    const signedOrder = await client.createLimitOrder({
+      tokenId: yesTokenId,
+      side: OrderSide.BUY,
+      price: "0.52",
+      size: "10",
+    });
+
+    // signedOrder: SignedOrder
+
+    const response = await client.postOrder(signedOrder);
+
+    // response: OrderResponse
+    ```
+  </Tab>
+
+  <Tab title="Python">
+    Given an `AsyncSecureClient`, create the signed order
+    locally, then post it when ready. The synchronous `SecureClient` provides
+    the same methods.
+
+    ```python theme={null}
+    signed_order = await client.create_limit_order(
+        token_id=yes_token_id,
+        side="BUY",
+        price="0.52",
+        size="10",
+    )
+
+    # signed_order: SignedOrder
+
+    response = await client.post_order(signed_order)
+
+    # response: OrderResponse
+    ```
+  </Tab>
+
+  <Tab title="API">
+    The API is inherently two-step: signing happens locally and submission is
+    a separate HTTP request. Build and sign the order as described in [Place a
+    Limit Order](#place-a-limit-order), then keep the signed order until you are
+    ready to submit it.
+  </Tab>
+</Tabs>
+
+## Post a Batch of Orders
+
+Submit several signed orders in one request. This is useful for placing a
+ladder of quotes across multiple price levels when market making.
+
+<Tabs>
+  <Tab title="TypeScript">
+    Given a `SecureClient`, create each signed order, then pass
+    them together to `postOrders()`:
+
+    ```ts theme={null}
+    const firstOrder = await client.createLimitOrder({
+      tokenId: yesTokenId,
+      side: OrderSide.BUY,
+      price: "0.51",
+      size: "10",
+    });
+
+    const secondOrder = await client.createLimitOrder({
+      tokenId: yesTokenId,
+      side: OrderSide.BUY,
+      price: "0.52",
+      size: "10",
+    });
+
+    const responses = await client.postOrders([firstOrder, secondOrder]);
+
+    // responses: OrderResponse[]
+    ```
+
+    ```json Example theme={null}
+    [
+      {
+        "ok": true,
+        "orderId": "0x0827…",
+        "status": "live",
+        "makingAmount": "0",
+        "takingAmount": "0",
+        "transactionsHashes": [],
+        "tradeIds": []
+      },
+      {
+        "ok": true,
+        "orderId": "0x09f3…",
+        "status": "live",
+        "makingAmount": "0",
+        "takingAmount": "0",
+        "transactionsHashes": [],
+        "tradeIds": []
+      }
+    ]
+    ```
+
+    `postOrders` accepts between 1 and 15 signed orders per call. Each
+    entry in `responses` can independently be accepted or rejected, so check
+    `ok` on every entry rather than assuming the whole batch succeeded or
+    failed together.
+  </Tab>
+
+  <Tab title="Python">
+    Given an `AsyncSecureClient`, create each signed order, then
+    pass them together to `post_orders()`. The synchronous `SecureClient`
+    provides the same methods.
+
+    ```python theme={null}
+    first_order = await client.create_limit_order(
+        token_id=yes_token_id,
+        side="BUY",
+        price="0.51",
+        size="10",
+    )
+
+    second_order = await client.create_limit_order(
+        token_id=yes_token_id,
+        side="BUY",
+        price="0.52",
+        size="10",
+    )
+
+    responses = await client.post_orders([first_order, second_order])
+
+    # responses: tuple[OrderResponse, ...]
+    ```
+
+    <CodeGroup>
+      ```python OrderResponse Type theme={null}
+      tuple[OrderResponse, ...]
+      ```
+
+      ```json OrderResponse Example theme={null}
+      [
+        {
+          "ok": true,
+          "order_id": "0x0827…",
+          "status": "live",
+          "making_amount": "0",
+          "taking_amount": "0",
+          "trade_ids": [],
+          "transactions_hashes": []
         },
-        { tickSize: "0.01", negRisk: false },
-      ),
-      orderType: OrderType.GTC,
-    },
-  ];
+        {
+          "ok": true,
+          "order_id": "0x09f3…",
+          "status": "live",
+          "making_amount": "0",
+          "taking_amount": "0",
+          "trade_ids": [],
+          "transactions_hashes": []
+        }
+      ]
+      ```
+    </CodeGroup>
 
-  const response = await client.postOrders(orders);
-  ```
+    `post_orders` accepts between 1 and 15 signed orders per call. Each
+    entry in `responses` can independently be accepted or rejected, so check
+    `ok` on every entry rather than assuming the whole batch succeeded or
+    failed together.
+  </Tab>
 
-  ```python Python theme={null}
-  from py_clob_client_v2 import OrderArgs, OrderType, PostOrdersV2Args, PartialCreateOrderOptions
-  from py_clob_client_v2.order_builder.constants import BUY, SELL
+  <Tab title="API">
+    Send an array of 1 to 15 signed-order entries to `/orders`:
 
-  response = client.post_orders([
-      PostOrdersV2Args(
-          order=client.create_order(OrderArgs(
-              price=0.48,
-              size=500,
-              side=BUY,
-              token_id="TOKEN_ID",
-          ), options=PartialCreateOrderOptions(tick_size="0.01", neg_risk=False)),
-          orderType=OrderType.GTC,
-      ),
-      PostOrdersV2Args(
-          order=client.create_order(OrderArgs(
-              price=0.52,
-              size=500,
-              side=SELL,
-              token_id="TOKEN_ID",
-          ), options=PartialCreateOrderOptions(tick_size="0.01", neg_risk=False)),
-          orderType=OrderType.GTC,
-      ),
-  ])
-  ```
+    ```bash theme={null}
+    curl -X POST "https://clob.polymarket.com/orders" \
+      -H "Content-Type: application/json" \
+      -H "POLY_ADDRESS: <signer_address>" \
+      -H "POLY_API_KEY: <clob_api_key>" \
+      -H "POLY_PASSPHRASE: <clob_api_passphrase>" \
+      -H "POLY_SIGNATURE: <clob_l2_signature>" \
+      -H "POLY_TIMESTAMP: <clob_request_timestamp>" \
+      --data '[
+        {
+          "deferExec": false,
+          "order": { "…": "…" },
+          "orderType": "GTC",
+          "owner": "<clob_api_key>"
+        },
+        {
+          "deferExec": false,
+          "order": { "…": "…" },
+          "orderType": "GTC",
+          "owner": "<clob_api_key>"
+        }
+      ]'
+    ```
 
-  ```rust Rust theme={null}
-  let token_id = "TOKEN_ID".parse()?;
+    Using the signer address and CLOB API credentials from [API
+    Authentication](/getting-started/api#authentication), create a fresh
+    `<clob_request_timestamp>` and generate `<clob_l2_signature>` from the exact
+    serialized array sent over the wire:
 
-  let bid = client
-      .limit_order()
-      .token_id(token_id)
-      .price(dec!(0.48))
-      .size(dec!(500))
-      .side(Side::Buy)
-      .build()
-      .await?;
-  let ask = client
-      .limit_order()
-      .token_id(token_id)
-      .price(dec!(0.52))
-      .size(dec!(500))
-      .side(Side::Sell)
-      .build()
-      .await?;
+    ```text theme={null}
+    body = <exact_serialized_order_array>
+    message = <clob_request_timestamp> + "POST" + "/orders" + body
 
-  let signed_bid = client.sign(&signer, bid).await?;
-  let signed_ask = client.sign(&signer, ask).await?;
-  let response = client.post_orders(vec![signed_bid, signed_ask]).await?;
-  ```
-</CodeGroup>
+    clob_l2_signature = urlsafeBase64WithPadding(
+      HMAC-SHA256(base64Decode(<clob_api_secret>), message)
+    )
+    ```
 
-***
+    Each entry uses the same shape as a single `/order` request. The response
+    contains one result for each submitted order. For example, one order can
+    be accepted while another is rejected:
 
-## Order Options
+    ```json theme={null}
+    [
+      {
+        "success": true,
+        "errorMsg": "",
+        "orderID": "<order_id>",
+        "status": "live",
+        "makingAmount": "",
+        "takingAmount": "",
+        "transactionsHashes": [],
+        "tradeIDs": []
+      },
+      {
+        "success": false,
+        "errorMsg": "not enough balance / allowance",
+        "orderID": "",
+        "status": "",
+        "makingAmount": "",
+        "takingAmount": ""
+      }
+    ]
+    ```
 
-Every order requires two market-specific options: `tickSize` and `negRisk`. For
-details on signature types (`0` = EOA, `1` = POLY\_PROXY, `2` = GNOSIS\_SAFE,
-`3` = POLY\_1271 deposit wallet), see
-[Authentication](/api-reference/authentication#signature-types-and-funder).
+    Check every result rather than treating the batch as a single success or
+    failure.
+  </Tab>
+</Tabs>
 
-### Tick Sizes
+## Builder Attribution
 
-Your order price must conform to the market's tick size, or the order is rejected.
+As part of the [Builder Program](/programs/builders/overview), attach your
+builder code to orders so matched trades are credited to your builder profile.
+The code is a 32-byte hex string that identifies your profile.
 
-| Tick Size | Precision   | Example Prices         |
-| --------- | ----------- | ---------------------- |
-| `0.1`     | 1 decimal   | 0.1, 0.2, 0.5          |
-| `0.01`    | 2 decimals  | 0.01, 0.50, 0.99       |
-| `0.001`   | 3 decimals  | 0.001, 0.500, 0.999    |
-| `0.0001`  | 4 decimals  | 0.0001, 0.5000, 0.9999 |
-| `0.0025`  | 0.25¢ steps | 0.0025, 0.5000, 0.9975 |
+### Attach Your Builder Code
 
-<Note>
-  The `0.0025` (0.25¢) tick size applies only to World Cup *to advance*, *moneyline*, *spreads*, and *totals* markets. Always fetch the market's tick size before quoting rather than assuming a value.
-</Note>
+In the builder account, open polymarket.com → Settings → Builders and copy the
+**Builder Code** from your profile:
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  const tickSize = await client.getTickSize("TOKEN_ID");
-  ```
+<Frame>
+  <img src="https://mintcdn.com/polymarket-292d1b1b/1lJ_npwaE_MShiVL/images/builder-code-tutorial.png?fit=max&auto=format&n=1lJ_npwaE_MShiVL&q=85&s=6648f4bfed0dd365fc1ad40664371032" alt="Open Settings, select Builders, and copy the Builder Code" width="1512" height="1040" data-path="images/builder-code-tutorial.png" />
+</Frame>
 
-  ```python Python theme={null}
-  tick_size = client.get_tick_size("TOKEN_ID")
-  ```
+Include the builder code in every order you want attributed to your integration.
+Because it is part of the signed order, add it before signing.
 
-  ```rust Rust theme={null}
-  let token_id = "TOKEN_ID".parse()?;
-  let tick_size = client.tick_size(token_id).await?;
-  ```
-</CodeGroup>
+<Tabs>
+  <Tab title="TypeScript">
+    Given a `SecureClient`, pass the code as `builderCode` when
+    placing the order:
 
-### Negative Risk
+    ```ts theme={null}
+    const response = await client.placeLimitOrder({
+      tokenId: yesTokenId,
+      side: OrderSide.BUY,
+      price: "0.52",
+      size: "10",
+      builderCode: process.env.POLYMARKET_BUILDER_CODE,
+    });
 
-Multi-outcome events (3+ outcomes) use the Neg Risk CTF Exchange. Pass `negRisk: true` for these markets.
+    // response: OrderResponse
+    ```
+  </Tab>
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  const isNegRisk = await client.getNegRisk("TOKEN_ID");
-  ```
+  <Tab title="Python">
+    Given an `AsyncSecureClient` (or `SecureClient` for synchronous code), pass
+    the code as `builder_code` when
+    placing the order:
 
-  ```python Python theme={null}
-  is_neg_risk = client.get_neg_risk("TOKEN_ID")
-  ```
+    ```python theme={null}
+    response = await client.place_limit_order(
+        token_id=yes_token_id,
+        side="BUY",
+        price="0.52",
+        size="10",
+        builder_code=os.environ["POLYMARKET_BUILDER_CODE"],
+    )
 
-  ```rust Rust theme={null}
-  let token_id = "TOKEN_ID".parse()?;
-  let is_neg_risk = client.neg_risk(token_id).await?;
-  ```
-</CodeGroup>
+    # response: OrderResponse
+    ```
+  </Tab>
 
-<Tip>
-  Both values are also available on the market object: `minimum_tick_size` and
-  `neg_risk`. In Rust, the order builder auto-fetches both — you don't need to
-  look them up manually.
-</Tip>
+  <Tab title="API">
+    Set the `builder` field of the order struct to your builder code before
+    signing, in place of its 32-byte zero default. The code becomes part of the
+    signed order and attributes any resulting trades to your builder profile.
 
-***
+    ```json theme={null}
+    {
+      "deferExec": false,
+      "order": {
+        "builder": "<builder_code>",
+        "…": "…"
+      },
+      "orderType": "GTC",
+      "owner": "<clob_api_key>"
+    }
+    ```
+  </Tab>
+</Tabs>
 
-## Prerequisites
+### Verify Attribution
 
-Before placing an order, your funder address must have approved the Exchange contract to spend the relevant tokens:
+After an attributed order matches, query builder trades using your builder code
+to confirm that the trade was credited to your profile. Orders that have not
+matched do not appear in builder trade results.
 
-* **BUY orders**: pUSD allowance >= spending amount
-* **SELL orders**: conditional token allowance >= selling amount
+<Tabs>
+  <Tab title="TypeScript">
+    Use `listBuilderTrades` with a `PublicClient` or `SecureClient`, then fetch
+    the first page of matching trades:
 
-Order size is limited by your available balance minus amounts reserved by existing open orders:
+    ```ts theme={null}
+    const pages = client.listBuilderTrades({
+      builderCode: process.env.POLYMARKET_BUILDER_CODE,
+    });
 
-$$
-\text{maxOrderSize} = \text{balance} - \sum(\text{openOrderSize} - \text{filledAmount})
-$$
+    const page = await pages.firstPage();
 
-<Warning>
-  Orders are continuously monitored for validity — balances and allowances are
-  tracked in real time. Any maker caught intentionally abusing these checks will
-  be blacklisted.
-</Warning>
+    // page.items: BuilderTrade[]
+    ```
+  </Tab>
 
-### Sports Markets
+  <Tab title="Python">
+    Use `list_builder_trades` with an `AsyncPublicClient` or
+    `AsyncSecureClient`, then fetch the first page of matching trades. The
+    synchronous `PublicClient` and `SecureClient` provide the same method.
 
-Sports markets have additional behaviors:
+    ```python theme={null}
+    pages = client.list_builder_trades(
+        builder_code=os.environ["POLYMARKET_BUILDER_CODE"],
+    )
 
-* Outstanding limit orders are **automatically cancelled** once the game begins, clearing the entire order book at the official start time
-* Marketable orders have a **1-second placement delay** before matching
-* Game start times can shift — monitor your orders closely, as they may not be cleared if the start time changes unexpectedly
+    page = await pages.first_page()
 
-***
+    # page.items: tuple[BuilderTrade, ...]
+    ```
+  </Tab>
 
-## Response
+  <Tab title="API">
+    Builder trades are a public read and do not require authentication headers:
 
-A successful order placement returns:
+    ```bash theme={null}
+    curl "https://clob.polymarket.com/builder/trades?builder_code=$POLYMARKET_BUILDER_CODE"
+    ```
 
-```json theme={null}
-{
-  "success": true,
-  "errorMsg": "",
-  "orderID": "0xabc123...",
-  "takingAmount": "",
-  "makingAmount": "",
-  "status": "live",
-  "transactionsHashes": [],
-  "tradeIDs": []
-}
-```
+    Use the response's `next_cursor` value to request additional pages.
+  </Tab>
+</Tabs>
 
-### Statuses
-
-| Status      | Description                                                   |
-| ----------- | ------------------------------------------------------------- |
-| `live`      | Order resting on the book                                     |
-| `matched`   | Order matched immediately with a resting order                |
-| `delayed`   | Marketable order accepted into an asynchronous matching delay |
-| `unmatched` | Marketable but failed to delay — placement still successful   |
-
-<Note>
-  Selected crypto and finance up/down markets apply a 250 ms taker delay to
-  marketable orders. To check a specific market, call `GET
-      https://clob.polymarket.com/clob-markets/{condition_id}` or SDK
-  `getClobMarketInfo(conditionID)` and look for `itode: true`. The API waits for
-  this short hold and returns the final order result, so these orders usually
-  return `matched`, `live`, or `unmatched` rather than `delayed`. Orders cannot
-  be canceled while they are pending in the delay window.
-</Note>
-
-### Error Messages
-
-| Error                              | Description                                     |
-| ---------------------------------- | ----------------------------------------------- |
-| `INVALID_ORDER_MIN_TICK_SIZE`      | Price doesn't conform to the market's tick size |
-| `INVALID_ORDER_MIN_SIZE`           | Order size below the minimum threshold          |
-| `INVALID_ORDER_DUPLICATED`         | Identical order already placed                  |
-| `INVALID_ORDER_NOT_ENOUGH_BALANCE` | Insufficient balance or allowance               |
-| `INVALID_ORDER_EXPIRATION`         | Expiration timestamp is in the past             |
-| `INVALID_POST_ONLY_ORDER_TYPE`     | Post-only used with FOK/FAK                     |
-| `INVALID_POST_ONLY_ORDER`          | Post-only order would cross the book            |
-| `FOK_ORDER_NOT_FILLED_ERROR`       | FOK order couldn't be fully filled              |
-| `INVALID_ORDER_ERROR`              | System error inserting the order                |
-| `EXECUTION_ERROR`                  | System error executing the trade                |
-| `ORDER_DELAYED`                    | Order match delayed due to market conditions    |
-| `DELAYING_ORDER_ERROR`             | System error while delaying the order           |
-| `MARKET_NOT_READY`                 | Market not yet accepting orders                 |
-
-***
-
-## Heartbeat
-
-The heartbeat endpoint maintains session liveness. If a valid heartbeat is not received within **10 seconds** (with a 5-second buffer), **all open orders are cancelled**.
-
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  let heartbeatId = "";
-  setInterval(async () => {
-    const resp = await client.postHeartbeat(heartbeatId);
-    heartbeatId = resp.heartbeat_id;
-  }, 5000);
-  ```
-
-  ```python Python theme={null}
-  import time
-
-  heartbeat_id = ""
-  while True:
-      resp = client.post_heartbeat(heartbeat_id)
-      heartbeat_id = resp["heartbeat_id"]
-      time.sleep(5)
-  ```
-
-  ```rust Rust theme={null}
-  // With the `heartbeats` feature, the Rust SDK can auto-send heartbeats
-  // in a background task — no manual loop needed:
-  Client::start_heartbeats(&mut client)?;
-  // ... your trading logic ...
-  client.stop_heartbeats().await?;
-
-  // Or send manually:
-  let resp = client.post_heartbeat(None).await?; // None for first call
-  let resp = client.post_heartbeat(Some(resp.heartbeat_id)).await?;
-  ```
-</CodeGroup>
-
-* Include the most recent `heartbeat_id` in each request. Use an empty string for the first request.
-* If you send an expired ID, the server responds with `400` and the correct ID. Update and retry.
-
-***
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Cancel Orders" icon="xmark" href="/trading/orders/cancel">
-    Cancel single, multiple, or all open orders
-  </Card>
-
-  <Card title="Order Attribution" icon="tag" href="/trading/orders/attribution">
-    Attribute orders to your builder account for volume credit
-  </Card>
-</CardGroup>
+You can also monitor credited volume on the [Builder
+Leaderboard](https://builders.polymarket.com). Allow up to 24 hours for matched
+volume to appear there.

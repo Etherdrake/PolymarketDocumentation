@@ -2,9 +2,9 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Polymarket Changelog
+# Predictions Changelog
 
-> Welcome to the Polymarket Changelog. Here you will find any important changes to Polymarket, including but not limited to CLOB, API, UI and Mobile Applications.
+> Important changes to Polymarket prediction markets, including the CLOB, APIs, web application, and mobile applications.
 
 <Update label="Jul 17, 2026" description="Latency improvements and order response changes — Friday July 24, 04:00 UTC">
   * **Rollout Friday, July 24 at 04:00 UTC**: An async commit pipeline cuts matching latency. `POST /order` and `POST /orders` will no longer return `transactionHashes` on successful FAK/FOK matches — you get `tradeIDs` instead. `tradeIDs` behavior is unchanged; websocket fills are unaffected.
@@ -21,11 +21,11 @@
 <Update label="Jul 10, 2026" description="Sports taker fee and maker rebate update">
   * **Sports fee coefficient**: The sports taker fee rate increases from `0.03` to `0.05` at midnight UTC.
   * **Sports maker rebate**: The sports maker rebate decreases from 25% to 15% of collected taker fees.
-  * **Updated documentation**: [Fees](/trading/fees) and [Maker Rebates Program](/market-makers/maker-rebates).
+  * **Updated documentation**: [Fees](/trading/fees) and [Maker Rebates Program](/programs/maker-rebates).
 </Update>
 
 <Update label="Jul 2, 2026" description="World Cup markets decimalized to a 0.0025 (0.25¢) tick size">
-  * **Finer tick size for World Cup markets**: All World Cup *to advance*, *moneyline*, *spreads*, and *totals* markets are now decimalized to a **0.0025 (0.25¢)** tick size. This lets you execute at smaller ticks and tighter spreads for the most competitive prices. Applies only to those World Cup markets — see [Tick Sizes](/trading/orders/overview#tick-sizes).
+  * **Finer tick size for World Cup markets**: All World Cup *to advance*, *moneyline*, *spreads*, and *totals* markets are now decimalized to a **0.0025 (0.25¢)** tick size. This lets you execute at smaller ticks and tighter spreads for the most competitive prices. Applies only to those World Cup markets — see [Place Orders](/trading/place-orders).
 </Update>
 
 <Update label="Jun 25, 2026" description="Bridge API: optional X-Builder-Code header">
@@ -135,7 +135,7 @@
 
 <Update label="Mar 30, 2026" description="Fee Structure V2">
   * **New fee categories**: Fees now apply to Crypto, Sports, Finance, Politics, Economics, Culture, Weather, Tech, Mentions, and Other / General markets with updated rates per category. Geopolitical and world events markets remain fee-free.
-  * **Updated documentation**: [Fees](/trading/fees) and [Maker Rebates Program](/market-makers/maker-rebates).
+  * **Updated documentation**: [Trading Fees](/trading/fees) and [Maker Rebates Program](/programs/maker-rebates).
 </Update>
 
 <Update label="Mar 17, 2026" description="March Madness: $2M+ in Liquidity Rewards">
@@ -160,12 +160,12 @@
 
   * **Markets**: [Browse March Madness markets](https://polymarket.com/sports/cbb/games)
 
-  * **More details**: [Liquidity Rewards documentation](/market-makers/liquidity-rewards#liquidity-rewards)
+  * **More details**: [Liquidity Rewards documentation](/programs/liquidity-rewards)
 </Update>
 
 <Update label="Mar 1, 2026" description="Taker Fees & Maker Rebates: All Crypto Markets">
   * **Crypto market fees expansion**: Starting March 6, 2026, taker fees and maker rebates extend to all crypto markets including 1H, 4H, daily, and weekly. The same fee structure as existing crypto markets applies. Only new markets created after March 6 are affected.
-  * **Updated documentation**: [Fees](/trading/fees) and [Maker Rebates Program](/market-makers/maker-rebates) updated to reflect all crypto market coverage.
+  * **Updated documentation**: [Trading Fees](/trading/fees) and [Maker Rebates Program](/programs/maker-rebates) updated to reflect all crypto market coverage.
 </Update>
 
 <Update label="Feb 12, 2026" description="5-Minute Crypto Markets">
@@ -176,7 +176,7 @@
 <Update label="Feb 11, 2026" description="Taker Fees & Maker Rebates: NCAAB and Serie A">
   * **Sports market fees**: Taker fees to be enabled on NCAAB (college basketball) and Serie A markets on February 18, 2026.
   * **Per-market rebate calculation**: Rebates are now calculated per market, makers only compete with other makers in the same market.
-  * **Updated documentation**: [Maker Rebates Program](/market-makers/maker-rebates) updated with sports fee tables and parameters.
+  * **Updated documentation**: [Maker Rebates Program](/programs/maker-rebates) updated with sports fee tables and parameters.
 </Update>
 
 <Update label="Jan 28, 2026" description="Bridge API: Withdrawal Endpoint">
@@ -217,7 +217,7 @@
 
 <Update label="September 15, 2025" description="WSS price_change event update">
   * There has been a significant change to the structure of the price change message. This update will be applied at 11PM UTC September 15, 2025. We apologize for the short notice
-    * Please see the [Market Channel](/market-data/websocket/market-channel) for details.
+    * Please see [Real-Time Data](/market-data/realtime-data) for details.
 </Update>
 
 <Update label="August 26, 2025" description="Updated /trades and /activity endpoints">
@@ -227,7 +227,7 @@
 </Update>
 
 <Update label="August 21, 2025" description="Batch Orders Increase">
-  * The batch orders limit has been increased from 5 -> 15. Read more about the batch orders functionality [here](/trading/orders/create).
+  * The batch orders limit has been increased from 5 -> 15. Read more about the batch orders functionality [here](/trading/place-orders#post-a-batch-of-orders).
 </Update>
 
 <Update label="July 23, 2025" description="Get Book(s) update">
@@ -244,11 +244,11 @@
 </Update>
 
 <Update label="June 3, 2025" description="New Batch Orders Endpoint">
-  * We’re excited to roll out a highly requested feature: **order batching**. With this new endpoint, users can now submit up to five trades in a single request. To help you get started, we’ve included sample code demonstrating how to use it. Please see [Create Orders](/trading/orders/create) for more details.
+  * We’re excited to roll out a highly requested feature: **order batching**. With this new endpoint, users can now submit up to five trades in a single request. To help you get started, we’ve included sample code demonstrating how to use it. Please see [Place Orders](/trading/place-orders) for more details.
 </Update>
 
 <Update label="June 3, 2025" description="Change to /data/trades">
-  * We're adding a new `side` field to the `MakerOrder` portion of the trade object. This field will indicate whether the maker order is a `buy` or `sell`, helping to clarify trade events where the maker side was previously ambiguous. For more details, refer to the MakerOrder object on the [Orders](/trading/orders/cancel) page.
+  * We're adding a new `side` field to the `MakerOrder` portion of the trade object. This field will indicate whether the maker order is a `buy` or `sell`, helping to clarify trade events where the maker side was previously ambiguous. For more details, refer to the MakerOrder object on the [Manage Orders](/trading/manage-orders) page.
 </Update>
 
 <Update label="May 28, 2025" description="Websocket Changes">

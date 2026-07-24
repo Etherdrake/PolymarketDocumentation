@@ -47,7 +47,7 @@ at risk, and why account balances change.
     How session state affects pricing feed selection.
   </Card>
 
-  <Card title="Geographic Restrictions" icon="globe" href="/perps/learn-about-trading/geographic-restrictions">
+  <Card title="Geographic Restrictions" icon="globe" href="/api-reference/perps/geographic-restrictions">
     Where order placement is restricted.
   </Card>
 </CardGroup>

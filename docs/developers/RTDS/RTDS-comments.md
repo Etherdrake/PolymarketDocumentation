@@ -2,553 +2,2215 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Real-Time Data Socket
+# Real-Time Data
 
-> Stream comments, crypto prices, and equity prices via WebSocket
+> Keep market data current with Polymarket's real-time feeds.
 
-The Polymarket Real-Time Data Socket (RTDS) is a WebSocket-based streaming service that provides real-time updates for **comments**, **crypto prices**, and **equity prices**.
+Use Polymarket's real-time feeds to react as market conditions and related data
+change. They keep the public market data your application depends on current
+without repeated polling. For authenticated order and trade updates, see
+[Real-Time Order Updates](/trading/realtime-order-updates).
 
-<Card title="TypeScript client" icon="github" href="https://github.com/Polymarket/real-time-data-client">
-  Official RTDS TypeScript client (`real-time-data-client`).
-</Card>
+## Market Stream
 
-## Endpoint
+Use the market stream to keep your application in sync with changes to a
+market's order book and trading state.
 
-```
-wss://ws-live-data.polymarket.com
-```
+<Tabs>
+  <Tab title="TypeScript">
+    Given a `PublicClient` or `SecureClient`, subscribe to the `market` topic with one or
+    more token IDs:
 
-Some user-specific streams may require `gamma_auth` with your wallet address.
+    ```ts theme={null}
+    const tokenId = "<token_id>";
 
-## Subscribing
+    const stream = await client.subscribe([
+      {
+        topic: "market",
+        tokenIds: [tokenId],
+      },
+    ]);
 
-Send a JSON message to subscribe to data streams:
-
-```json theme={null}
-{
-  "action": "subscribe",
-  "subscriptions": [
-    {
-      "topic": "topic_name",
-      "type": "message_type",
-      "filters": "optional_filter_string",
-      "gamma_auth": {
-        "address": "wallet_address"
+    for await (const event of stream) {
+      switch (event.type) {
+        case "book":
+          // event: MarketBookEvent
+          break;
+        case "price_change":
+          // event: MarketPriceChangeEvent
+          break;
+        case "last_trade_price":
+          // event: MarketLastTradePriceEvent
+          break;
+        case "tick_size_change":
+          // event: MarketTickSizeChangeEvent
+          break;
       }
     }
-  ]
-}
-```
+    ```
 
-To unsubscribe, send the same structure with `"action": "unsubscribe"`.
+    <Accordion title="Standard Market Events">
+      #### Order Book
 
-Subscriptions can be added, removed, and modified without disconnecting. Send `PING` messages every 5 seconds to maintain the connection.
+      <CodeGroup>
+        ```ts MarketBookEvent Type theme={null}
+        type OrderBookLevel = {
+          price: DecimalString;
+          size: DecimalString;
+        };
 
-<Note>Only the subscription types documented below are supported.</Note>
+        type MarketBookEvent = {
+          topic: "market";
+          type: "book";
+          payload: {
+            market: string;
+            tokenId: TokenId;
+            bids: OrderBookLevel[];
+            asks: OrderBookLevel[];
+            hash?: string | null;
+            timestamp?: string | null;
+            minOrderSize?: DecimalString | null;
+            tickSize?: DecimalString | null;
+            negRisk?: boolean | null;
+            lastTradePrice?: DecimalString | null;
+          };
+        };
+        ```
 
-## Message Structure
+        ```json MarketBookEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "book",
+          "payload": {
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "tokenId": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+            "bids": [{ "price": "0.08", "size": "33343.4" }],
+            "asks": [{ "price": "0.09", "size": "163939.58" }],
+            "hash": "0xabc123…",
+            "timestamp": "1782753357257"
+          }
+        }
+        ```
+      </CodeGroup>
 
-All messages follow this structure:
+      #### Price Change
 
-```json theme={null}
-{
-  "topic": "string",
-  "type": "string",
-  "timestamp": "number",
-  "payload": "object"
-}
-```
+      <CodeGroup>
+        ```ts MarketPriceChangeEvent Type theme={null}
+        type PriceChange = {
+          tokenId: TokenId;
+          price: DecimalString;
+          size: DecimalString;
+          side: OrderSide;
+          hash?: string | null;
+          bestBid?: DecimalString | null;
+          bestAsk?: DecimalString | null;
+        };
 
-| Field       | Type   | Description                                                                 |
-| ----------- | ------ | --------------------------------------------------------------------------- |
-| `topic`     | string | The subscription topic (e.g., `crypto_prices`, `equity_prices`, `comments`) |
-| `type`      | string | The message type/event (e.g., `update`, `reaction_created`)                 |
-| `timestamp` | number | Unix timestamp in milliseconds when the message was sent                    |
-| `payload`   | object | Event-specific data object                                                  |
+        type MarketPriceChangeEvent = {
+          topic: "market";
+          type: "price_change";
+          payload: {
+            market: string;
+            priceChanges: PriceChange[];
+            timestamp?: string | null;
+          };
+        };
+        ```
 
-## Crypto Prices
+        ```json MarketPriceChangeEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "price_change",
+          "payload": {
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "priceChanges": [
+              {
+                "tokenId": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+                "price": "0.08",
+                "size": "33343.4",
+                "side": "BUY",
+                "hash": "56621a121a47ed9333273e21c83b660cff37ae50",
+                "bestBid": "0.08",
+                "bestAsk": "0.09"
+              }
+            ],
+            "timestamp": "1782753357257"
+          }
+        }
+        ```
+      </CodeGroup>
 
-Real-time cryptocurrency price data from two sources: **Binance** and **Chainlink**. No authentication required.
+      #### Last Trade Price
 
-### Binance Source
+      <CodeGroup>
+        ```ts MarketLastTradePriceEvent Type theme={null}
+        type MarketLastTradePriceEvent = {
+          topic: "market";
+          type: "last_trade_price";
+          payload: {
+            market: string;
+            tokenId: TokenId;
+            price: DecimalString;
+            size?: DecimalString | null;
+            feeRateBps?: DecimalString | null;
+            side: OrderSide;
+            timestamp?: string | null;
+            transactionHash?: string | null;
+          };
+        };
+        ```
 
-Subscribe to all symbols:
+        ```json MarketLastTradePriceEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "last_trade_price",
+          "payload": {
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "tokenId": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+            "price": "0.08",
+            "size": "219.217767",
+            "feeRateBps": "0",
+            "side": "SELL",
+            "timestamp": "1782753357257",
+            "transactionHash": "0xeeefff…"
+          }
+        }
+        ```
+      </CodeGroup>
 
-```json theme={null}
-{
-  "action": "subscribe",
-  "subscriptions": [
-    {
-      "topic": "crypto_prices",
-      "type": "update"
+      #### Tick Size Change
+
+      <CodeGroup>
+        ```ts MarketTickSizeChangeEvent Type theme={null}
+        type MarketTickSizeChangeEvent = {
+          topic: "market";
+          type: "tick_size_change";
+          payload: {
+            market: string;
+            tokenId: TokenId;
+            oldTickSize?: DecimalString | null;
+            newTickSize: DecimalString;
+            timestamp?: string | null;
+          };
+        };
+        ```
+
+        ```json MarketTickSizeChangeEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "tick_size_change",
+          "payload": {
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "tokenId": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+            "oldTickSize": "0.01",
+            "newTickSize": "0.001",
+            "timestamp": "1782753357257"
+          }
+        }
+        ```
+      </CodeGroup>
+    </Accordion>
+
+    Enable `customFeatureEnabled` to include top-of-book and market lifecycle
+    updates:
+
+    ```ts theme={null}
+    const stream = await client.subscribe([
+      {
+        topic: "market",
+        tokenIds: [tokenId],
+        customFeatureEnabled: true,
+      },
+    ]);
+
+    for await (const event of stream) {
+      switch (event.type) {
+        case "book":
+          // event: MarketBookEvent
+          break;
+        case "price_change":
+          // event: MarketPriceChangeEvent
+          break;
+        case "last_trade_price":
+          // event: MarketLastTradePriceEvent
+          break;
+        case "tick_size_change":
+          // event: MarketTickSizeChangeEvent
+          break;
+        case "best_bid_ask":
+          // event: MarketBestBidAskEvent
+          break;
+        case "new_market":
+          // event: NewMarketEvent
+          break;
+        case "market_resolved":
+          // event: MarketResolvedEvent
+          break;
+      }
     }
-  ]
-}
-```
+    ```
 
-Subscribe to specific symbols with a comma-separated filter:
+    <Accordion title="Additional Market Events">
+      #### Best Bid and Ask
 
-```json theme={null}
-{
-  "action": "subscribe",
-  "subscriptions": [
+      <CodeGroup>
+        ```ts MarketBestBidAskEvent Type theme={null}
+        type MarketBestBidAskEvent = {
+          topic: "market";
+          type: "best_bid_ask";
+          payload: {
+            market: string;
+            tokenId: TokenId;
+            bestBid?: DecimalString | null;
+            bestAsk?: DecimalString | null;
+            spread?: DecimalString | null;
+            timestamp?: string | null;
+          };
+        };
+        ```
+
+        ```json MarketBestBidAskEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "best_bid_ask",
+          "payload": {
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "tokenId": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+            "bestBid": "0.08",
+            "bestAsk": "0.09",
+            "spread": "0.01",
+            "timestamp": "1782753357257"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### New Market
+
+      <CodeGroup>
+        ```ts NewMarketEvent Type theme={null}
+        type NewMarketEvent = {
+          topic: "market";
+          type: "new_market";
+          payload: {
+            id: string;
+            question?: string | null;
+            market: string;
+            slug?: string | null;
+            description?: string | null;
+            tokenIds?: TokenId[] | null;
+            outcomes?: string[] | null;
+            eventMessage?: {
+              id: string;
+              ticker?: string | null;
+              slug?: string | null;
+              title?: string | null;
+              description?: string | null;
+            } | null;
+            timestamp?: string | null;
+            tags?: string[] | null;
+            conditionId?: CtfConditionId | null;
+            active?: boolean | null;
+            clobTokenIds?: string[] | null;
+            sportsMarketType?: string | null;
+            line?: DecimalString | null;
+            gameStartTime?: IsoDateTimeString | null;
+            orderPriceMinTickSize?: DecimalString | null;
+            groupItemTitle?: string | null;
+            takerBaseFee?: DecimalString | null;
+            feesEnabled?: boolean | null;
+            feeSchedule?: unknown;
+          };
+        };
+        ```
+
+        ```json NewMarketEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "new_market",
+          "payload": {
+            "id": "123456",
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "question": "Will the US confirm that aliens exist before 2027?",
+            "slug": "will-the-us-confirm-that-aliens-exist-before-2027",
+            "tokenIds": [
+              "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+              "7305630249804085635496399869905769372294302716159034447326228509068694952392"
+            ],
+            "outcomes": ["Yes", "No"],
+            "active": true,
+            "timestamp": "1782753357257"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### Market Resolved
+
+      <CodeGroup>
+        ```ts MarketResolvedEvent Type theme={null}
+        type MarketResolvedEvent = {
+          topic: "market";
+          type: "market_resolved";
+          payload: {
+            id: string;
+            market: string;
+            tokenIds?: TokenId[] | null;
+            winningTokenId?: TokenId | null;
+            winningOutcome?: string | null;
+            eventMessage?: {
+              id: string;
+              ticker?: string | null;
+              slug?: string | null;
+              title?: string | null;
+              description?: string | null;
+            } | null;
+            timestamp?: string | null;
+            tags?: string[] | null;
+          };
+        };
+        ```
+
+        ```json MarketResolvedEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "market_resolved",
+          "payload": {
+            "id": "123456",
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "tokenIds": [
+              "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+              "7305630249804085635496399869905769372294302716159034447326228509068694952392"
+            ],
+            "winningTokenId": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+            "winningOutcome": "Yes",
+            "timestamp": "1782753357257"
+          }
+        }
+        ```
+      </CodeGroup>
+    </Accordion>
+  </Tab>
+
+  <Tab title="Python">
+    Given an `AsyncPublicClient` or `AsyncSecureClient`, subscribe to the market
+    stream with a `MarketSpec` containing one or more token IDs:
+
+    ```python theme={null}
+    from polymarket.streams import MarketSpec
+
+    token_id = "<token_id>"
+
+    async with await client.subscribe(
+        MarketSpec(token_ids=[token_id]),
+    ) as stream:
+        async for event in stream:
+            if event.type == "book":
+                ...  # event: MarketBookEvent
+            elif event.type == "price_change":
+                ...  # event: MarketPriceChangeEvent
+            elif event.type == "last_trade_price":
+                ...  # event: MarketLastTradePriceEvent
+            elif event.type == "tick_size_change":
+                ...  # event: MarketTickSizeChangeEvent
+    ```
+
+    <Accordion title="Standard Market Events">
+      #### Order Book
+
+      <CodeGroup>
+        ```python MarketBookEvent Type theme={null}
+        class OrderBookLevel:
+            price: Decimal
+            size: Decimal
+
+        class MarketBookPayload:
+            market: str
+            token_id: TokenId
+            bids: tuple[OrderBookLevel, ...]
+            asks: tuple[OrderBookLevel, ...]
+            hash: str | None
+            timestamp: datetime | None
+            min_order_size: Decimal | None
+            tick_size: Decimal | None
+            neg_risk: bool | None
+            last_trade_price: Decimal | None
+
+        class MarketBookEvent:
+            topic: Literal["market"]
+            type: Literal["book"]
+            payload: MarketBookPayload
+        ```
+
+        ```json MarketBookEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "book",
+          "payload": {
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "token_id": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+            "bids": [{ "price": "0.08", "size": "33343.4" }],
+            "asks": [{ "price": "0.09", "size": "163939.58" }],
+            "hash": "0xabc123…",
+            "timestamp": "2026-06-29T17:15:57.257000Z"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### Price Change
+
+      <CodeGroup>
+        ```python MarketPriceChangeEvent Type theme={null}
+        class PriceChange:
+            token_id: TokenId
+            price: Decimal
+            size: Decimal
+            side: Literal["BUY", "SELL"]
+            hash: str | None
+            best_bid: Decimal | None
+            best_ask: Decimal | None
+
+        class MarketPriceChangePayload:
+            market: str
+            price_changes: tuple[PriceChange, ...]
+            timestamp: datetime | None
+
+        class MarketPriceChangeEvent:
+            topic: Literal["market"]
+            type: Literal["price_change"]
+            payload: MarketPriceChangePayload
+        ```
+
+        ```json MarketPriceChangeEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "price_change",
+          "payload": {
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "price_changes": [
+              {
+                "token_id": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+                "price": "0.08",
+                "size": "33343.4",
+                "side": "BUY",
+                "hash": "56621a121a47ed9333273e21c83b660cff37ae50",
+                "best_bid": "0.08",
+                "best_ask": "0.09"
+              }
+            ],
+            "timestamp": "2026-06-29T17:15:57.257000Z"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### Last Trade Price
+
+      <CodeGroup>
+        ```python MarketLastTradePriceEvent Type theme={null}
+        class MarketLastTradePricePayload:
+            market: str
+            token_id: TokenId
+            price: Decimal
+            size: Decimal | None
+            side: Literal["BUY", "SELL"]
+            fee_rate_bps: Decimal | None
+            transaction_hash: str | None
+            timestamp: datetime | None
+
+        class MarketLastTradePriceEvent:
+            topic: Literal["market"]
+            type: Literal["last_trade_price"]
+            payload: MarketLastTradePricePayload
+        ```
+
+        ```json MarketLastTradePriceEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "last_trade_price",
+          "payload": {
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "token_id": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+            "price": "0.08",
+            "size": "219.217767",
+            "side": "SELL",
+            "fee_rate_bps": "0",
+            "transaction_hash": "0xeeefff…",
+            "timestamp": "2026-06-29T17:15:57.257000Z"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### Tick Size Change
+
+      <CodeGroup>
+        ```python MarketTickSizeChangeEvent Type theme={null}
+        class MarketTickSizeChangePayload:
+            market: str
+            token_id: TokenId
+            old_tick_size: Decimal | None
+            new_tick_size: Decimal
+            timestamp: datetime | None
+
+        class MarketTickSizeChangeEvent:
+            topic: Literal["market"]
+            type: Literal["tick_size_change"]
+            payload: MarketTickSizeChangePayload
+        ```
+
+        ```json MarketTickSizeChangeEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "tick_size_change",
+          "payload": {
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "token_id": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+            "old_tick_size": "0.01",
+            "new_tick_size": "0.001",
+            "timestamp": "2026-06-29T17:15:57.257000Z"
+          }
+        }
+        ```
+      </CodeGroup>
+    </Accordion>
+
+    Enable `custom_feature_enabled` to include top-of-book and market lifecycle
+    updates:
+
+    ```python theme={null}
+    async with await client.subscribe(
+        MarketSpec(token_ids=[token_id], custom_feature_enabled=True),
+    ) as stream:
+        async for event in stream:
+            if event.type == "book":
+                ...  # event: MarketBookEvent
+            elif event.type == "price_change":
+                ...  # event: MarketPriceChangeEvent
+            elif event.type == "last_trade_price":
+                ...  # event: MarketLastTradePriceEvent
+            elif event.type == "tick_size_change":
+                ...  # event: MarketTickSizeChangeEvent
+            elif event.type == "best_bid_ask":
+                ...  # event: MarketBestBidAskEvent
+            elif event.type == "new_market":
+                ...  # event: NewMarketEvent
+            elif event.type == "market_resolved":
+                ...  # event: MarketResolvedEvent
+    ```
+
+    <Accordion title="Additional Market Events">
+      #### Best Bid and Ask
+
+      <CodeGroup>
+        ```python MarketBestBidAskEvent Type theme={null}
+        class MarketBestBidAskPayload:
+            market: str
+            token_id: TokenId
+            best_bid: Decimal | None
+            best_ask: Decimal | None
+            spread: Decimal | None
+            timestamp: datetime | None
+
+        class MarketBestBidAskEvent:
+            topic: Literal["market"]
+            type: Literal["best_bid_ask"]
+            payload: MarketBestBidAskPayload
+        ```
+
+        ```json MarketBestBidAskEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "best_bid_ask",
+          "payload": {
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "token_id": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+            "best_bid": "0.08",
+            "best_ask": "0.09",
+            "spread": "0.01",
+            "timestamp": "2026-06-29T17:15:57.257000Z"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### New Market
+
+      <CodeGroup>
+        ```python NewMarketEvent Type theme={null}
+        class MarketEventMessage:
+            id: str
+            ticker: str | None
+            slug: str | None
+            title: str | None
+            description: str | None
+
+        class NewMarketPayload:
+            id: str
+            market: str
+            question: str | None
+            slug: str | None
+            description: str | None
+            token_ids: tuple[TokenId, ...] | None
+            outcomes: tuple[str, ...] | None
+            event_message: MarketEventMessage | None
+            timestamp: datetime | None
+            tags: tuple[str, ...] | None
+            condition_id: CtfConditionId | None
+            active: bool | None
+            clob_token_ids: tuple[str, ...] | None
+            sports_market_type: str | None
+            line: Decimal | None
+            game_start_time: datetime | None
+            order_price_min_tick_size: Decimal | None
+            group_item_title: str | None
+            taker_base_fee: Decimal | None
+            fees_enabled: bool | None
+            fee_schedule: object | None
+
+        class NewMarketEvent:
+            topic: Literal["market"]
+            type: Literal["new_market"]
+            payload: NewMarketPayload
+        ```
+
+        ```json NewMarketEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "new_market",
+          "payload": {
+            "id": "123456",
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "question": "Will the US confirm that aliens exist before 2027?",
+            "slug": "will-the-us-confirm-that-aliens-exist-before-2027",
+            "token_ids": [
+              "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+              "7305630249804085635496399869905769372294302716159034447326228509068694952392"
+            ],
+            "outcomes": ["Yes", "No"],
+            "active": true,
+            "timestamp": "2026-06-29T17:15:57.257000Z"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### Market Resolved
+
+      <CodeGroup>
+        ```python MarketResolvedEvent Type theme={null}
+        class MarketResolvedPayload:
+            id: str
+            market: str
+            token_ids: tuple[TokenId, ...] | None
+            winning_token_id: TokenId | None
+            winning_outcome: str | None
+            event_message: MarketEventMessage | None
+            timestamp: datetime | None
+            tags: tuple[str, ...] | None
+
+        class MarketResolvedEvent:
+            topic: Literal["market"]
+            type: Literal["market_resolved"]
+            payload: MarketResolvedPayload
+        ```
+
+        ```json MarketResolvedEvent Example theme={null}
+        {
+          "topic": "market",
+          "type": "market_resolved",
+          "payload": {
+            "id": "123456",
+            "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+            "token_ids": [
+              "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+              "7305630249804085635496399869905769372294302716159034447326228509068694952392"
+            ],
+            "winning_token_id": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+            "winning_outcome": "Yes",
+            "timestamp": "2026-06-29T17:15:57.257000Z"
+          }
+        }
+        ```
+      </CodeGroup>
+    </Accordion>
+  </Tab>
+
+  <Tab title="API">
+    Connect to the market WebSocket:
+
+    ```text theme={null}
+    wss://ws-subscriptions-clob.polymarket.com/ws/market
+    ```
+
+    <Note>
+      The market WebSocket uses an application-level heartbeat. Send the text frame
+      `PING` every 10 seconds; the server replies with `PONG`.
+    </Note>
+
+    Once connected, send a `market` subscription frame with one or more token
+    IDs:
+
+    ```json theme={null}
     {
-      "topic": "crypto_prices",
-      "type": "update",
-      "filters": "solusdt,btcusdt,ethusdt"
+      "assets_ids": ["<token_id>"],
+      "type": "market"
     }
-  ]
-}
-```
+    ```
 
-Symbols use lowercase concatenated format (e.g., `solusdt`, `btcusdt`).
+    <Accordion title="Standard Market Events">
+      #### Order Book
 
-**Solana price update:**
+      ```json theme={null}
+      {
+        "event_type": "book",
+        "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+        "asset_id": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+        "timestamp": "1782753357257",
+        "hash": "0xabc123…",
+        "bids": [
+          { "price": "0.08", "size": "33343.4" },
+          { "price": "0.09", "size": "163939.58" }
+        ],
+        "asks": [
+          { "price": "0.99", "size": "218442.27" },
+          { "price": "0.98", "size": "13229.55" }
+        ]
+      }
+      ```
 
-```json theme={null}
-{
-  "topic": "crypto_prices",
-  "type": "update",
-  "timestamp": 1753314064237,
-  "payload": {
-    "symbol": "solusdt",
-    "timestamp": 1753314064213,
-    "value": 189.55
-  }
-}
-```
+      #### Price Change
 
-**Bitcoin price update:**
+      ```json theme={null}
+      {
+        "event_type": "price_change",
+        "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+        "price_changes": [
+          {
+            "asset_id": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+            "price": "0.08",
+            "size": "33343.4",
+            "side": "BUY",
+            "hash": "56621a121a47ed9333273e21c83b660cff37ae50",
+            "best_bid": "0.08",
+            "best_ask": "0.09"
+          }
+        ],
+        "timestamp": "1782753357257"
+      }
+      ```
 
-```json theme={null}
-{
-  "topic": "crypto_prices",
-  "type": "update",
-  "timestamp": 1753314088421,
-  "payload": {
-    "symbol": "btcusdt",
-    "timestamp": 1753314088395,
-    "value": 67234.50
-  }
-}
-```
+      #### Last Trade Price
 
-### Chainlink Source
+      ```json theme={null}
+      {
+        "event_type": "last_trade_price",
+        "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+        "asset_id": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+        "price": "0.08",
+        "size": "219.217767",
+        "fee_rate_bps": "0",
+        "side": "SELL",
+        "timestamp": "1782753357257",
+        "transaction_hash": "0xeeefff…"
+      }
+      ```
+
+      #### Tick Size Change
+
+      ```json theme={null}
+      {
+        "event_type": "tick_size_change",
+        "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+        "asset_id": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+        "old_tick_size": "0.01",
+        "new_tick_size": "0.001",
+        "timestamp": "1782753357257"
+      }
+      ```
+    </Accordion>
+
+    Enable `custom_feature_enabled` to include top-of-book and market lifecycle
+    updates:
+
+    ```json theme={null}
+    {
+      "assets_ids": ["<token_id>"],
+      "type": "market",
+      "custom_feature_enabled": true
+    }
+    ```
+
+    <Accordion title="Additional Market Events">
+      #### Best Bid and Ask
+
+      ```json theme={null}
+      {
+        "event_type": "best_bid_ask",
+        "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+        "asset_id": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+        "best_bid": "0.08",
+        "best_ask": "0.09",
+        "spread": "0.01",
+        "timestamp": "1782753357257"
+      }
+      ```
+
+      #### New Market
+
+      ```json theme={null}
+      {
+        "event_type": "new_market",
+        "id": "123456",
+        "question": "Will the US confirm that aliens exist before 2027?",
+        "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+        "slug": "will-the-us-confirm-that-aliens-exist-before-2027",
+        "assets_ids": [
+          "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+          "7305630249804085635496399869905769372294302716159034447326228509068694952392"
+        ],
+        "outcomes": ["Yes", "No"],
+        "timestamp": "1782753357257"
+      }
+      ```
+
+      #### Market Resolved
+
+      ```json theme={null}
+      {
+        "event_type": "market_resolved",
+        "id": "123456",
+        "market": "0x747dc809fb79e1b05be09c42d6179459a58de2ef3e40f02484a4e1260f741f75",
+        "assets_ids": [
+          "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+          "7305630249804085635496399869905769372294302716159034447326228509068694952392"
+        ],
+        "winning_asset_id": "107505882767731489358349912513945399560393482969656700824895970500493757150417",
+        "winning_outcome": "Yes",
+        "timestamp": "1782753357257"
+      }
+      ```
+    </Accordion>
+
+    You can add or remove token IDs without opening a new connection:
+
+    <CodeGroup>
+      ```json Subscribe theme={null}
+      {
+        "assets_ids": ["<new_token_id>"],
+        "operation": "subscribe"
+      }
+      ```
+
+      ```json Unsubscribe theme={null}
+      {
+        "assets_ids": ["<old_token_id>"],
+        "operation": "unsubscribe"
+      }
+      ```
+    </CodeGroup>
+
+    These frames update only the token set for the current market-stream
+    connection.
+  </Tab>
+</Tabs>
+
+## Sports Stream
+
+Use the sports stream to keep live game information current alongside sports
+markets. Updates arrive when a game goes live, its score or period changes, or
+it ends. NFL and CFB updates can also reflect possession changes.
+
+<Warning>
+  Sports data is provided for informational purposes only. It may be delayed,
+  contain errors, or omit recent events. Polymarket does not provide trading or
+  investment advice, and this data should not be used as the basis for a trading
+  decision.
+</Warning>
+
+<Tabs>
+  <Tab title="TypeScript">
+    Given a `PublicClient` or `SecureClient`, subscribe to the `sports` topic to receive
+    every game update:
+
+    ```ts theme={null}
+    const stream = await client.subscribe([{ topic: "sports" }]);
+
+    for await (const event of stream) {
+      // event: SportsEvent
+    }
+    ```
+
+    <Accordion title="Sports Event">
+      <CodeGroup>
+        ```ts SportsEvent Type theme={null}
+        type SportsEvent = {
+          topic: "sports";
+          type: "sport_result";
+          payload: {
+            gameId: number;
+            sportradarGameId?: string | null;
+            slug?: string | null;
+            leagueAbbreviation: string;
+            homeTeam?: string | null;
+            awayTeam?: string | null;
+            status: string;
+            live: boolean;
+            ended: boolean;
+            score: string;
+            period?: string | null;
+            elapsed?: string | null;
+            finishedAt?: IsoDateTimeString | null;
+            turn?: string | null;
+          };
+        };
+        ```
+
+        ```json SportsEvent Example theme={null}
+        {
+          "topic": "sports",
+          "type": "sport_result",
+          "payload": {
+            "gameId": 5127839,
+            "leagueAbbreviation": "NBA",
+            "homeTeam": "Los Angeles Lakers",
+            "awayTeam": "Boston Celtics",
+            "status": "InProgress",
+            "live": true,
+            "ended": false,
+            "score": "98-94",
+            "period": "Q4",
+            "elapsed": "05:12"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      `score` is a combined `"<home>-<away>"` string, not separate home and away
+      fields.
+    </Accordion>
+  </Tab>
+
+  <Tab title="Python">
+    Given an `AsyncPublicClient` or `AsyncSecureClient`, subscribe with a
+    `SportsSpec` to receive every game update:
+
+    ```python theme={null}
+    from polymarket.streams import SportsSpec
+
+    async with await client.subscribe(SportsSpec()) as stream:
+        async for event in stream:
+            ...  # event: SportsEvent
+    ```
+
+    <Accordion title="Sports Event">
+      <CodeGroup>
+        ```python SportsEvent Type theme={null}
+        class SportsGameResult:
+            game_id: int
+            sportradar_game_id: str | None
+            slug: str | None
+            league_abbreviation: str
+            home_team: str | None
+            away_team: str | None
+            status: str
+            live: bool
+            ended: bool
+            score: str
+            period: str | None
+            elapsed: str | None
+            finished_at: datetime | None
+            turn: str | None
+
+        class SportsResultEvent:
+            topic: Literal["sports"]
+            type: Literal["sport_result"]
+            payload: SportsGameResult
+
+        SportsEvent = SportsResultEvent
+        ```
+
+        ```json SportsEvent Example theme={null}
+        {
+          "topic": "sports",
+          "type": "sport_result",
+          "payload": {
+            "game_id": 5127839,
+            "league_abbreviation": "NBA",
+            "home_team": "Los Angeles Lakers",
+            "away_team": "Boston Celtics",
+            "status": "InProgress",
+            "live": true,
+            "ended": false,
+            "score": "98-94",
+            "period": "Q4",
+            "elapsed": "05:12"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      `score` is a combined `"<home>-<away>"` string, not separate home and away
+      fields.
+    </Accordion>
+  </Tab>
+
+  <Tab title="API">
+    Connect to the sports WebSocket:
+
+    ```text theme={null}
+    wss://sports-api.polymarket.com/ws
+    ```
+
+    <Note>
+      The sports WebSocket uses an application-level heartbeat. The server sends the
+      text frame `ping` every 5 seconds; reply with `pong` within 10 seconds or the
+      server closes the connection.
+    </Note>
+
+    Once connected, the server starts streaming every game update. No
+    subscription frame is required.
+
+    <Accordion title="Sports Event">
+      ```json theme={null}
+      {
+        "gameId": 5127839,
+        "leagueAbbreviation": "NBA",
+        "homeTeam": "Los Angeles Lakers",
+        "awayTeam": "Boston Celtics",
+        "status": "InProgress",
+        "live": true,
+        "ended": false,
+        "score": "98-94",
+        "period": "Q4",
+        "elapsed": "05:12"
+      }
+      ```
+
+      Sports messages have no envelope or event-type field. Each message is the
+      game update object itself, and `score` is a combined `"<home>-<away>"`
+      string.
+    </Accordion>
+  </Tab>
+</Tabs>
+
+### Period Values
+
+The meaning and format of a period depend on the sport:
+
+| Values                 | Meaning                              |
+| ---------------------- | ------------------------------------ |
+| `1H`, `2H`             | First or second half                 |
+| `1Q`, `2Q`, `3Q`, `4Q` | Quarter                              |
+| `HT`                   | Halftime                             |
+| `FT`                   | Full time in regulation              |
+| `FT OT`                | Full time after overtime             |
+| `FT NR`                | Full time with no result             |
+| `End 1`, `End 2`, …    | End of an MLB inning                 |
+| `1/3`, `2/3`, `3/3`    | Map number in a best-of-three series |
+| `1/5`, `2/5`, …        | Map number in a best-of-five series  |
+
+### Game Status Values
+
+Status values vary by sport and are case-sensitive:
+
+| Sport       | Values                                                                                                                         |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| NFL         | `Scheduled`, `InProgress`, `Final`, `F/OT`, `Suspended`, `Postponed`, `Delayed`, `Canceled`, `Forfeit`, `NotNecessary`         |
+| NHL         | `Scheduled`, `InProgress`, `Final`, `F/OT`, `F/SO`, `Suspended`, `Postponed`, `Delayed`, `Canceled`, `Forfeit`, `NotNecessary` |
+| MLB         | `Scheduled`, `InProgress`, `Final`, `Suspended`, `Delayed`, `Postponed`, `Canceled`, `Forfeit`, `NotNecessary`                 |
+| NBA and CBB | `Scheduled`, `InProgress`, `Final`, `F/OT`, `Suspended`, `Postponed`, `Delayed`, `Canceled`, `Forfeit`, `NotNecessary`         |
+| CFB         | `Scheduled`, `InProgress`, `Final`, `F/OT`, `Suspended`, `Postponed`, `Delayed`, `Canceled`, `Forfeit`                         |
+| Soccer      | `Scheduled`, `InProgress`, `Break`, `Suspended`, `PenaltyShootout`, `Final`, `Awarded`, `Postponed`, `Canceled`                |
+| Esports     | `not_started`, `running`, `finished`, `postponed`, `canceled`                                                                  |
+| Tennis      | `scheduled`, `inprogress`, `suspended`, `finished`, `postponed`, `cancelled`                                                   |
+
+## RTDS Streams
+
+The Real-Time Data Service (RTDS) carries reference prices and comments over a
+shared real-time connection. Subscribe only to the topics your application
+needs.
+
+### Crypto Prices
+
+Use crypto price streams to keep reference values current alongside related
+markets.
 
 <Tip>
-  **Trading 15m Crypto Markets?** Get a sponsored Chainlink API key with onboarding support from Chainlink. Fill out [this form](https://pm-ds-request.streams.chain.link/).
+  Trading 15-minute crypto markets? [Request a sponsored Chainlink API
+  key](https://pm-ds-request.streams.chain.link/) with onboarding support from
+  Chainlink.
 </Tip>
 
-Subscribe to all symbols:
+Use the symbol format for the selected price source:
 
-```json theme={null}
-{
-  "action": "subscribe",
-  "subscriptions": [
-    {
-      "topic": "crypto_prices_chainlink",
-      "type": "*",
-      "filters": ""
+| Source    | Supported symbols                          |
+| --------- | ------------------------------------------ |
+| Binance   | `btcusdt`, `ethusdt`, `solusdt`, `xrpusdt` |
+| Chainlink | `btc/usd`, `eth/usd`, `sol/usd`, `xrp/usd` |
+
+<Tabs>
+  <Tab title="TypeScript">
+    Given a `PublicClient` or `SecureClient`, subscribe to the crypto price topics you
+    need:
+
+    ```ts theme={null}
+    const stream = await client.subscribe([
+      { topic: "prices.crypto.binance", symbols: ["btcusdt", "ethusdt"] },
+      { topic: "prices.crypto.chainlink", symbols: ["eth/usd"] },
+    ]);
+
+    for await (const event of stream) {
+      switch (event.topic) {
+        case "prices.crypto.binance":
+          // event: CryptoPricesBinanceEvent
+          break;
+        case "prices.crypto.chainlink":
+          // event: CryptoPricesChainlinkEvent
+          break;
+      }
     }
-  ]
-}
-```
+    ```
 
-Subscribe to a specific symbol with a JSON filter:
+    <Accordion title="Crypto Price Events">
+      #### Binance Price Update
 
-```json theme={null}
-{
-  "action": "subscribe",
-  "subscriptions": [
+      <CodeGroup>
+        ```ts CryptoPricesBinanceEvent Type theme={null}
+        type PriceUpdatePayload = {
+          symbol: string;
+          timestamp: EpochMilliseconds;
+          value: DecimalString;
+        };
+
+        type CryptoPricesBinanceEvent = {
+          topic: "prices.crypto.binance";
+          type: "update";
+          timestamp: EpochMilliseconds;
+          payload: PriceUpdatePayload;
+        };
+        ```
+
+        ```json CryptoPricesBinanceEvent Example theme={null}
+        {
+          "topic": "prices.crypto.binance",
+          "type": "update",
+          "timestamp": 1782753357257,
+          "payload": {
+            "symbol": "btcusdt",
+            "timestamp": 1782753357213,
+            "value": "67234.5"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### Chainlink Price Update
+
+      <CodeGroup>
+        ```ts CryptoPricesChainlinkEvent Type theme={null}
+        type CryptoPricesChainlinkEvent = {
+          topic: "prices.crypto.chainlink";
+          type: "update";
+          timestamp: EpochMilliseconds;
+          payload: PriceUpdatePayload;
+        };
+        ```
+
+        ```json CryptoPricesChainlinkEvent Example theme={null}
+        {
+          "topic": "prices.crypto.chainlink",
+          "type": "update",
+          "timestamp": 1782753357257,
+          "payload": {
+            "symbol": "eth/usd",
+            "timestamp": 1782753357213,
+            "value": "3420.15"
+          }
+        }
+        ```
+      </CodeGroup>
+    </Accordion>
+  </Tab>
+
+  <Tab title="Python">
+    Given an `AsyncPublicClient` or `AsyncSecureClient`, subscribe with the
+    crypto price specs you need:
+
+    ```python theme={null}
+    from polymarket.streams import CryptoPricesSpec
+
+    async with await client.subscribe(
+        [
+            CryptoPricesSpec(topic="prices.crypto.binance", symbols=["btcusdt", "ethusdt"]),
+            CryptoPricesSpec(topic="prices.crypto.chainlink", symbols=["eth/usd"]),
+        ],
+    ) as stream:
+        async for event in stream:
+            if event.topic == "prices.crypto.binance":
+                ...  # event: CryptoPricesBinanceEvent
+            elif event.topic == "prices.crypto.chainlink":
+                ...  # event: CryptoPricesChainlinkEvent
+    ```
+
+    <Accordion title="Crypto Price Events">
+      #### Binance Price Update
+
+      <CodeGroup>
+        ```python CryptoPricesBinanceEvent Type theme={null}
+        class PriceUpdatePayload:
+            symbol: str
+            timestamp: int
+            value: Decimal
+
+        class CryptoPricesBinanceEvent:
+            topic: Literal["prices.crypto.binance"]
+            type: Literal["update"]
+            timestamp: datetime
+            payload: PriceUpdatePayload
+        ```
+
+        ```json CryptoPricesBinanceEvent Example theme={null}
+        {
+          "topic": "prices.crypto.binance",
+          "type": "update",
+          "timestamp": "2026-06-29T17:15:57.257000Z",
+          "payload": {
+            "symbol": "btcusdt",
+            "timestamp": 1782753357213,
+            "value": "67234.5"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### Chainlink Price Update
+
+      <CodeGroup>
+        ```python CryptoPricesChainlinkEvent Type theme={null}
+        class CryptoPricesChainlinkEvent:
+            topic: Literal["prices.crypto.chainlink"]
+            type: Literal["update"]
+            timestamp: datetime
+            payload: PriceUpdatePayload
+        ```
+
+        ```json CryptoPricesChainlinkEvent Example theme={null}
+        {
+          "topic": "prices.crypto.chainlink",
+          "type": "update",
+          "timestamp": "2026-06-29T17:15:57.257000Z",
+          "payload": {
+            "symbol": "eth/usd",
+            "timestamp": 1782753357213,
+            "value": "3420.15"
+          }
+        }
+        ```
+      </CodeGroup>
+    </Accordion>
+  </Tab>
+
+  <Tab title="API">
+    Connect to RTDS:
+
+    ```text theme={null}
+    wss://ws-live-data.polymarket.com
+    ```
+
+    <Note>
+      RTDS uses an application-level heartbeat. Send the text frame `PING` every 5
+      seconds to maintain the connection.
+    </Note>
+
+    Once connected, send a subscription frame for the crypto price topics you
+    need:
+
+    ```json theme={null}
     {
-      "topic": "crypto_prices_chainlink",
-      "type": "*",
-      "filters": "{\"symbol\":\"eth/usd\"}"
+      "action": "subscribe",
+      "subscriptions": [
+        {
+          "topic": "crypto_prices",
+          "type": "update",
+          "filters": "btcusdt,ethusdt"
+        },
+        {
+          "topic": "crypto_prices_chainlink",
+          "type": "*",
+          "filters": "{\"symbol\":\"eth/usd\"}"
+        }
+      ]
     }
-  ]
-}
-```
+    ```
 
-Symbols use slash-separated format (e.g., `eth/usd`, `btc/usd`).
+    Binance filters are comma-separated symbols, while Chainlink filters are
+    JSON strings with a single symbol. Omit `filters` to receive every event
+    for a topic and type.
 
-**Ethereum price update:**
+    <Accordion title="Crypto Price Events">
+      #### Binance Price Update
 
-```json theme={null}
-{
-  "topic": "crypto_prices_chainlink",
-  "type": "update",
-  "timestamp": 1753314064237,
-  "payload": {
-    "symbol": "eth/usd",
-    "timestamp": 1753314064213,
-    "value": 3456.78
-  }
-}
-```
+      ```json theme={null}
+      {
+        "topic": "crypto_prices",
+        "type": "update",
+        "timestamp": 1782753357257,
+        "payload": {
+          "symbol": "btcusdt",
+          "timestamp": 1782753357213,
+          "value": 67234.5
+        }
+      }
+      ```
 
-**Bitcoin price update:**
+      #### Chainlink Price Update
 
-```json theme={null}
-{
-  "topic": "crypto_prices_chainlink",
-  "type": "update",
-  "timestamp": 1753314088421,
-  "payload": {
-    "symbol": "btc/usd",
-    "timestamp": 1753314088395,
-    "value": 67234.50
-  }
-}
-```
+      ```json theme={null}
+      {
+        "topic": "crypto_prices_chainlink",
+        "type": "update",
+        "timestamp": 1782753357257,
+        "payload": {
+          "symbol": "eth/usd",
+          "timestamp": 1782753357213,
+          "value": 3420.15
+        }
+      }
+      ```
+    </Accordion>
+  </Tab>
+</Tabs>
 
-### Price Payload Fields
+### Equity Prices
 
-| Field       | Type   | Description                                                                                                                                        |
-| ----------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `symbol`    | string | Trading pair symbol. **Binance**: lowercase concatenated (e.g., `solusdt`, `btcusdt`). **Chainlink**: slash-separated (e.g., `eth/usd`, `btc/usd`) |
-| `timestamp` | number | When the price was recorded, in Unix milliseconds                                                                                                  |
-| `value`     | number | Current price value in the quote currency                                                                                                          |
-
-### Supported Symbols
-
-**Binance Source** — lowercase concatenated format:
-
-* `btcusdt` — Bitcoin to USDT
-* `ethusdt` — Ethereum to USDT
-* `solusdt` — Solana to USDT
-* `xrpusdt` — XRP to USDT
-
-**Chainlink Source** — slash-separated format:
-
-* `btc/usd` — Bitcoin to USD
-* `eth/usd` — Ethereum to USD
-* `sol/usd` — Solana to USD
-* `xrp/usd` — XRP to USD
-
-## Equity Prices
-
-Real-time price data for stocks, ETFs, forex pairs, precious metals, and commodities sourced from **Pyth Network**. No authentication required.
+Equity price streams provide Pyth Network reference prices for stocks, ETFs,
+forex pairs, precious metals, and commodities.
 
 <Tip>
-  **Trading Equity Markets?** Get a Pyth Network data feed - first 30 days free, then \$99/month. [Subscribe here](https://buy.stripe.com/cNi8wPeiq76FgQrbsD4ZG09).
+  Trading equity markets? [Subscribe to a Pyth Network data
+  feed](https://buy.stripe.com/cNi8wPeiq76FgQrbsD4ZG09). The first 30 days are
+  free, then access costs \$99 per month.
 </Tip>
 
-All asset classes stream through a single `equity_prices` topic. When you subscribe with a symbol filter, the server sends a historical snapshot (last 2 minutes of data), then continues streaming live updates.
+#### Subscribe to Equity Prices
 
-### Subscribe
+<Tabs>
+  <Tab title="TypeScript">
+    Given a `PublicClient` or `SecureClient`, subscribe to the equity price topic for the
+    symbols you need:
 
-Subscribe to a specific symbol with a JSON filter:
+    ```ts theme={null}
+    const stream = await client.subscribe([
+      { topic: "prices.equity.pyth", symbol: "AAPL" },
+    ]);
 
-```json theme={null}
-{
-  "action": "subscribe",
-  "subscriptions": [
-    {
-      "topic": "equity_prices",
-      "type": "update",
-      "filters": "{\"symbol\":\"AAPL\"}"
+    for await (const event of stream) {
+      if (event.type === "update") {
+        // event: EquityPricesUpdateEvent
+      } else {
+        // event: EquityPricesSubscribeEvent
+      }
     }
-  ]
-}
-```
+    ```
 
-Subscribe to multiple symbols across asset classes:
+    <Accordion title="Equity Price Events">
+      #### Equity Price Update
 
-```json theme={null}
-{
-  "action": "subscribe",
-  "subscriptions": [
-    { "topic": "equity_prices", "type": "update", "filters": "{\"symbol\":\"AAPL\"}" },
-    { "topic": "equity_prices", "type": "update", "filters": "{\"symbol\":\"EURUSD\"}" },
-    { "topic": "equity_prices", "type": "update", "filters": "{\"symbol\":\"XAUUSD\"}" },
-    { "topic": "equity_prices", "type": "update", "filters": "{\"symbol\":\"WTI\"}" }
-  ]
-}
-```
+      <CodeGroup>
+        ```ts EquityPricesUpdateEvent Type theme={null}
+        type EquityPriceUpdatePayload = {
+          symbol: string;
+          value: DecimalString;
+          timestamp: EpochMilliseconds;
+          receivedAt?: EpochMilliseconds | null;
+          isCarriedForward?: boolean | null;
+        };
 
-Use `type: "*"` to receive all message types (live updates and snapshots):
+        type EquityPricesUpdateEvent = {
+          topic: "prices.equity.pyth";
+          type: "update";
+          timestamp: EpochMilliseconds;
+          payload: EquityPriceUpdatePayload;
+        };
+        ```
 
-```json theme={null}
-{
-  "action": "subscribe",
-  "subscriptions": [
+        ```json EquityPricesUpdateEvent Example theme={null}
+        {
+          "topic": "prices.equity.pyth",
+          "type": "update",
+          "timestamp": 1782753357257,
+          "payload": {
+            "symbol": "aapl",
+            "timestamp": 1782753357213,
+            "value": "189.4217",
+            "receivedAt": 1782753357220,
+            "isCarriedForward": false
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### Equity Price Snapshot
+
+      <CodeGroup>
+        ```ts EquityPricesSubscribeEvent Type theme={null}
+        type EquityPriceSnapshotPoint = {
+          timestamp: number;
+          value: DecimalString;
+        };
+
+        type EquityPriceSubscribePayload = {
+          symbol: string;
+          data: EquityPriceSnapshotPoint[];
+        };
+
+        type EquityPricesSubscribeEvent = {
+          topic: "prices.equity.pyth";
+          type: "subscribe";
+          timestamp: EpochMilliseconds;
+          payload: EquityPriceSubscribePayload;
+        };
+        ```
+
+        ```json EquityPricesSubscribeEvent Example theme={null}
+        {
+          "topic": "prices.equity.pyth",
+          "type": "subscribe",
+          "timestamp": 1782753357257,
+          "payload": {
+            "symbol": "aapl",
+            "data": [
+              { "timestamp": 1782753297000, "value": "189.38" },
+              { "timestamp": 1782753357000, "value": "189.42" }
+            ]
+          }
+        }
+        ```
+      </CodeGroup>
+    </Accordion>
+  </Tab>
+
+  <Tab title="Python">
+    Given an `AsyncPublicClient` or `AsyncSecureClient`, subscribe with an
+    equity price spec for the symbols you need:
+
+    ```python theme={null}
+    from polymarket.streams import EquityPricesSpec
+
+    async with await client.subscribe(EquityPricesSpec(symbol="AAPL")) as stream:
+        async for event in stream:
+            if event.type == "update":
+                ...  # event: EquityPricesUpdateEvent
+            else:
+                ...  # event: EquityPricesSubscribeEvent
+    ```
+
+    <Accordion title="Equity Price Events">
+      #### Equity Price Update
+
+      <CodeGroup>
+        ```python EquityPricesUpdateEvent Type theme={null}
+        class EquityPriceUpdatePayload:
+            symbol: str
+            value: Decimal
+            timestamp: int
+            received_at: int | None
+            is_carried_forward: bool | None
+
+        class EquityPricesUpdateEvent:
+            topic: Literal["prices.equity.pyth"]
+            type: Literal["update"]
+            timestamp: datetime
+            payload: EquityPriceUpdatePayload
+        ```
+
+        ```json EquityPricesUpdateEvent Example theme={null}
+        {
+          "topic": "prices.equity.pyth",
+          "type": "update",
+          "timestamp": "2026-06-29T17:15:57.257000Z",
+          "payload": {
+            "symbol": "aapl",
+            "value": "189.4217",
+            "timestamp": 1782753357213,
+            "received_at": 1782753357220,
+            "is_carried_forward": false
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### Equity Price Snapshot
+
+      <CodeGroup>
+        ```python EquityPricesSubscribeEvent Type theme={null}
+        class EquityPriceSnapshotEntry:
+            timestamp: int
+            value: Decimal
+
+        class EquityPriceSubscribePayload:
+            symbol: str
+            data: tuple[EquityPriceSnapshotEntry, ...]
+
+        class EquityPricesSubscribeEvent:
+            topic: Literal["prices.equity.pyth"]
+            type: Literal["subscribe"]
+            timestamp: datetime
+            payload: EquityPriceSubscribePayload
+        ```
+
+        ```json EquityPricesSubscribeEvent Example theme={null}
+        {
+          "topic": "prices.equity.pyth",
+          "type": "subscribe",
+          "timestamp": "2026-06-29T17:15:57.257000Z",
+          "payload": {
+            "symbol": "aapl",
+            "data": [
+              { "timestamp": 1782753297000, "value": "189.38" },
+              { "timestamp": 1782753357000, "value": "189.42" }
+            ]
+          }
+        }
+        ```
+      </CodeGroup>
+    </Accordion>
+  </Tab>
+
+  <Tab title="API">
+    Connect to RTDS:
+
+    ```text theme={null}
+    wss://ws-live-data.polymarket.com
+    ```
+
+    <Note>
+      RTDS uses an application-level heartbeat. Send the text frame `PING` every 5
+      seconds to maintain the connection.
+    </Note>
+
+    Once connected, send an equity price subscription frame for the symbols
+    you need:
+
+    ```json theme={null}
     {
-      "topic": "equity_prices",
-      "type": "*",
-      "filters": "{\"symbol\":\"GOOGL\"}"
+      "action": "subscribe",
+      "subscriptions": [
+        {
+          "topic": "equity_prices",
+          "type": "*",
+          "filters": "{\"symbol\":\"AAPL\"}"
+        }
+      ]
     }
-  ]
-}
-```
+    ```
 
-Filter values are case-insensitive on subscribe, but the `symbol` field in payloads is always returned lowercase.
+    `filters` is an optional string, and the server validates that it's
+    well-formed JSON: quote both keys and string values. To filter on more than
+    one symbol, send one subscription entry per symbol. An empty or omitted
+    `filters` value means unfiltered.
 
-<Tip>
-  **Need the price-to-beat value?** Pass the market slug to the price-to-beat endpoint:
+    <Note>
+      Price updates can include `full_accuracy_value`. Prefer this string over the
+      numeric `value` when it is present.
+    </Note>
 
-  `GET https://polymarket.com/api/equity/price-to-beat/{slug}`
+    <Accordion title="Equity Price Events">
+      #### Equity Price Update
 
-  Example: `https://polymarket.com/api/equity/price-to-beat/wti-up-or-down-on-april-7-2026`
-</Tip>
+      ```json theme={null}
+      {
+        "topic": "equity_prices",
+        "type": "update",
+        "timestamp": 1782753357257,
+        "payload": {
+          "symbol": "aapl",
+          "timestamp": 1782753357213,
+          "value": 189.42,
+          "full_accuracy_value": "189.4217",
+          "received_at": 1782753357220,
+          "is_carried_forward": false
+        }
+      }
+      ```
 
-### Live Price Update
+      #### Equity Price Snapshot
 
-**Apple stock update:**
+      ```json theme={null}
+      {
+        "topic": "equity_prices",
+        "type": "subscribe",
+        "timestamp": 1782753357257,
+        "payload": {
+          "symbol": "aapl",
+          "data": [
+            { "timestamp": 1782753297000, "value": 189.38 },
+            { "timestamp": 1782753357000, "value": 189.42 }
+          ]
+        }
+      }
+      ```
+    </Accordion>
+  </Tab>
+</Tabs>
 
-```json theme={null}
-{
-  "topic": "equity_prices",
-  "type": "update",
-  "timestamp": 1711382400000,
-  "payload": {
-    "symbol": "aapl",
-    "value": 198.45,
-    "full_accuracy_value": "198.4523",
-    "timestamp": 1711382400000,
-    "received_at": 1711382400005
-  }
-}
-```
+#### Historical Snapshot
 
-**Gold price update (market closed):**
+When you subscribe to a symbol, the stream first sends its preceding two
+minutes of price data and then continues with live updates. Use this snapshot to
+initialize your local state before processing new prices.
 
-```json theme={null}
-{
-  "topic": "equity_prices",
-  "type": "update",
-  "timestamp": 1711400000000,
-  "payload": {
-    "symbol": "xauusd",
-    "value": 2175.30,
-    "full_accuracy_value": "2175.3012",
-    "timestamp": 1711399000000,
-    "received_at": 1711400000002,
-    "is_carried_forward": true
-  }
-}
-```
+#### Supported Symbols
 
-### Historical Snapshot
+| Asset class     | Supported symbols                                                                                               |
+| --------------- | --------------------------------------------------------------------------------------------------------------- |
+| Stocks          | `AAPL`, `TSLA`, `MSFT`, `GOOGL`, `AMZN`, `META`, `NVDA`, `NFLX`, `PLTR`, `OPEN`, `RKLB`, `ABNB`, `COIN`, `HOOD` |
+| ETFs            | `QQQ`, `SPY`, `EWY`, `VXX`                                                                                      |
+| Forex           | `EURUSD`, `GBPUSD`, `USDCAD`, `USDJPY`, `USDKRW`                                                                |
+| Precious metals | `XAUUSD`, `XAGUSD`                                                                                              |
+| Commodities     | `WTI`, `CC`, `NGD`                                                                                              |
 
-On subscribe, the server delivers a backfill of the last 2 minutes of price data. Use the `type` field to distinguish: `"subscribe"` for the initial snapshot vs `"update"` for live ticks.
+<Note>
+  Subscription symbols are case-insensitive, but stream events return symbols in
+  lowercase.
+</Note>
 
-```json theme={null}
-{
-  "topic": "equity_prices",
-  "type": "subscribe",
-  "timestamp": 1711382400000,
-  "payload": {
-    "symbol": "aapl",
-    "data": [
-      { "timestamp": 1711382280000, "value": 198.30 },
-      { "timestamp": 1711382281000, "value": 198.32 },
-      { "timestamp": 1711382340000, "value": 198.41 }
-    ]
-  }
-}
-```
+#### Market Hours
 
-### Equity Price Payload Fields
+When the market for an asset is closed, the stream continues with its last
+known price and marks that value as carried forward. During market hours,
+prices can update up to five times per second for each feed.
 
-| Field                 | Type    | Description                                                                                               |
-| --------------------- | ------- | --------------------------------------------------------------------------------------------------------- |
-| `symbol`              | string  | Lowercase symbol identifier (e.g., `aapl`, `eurusd`, `xauusd`)                                            |
-| `value`               | number  | Spot price as a float                                                                                     |
-| `full_accuracy_value` | string  | Full-precision price as a string                                                                          |
-| `timestamp`           | number  | Price measurement timestamp in Unix milliseconds                                                          |
-| `received_at`         | number  | When the system received the price, in Unix milliseconds. Only present when non-zero.                     |
-| `is_carried_forward`  | boolean | `true` when the market session is closed and the value is the last known price. Only present when `true`. |
+### Comments
 
-### Supported Symbols
+Use the comments stream to keep conversations and reactions current wherever
+your application displays Polymarket discussion. Comments can begin a thread or
+reply to another comment; reply events include the parent comment's ID.
 
-**Stocks:**
+<Tabs>
+  <Tab title="TypeScript">
+    Given a `PublicClient` or `SecureClient`, subscribe to the `comments` topic and
+    select the event types you need:
 
-| Symbol  | Name           |
-| ------- | -------------- |
-| `AAPL`  | Apple          |
-| `TSLA`  | Tesla          |
-| `MSFT`  | Microsoft      |
-| `GOOGL` | Alphabet       |
-| `AMZN`  | Amazon         |
-| `META`  | Meta Platforms |
-| `NVDA`  | NVIDIA         |
-| `NFLX`  | Netflix        |
-| `PLTR`  | Palantir       |
-| `OPEN`  | Opendoor       |
-| `RKLB`  | Rocket Lab     |
-| `ABNB`  | Airbnb         |
-| `COIN`  | Coinbase       |
-| `HOOD`  | Robinhood      |
+    ```ts theme={null}
+    const stream = await client.subscribe([
+      {
+        topic: "comments",
+        types: [
+          "comment_created",
+          "comment_removed",
+          "reaction_created",
+          "reaction_removed",
+        ],
+      },
+    ]);
 
-**ETFs:**
+    for await (const event of stream) {
+      switch (event.type) {
+        case "comment_created":
+          // event: CommentCreatedEvent
+          break;
+        case "comment_removed":
+          // event: CommentRemovedEvent
+          break;
+        case "reaction_created":
+          // event: ReactionCreatedEvent
+          break;
+        case "reaction_removed":
+          // event: ReactionRemovedEvent
+          break;
+      }
+    }
+    ```
 
-| Symbol | Name                                 |
-| ------ | ------------------------------------ |
-| `QQQ`  | Invesco QQQ ETF                      |
-| `SPY`  | S\&P 500 ETF                         |
-| `EWY`  | iShares MSCI South Korea ETF         |
-| `VXX`  | Barclays iPath Series B S\&P 500 VIX |
+    Use `parentEntityId` and `parentEntityType` to scope the subscription to one
+    event or market.
 
-**Forex:**
+    <Accordion title="Comment Events">
+      #### New Comment
 
-| Symbol   | Pair                         |
-| -------- | ---------------------------- |
-| `EURUSD` | Euro / US Dollar             |
-| `GBPUSD` | British Pound / US Dollar    |
-| `USDCAD` | US Dollar / Canadian Dollar  |
-| `USDJPY` | US Dollar / Japanese Yen     |
-| `USDKRW` | US Dollar / South Korean Won |
+      <CodeGroup>
+        ```ts CommentCreatedEvent Type theme={null}
+        type Comment = {
+          id: CommentId;
+          body?: string | null;
+          parentEntityType?: CommentParentEntityType | null;
+          parentEntityID?: EventId | SeriesId | null;
+          parentCommentID?: CommentId | null;
+          userAddress?: string | null;
+          replyAddress?: string | null;
+          createdAt?: IsoDateTimeString | null;
+          updatedAt?: IsoDateTimeString | null;
+          media?: CommentMedia[] | null;
+          profile?: CommentProfile | null;
+          reactions?: Reaction[] | null;
+          reportCount?: number | null;
+          reactionCount?: number | null;
+          tradeAsset?: string | null;
+        };
 
-**Precious Metals:**
+        type CommentCreatedEvent = {
+          topic: "comments";
+          type: "comment_created";
+          timestamp: EpochMilliseconds;
+          payload: Comment;
+        };
+        ```
 
-| Symbol   | Name   |
-| -------- | ------ |
-| `XAUUSD` | Gold   |
-| `XAGUSD` | Silver |
+        ```json CommentCreatedEvent Example theme={null}
+        {
+          "topic": "comments",
+          "type": "comment_created",
+          "timestamp": 1782753357257,
+          "payload": {
+            "id": "1763355",
+            "body": "That's a good point about the definition.",
+            "parentEntityType": "Event",
+            "parentEntityID": "18396",
+            "parentCommentID": null,
+            "userAddress": "0xce533188d53a16ed580fd5121dedf166d3482677",
+            "replyAddress": "0x0bda5d16f76cd1d3485bcc7a44bc6fa7db004cdd",
+            "createdAt": "2025-07-25T14:49:35.801298Z",
+            "reactionCount": 0,
+            "reportCount": 0,
+            "profile": {
+              "baseAddress": "0xce533188d53a16ed580fd5121dedf166d3482677",
+              "displayUsernamePublic": true,
+              "name": "salted.caramel",
+              "wallet": "0x4ca749dcfa93c87e5ee23e2d21ff4422c7a4c1ee",
+              "pseudonym": "Adored-Disparity"
+            }
+          }
+        }
+        ```
+      </CodeGroup>
 
-**Commodities** (rolling front-month futures):
+      #### Removed Comment
 
-| Symbol | Name            |
-| ------ | --------------- |
-| `WTI`  | Crude Oil (WTI) |
-| `CC`   | Cocoa           |
-| `NGD`  | Natural Gas     |
+      <CodeGroup>
+        ```ts CommentRemovedEvent Type theme={null}
+        type CommentRemovedPayload = {
+          id: string;
+          body?: string | null;
+          parentEntityType?: CommentParentEntityType | null;
+          parentEntityID?: number | null;
+          parentCommentID?: string | null;
+          userAddress?: string | null;
+          replyAddress?: string | null;
+          createdAt?: string | null;
+          updatedAt?: string | null;
+          media?: CommentMedia[] | null;
+          profile?: CommentProfile | null;
+          reactions?: Reaction[] | null;
+          reportCount?: number | null;
+          reactionCount?: number | null;
+          tradeAsset?: string | null;
+        };
 
-### Market Hours
+        type CommentRemovedEvent = {
+          topic: "comments";
+          type: "comment_removed";
+          timestamp: EpochMilliseconds;
+          payload: CommentRemovedPayload;
+        };
+        ```
 
-When a market session is closed, the stream continues with the last known price and `is_carried_forward: true`. This lets you distinguish stale prices from live ticks. Update frequency is sub-second (up to 5 per second per feed) during market hours.
+        ```json CommentRemovedEvent Example theme={null}
+        {
+          "topic": "comments",
+          "type": "comment_removed",
+          "timestamp": 1782753357257,
+          "payload": {
+            "id": "1763355",
+            "body": "That's a good point about the definition.",
+            "parentEntityType": "Event",
+            "parentEntityID": 18396,
+            "userAddress": "0xce533188d53a16ed580fd5121dedf166d3482677"
+          }
+        }
+        ```
+      </CodeGroup>
 
-## Comments
+      #### New Reaction
 
-Real-time comment events on the Polymarket platform, including new comments, replies, reactions, and removals. May require Gamma authentication for user-specific data.
+      <CodeGroup>
+        ```ts ReactionCreatedEvent Type theme={null}
+        type Reaction = {
+          id: string;
+          commentID?: number | null;
+          reactionType?: ReactionType | null;
+          icon?: string | null;
+          userAddress?: string | null;
+          createdAt?: IsoDateTimeString | null;
+          profile?: CommentProfile | null;
+        };
 
-### Subscribe
+        type ReactionCreatedEvent = {
+          topic: "comments";
+          type: "reaction_created";
+          timestamp: EpochMilliseconds;
+          payload: Reaction;
+        };
+        ```
 
-```json theme={null}
-{
-  "action": "subscribe",
-  "subscriptions": [
+        ```json ReactionCreatedEvent Example theme={null}
+        {
+          "topic": "comments",
+          "type": "reaction_created",
+          "timestamp": 1782753357257,
+          "payload": {
+            "id": "8675309",
+            "commentID": 1763355,
+            "reactionType": "HEART",
+            "icon": "❤️",
+            "userAddress": "0xce533188d53a16ed580fd5121dedf166d3482677",
+            "createdAt": "2025-07-25T14:50:04.120000Z"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### Removed Reaction
+
+      <CodeGroup>
+        ```ts ReactionRemovedEvent Type theme={null}
+        type ReactionRemovedEvent = {
+          topic: "comments";
+          type: "reaction_removed";
+          timestamp: EpochMilliseconds;
+          payload: Reaction;
+        };
+        ```
+
+        ```json ReactionRemovedEvent Example theme={null}
+        {
+          "topic": "comments",
+          "type": "reaction_removed",
+          "timestamp": 1782753357257,
+          "payload": {
+            "id": "8675309",
+            "commentID": 1763355,
+            "reactionType": "HEART",
+            "userAddress": "0xce533188d53a16ed580fd5121dedf166d3482677"
+          }
+        }
+        ```
+      </CodeGroup>
+    </Accordion>
+  </Tab>
+
+  <Tab title="Python">
+    Given an `AsyncPublicClient` or `AsyncSecureClient`, subscribe with a
+    `CommentsSpec` containing the event types you need:
+
+    ```python theme={null}
+    from polymarket.streams import CommentsSpec
+
+    async with await client.subscribe(
+        CommentsSpec(
+            types=[
+                "comment_created",
+                "comment_removed",
+                "reaction_created",
+                "reaction_removed",
+            ],
+        ),
+    ) as stream:
+        async for event in stream:
+            if event.type == "comment_created":
+                ...  # event: CommentCreatedEvent
+            elif event.type == "comment_removed":
+                ...  # event: CommentRemovedEvent
+            elif event.type == "reaction_created":
+                ...  # event: ReactionCreatedEvent
+            else:
+                ...  # event: ReactionRemovedEvent
+    ```
+
+    Use `parent_entity_id` and `parent_entity_type` to scope the subscription to
+    one event or market.
+
+    <Accordion title="Comment Events">
+      #### New Comment
+
+      <CodeGroup>
+        ```python CommentCreatedEvent Type theme={null}
+        class Comment:
+            id: CommentId
+            body: str | None
+            parent_entity_type: str | None
+            parent_entity_id: EventId | SeriesId | None
+            parent_comment_id: CommentId | None
+            user_address: EvmAddress | None
+            reply_address: EvmAddress | None
+            created_at: datetime | None
+            updated_at: datetime | None
+            media: tuple[CommentMedia, ...] | None
+            profile: CommentProfile | None
+            reactions: tuple[Reaction, ...] | None
+            report_count: int | None
+            reaction_count: int | None
+            trade_asset: str | None
+
+        class CommentCreatedEvent:
+            topic: Literal["comments"]
+            type: Literal["comment_created"]
+            timestamp: datetime
+            payload: Comment
+        ```
+
+        ```json CommentCreatedEvent Example theme={null}
+        {
+          "topic": "comments",
+          "type": "comment_created",
+          "timestamp": "2026-06-29T17:15:57.257000Z",
+          "payload": {
+            "id": "1763355",
+            "body": "That's a good point about the definition.",
+            "parent_entity_type": "Event",
+            "parent_entity_id": "18396",
+            "parent_comment_id": null,
+            "user_address": "0xce533188d53a16ed580fd5121dedf166d3482677",
+            "reply_address": "0x0bda5d16f76cd1d3485bcc7a44bc6fa7db004cdd",
+            "created_at": "2025-07-25T14:49:35.801298Z",
+            "reaction_count": 0,
+            "report_count": 0,
+            "profile": {
+              "base_address": "0xce533188d53a16ed580fd5121dedf166d3482677",
+              "display_username_public": true,
+              "name": "salted.caramel",
+              "wallet": "0x4ca749dcfa93c87e5ee23e2d21ff4422c7a4c1ee",
+              "pseudonym": "Adored-Disparity"
+            }
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### Removed Comment
+
+      <CodeGroup>
+        ```python CommentRemovedEvent Type theme={null}
+        class CommentRemovedPayload:
+            id: str
+            body: str | None
+            parent_entity_type: Literal["Event", "Market"] | None
+            parent_entity_id: int | None
+            parent_comment_id: str | None
+            user_address: EvmAddress | None
+            reply_address: EvmAddress | None
+            created_at: datetime | None
+            updated_at: datetime | None
+            media: tuple[CommentMedia, ...] | None
+            profile: CommentProfile | None
+            reactions: tuple[Reaction, ...] | None
+            report_count: int | None
+            reaction_count: int | None
+            trade_asset: str | None
+
+        class CommentRemovedEvent:
+            topic: Literal["comments"]
+            type: Literal["comment_removed"]
+            timestamp: datetime
+            payload: CommentRemovedPayload
+        ```
+
+        ```json CommentRemovedEvent Example theme={null}
+        {
+          "topic": "comments",
+          "type": "comment_removed",
+          "timestamp": "2026-06-29T17:15:57.257000Z",
+          "payload": {
+            "id": "1763355",
+            "body": "That's a good point about the definition.",
+            "parent_entity_type": "Event",
+            "parent_entity_id": 18396,
+            "user_address": "0xce533188d53a16ed580fd5121dedf166d3482677"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### New Reaction
+
+      <CodeGroup>
+        ```python ReactionCreatedEvent Type theme={null}
+        class Reaction:
+            id: str
+            comment_id: int | None
+            reaction_type: str | None
+            icon: str | None
+            user_address: EvmAddress | None
+            created_at: datetime | None
+            profile: CommentProfile | None
+
+        class ReactionCreatedEvent:
+            topic: Literal["comments"]
+            type: Literal["reaction_created"]
+            timestamp: datetime
+            payload: Reaction
+        ```
+
+        ```json ReactionCreatedEvent Example theme={null}
+        {
+          "topic": "comments",
+          "type": "reaction_created",
+          "timestamp": "2026-06-29T17:15:57.257000Z",
+          "payload": {
+            "id": "8675309",
+            "comment_id": 1763355,
+            "reaction_type": "HEART",
+            "icon": "❤️",
+            "user_address": "0xce533188d53a16ed580fd5121dedf166d3482677",
+            "created_at": "2025-07-25T14:50:04.120000Z"
+          }
+        }
+        ```
+      </CodeGroup>
+
+      #### Removed Reaction
+
+      <CodeGroup>
+        ```python ReactionRemovedEvent Type theme={null}
+        class ReactionRemovedEvent:
+            topic: Literal["comments"]
+            type: Literal["reaction_removed"]
+            timestamp: datetime
+            payload: Reaction
+        ```
+
+        ```json ReactionRemovedEvent Example theme={null}
+        {
+          "topic": "comments",
+          "type": "reaction_removed",
+          "timestamp": "2026-06-29T17:15:57.257000Z",
+          "payload": {
+            "id": "8675309",
+            "comment_id": 1763355,
+            "reaction_type": "HEART",
+            "user_address": "0xce533188d53a16ed580fd5121dedf166d3482677"
+          }
+        }
+        ```
+      </CodeGroup>
+    </Accordion>
+  </Tab>
+
+  <Tab title="API">
+    Connect to RTDS:
+
+    ```text theme={null}
+    wss://ws-live-data.polymarket.com
+    ```
+
+    <Note>
+      RTDS uses an application-level heartbeat. Send the text frame `PING` every 5
+      seconds to maintain the connection.
+    </Note>
+
+    Once connected, send one subscription entry for each comment event type you
+    need. Use a `filters` string to scope an entry to one entity:
+
+    ```json theme={null}
     {
-      "topic": "comments",
-      "type": "comment_created"
+      "action": "subscribe",
+      "subscriptions": [
+        {
+          "topic": "comments",
+          "type": "comment_created",
+          "filters": "{\"parentEntityID\":18396,\"parentEntityType\":\"Event\"}"
+        }
+      ]
     }
-  ]
-}
-```
+    ```
 
-### Message Types
+    `filters` must be well-formed JSON when present: quote keys and string
+    values. An empty or omitted `filters` value means you receive every
+    comment event.
 
-| Type               | Description                           |
-| ------------------ | ------------------------------------- |
-| `comment_created`  | A user creates a new comment or reply |
-| `comment_removed`  | A comment is removed or deleted       |
-| `reaction_created` | A user adds a reaction to a comment   |
-| `reaction_removed` | A reaction is removed from a comment  |
+    <Accordion title="Comment Events">
+      #### New Comment
 
-### comment\_created
+      ```json theme={null}
+      {
+        "topic": "comments",
+        "type": "comment_created",
+        "timestamp": 1782753357257,
+        "payload": {
+          "id": "1763355",
+          "body": "That's a good point about the definition.",
+          "parentEntityType": "Event",
+          "parentEntityID": 18396,
+          "parentCommentID": null,
+          "userAddress": "0xce533188d53a16ed580fd5121dedf166d3482677",
+          "replyAddress": "0x0bda5d16f76cd1d3485bcc7a44bc6fa7db004cdd",
+          "createdAt": "2025-07-25T14:49:35.801298Z",
+          "reactionCount": 0,
+          "reportCount": 0,
+          "profile": {
+            "baseAddress": "0xce533188d53a16ed580fd5121dedf166d3482677",
+            "displayUsernamePublic": true,
+            "name": "salted.caramel",
+            "proxyWallet": "0x4ca749dcfa93c87e5ee23e2d21ff4422c7a4c1ee",
+            "pseudonym": "Adored-Disparity"
+          }
+        }
+      }
+      ```
 
-Emitted when a user posts a new comment or replies to an existing one.
+      #### Removed Comment
 
-```json theme={null}
-{
-  "topic": "comments",
-  "type": "comment_created",
-  "timestamp": 1753454975808,
-  "payload": {
-    "body": "That's a good point about the definition.",
-    "createdAt": "2025-07-25T14:49:35.801298Z",
-    "id": "1763355",
-    "parentCommentID": "1763325",
-    "parentEntityID": 18396,
-    "parentEntityType": "Event",
-    "profile": {
-      "baseAddress": "0xce533188d53a16ed580fd5121dedf166d3482677",
-      "displayUsernamePublic": true,
-      "name": "salted.caramel",
-      "proxyWallet": "0x4ca749dcfa93c87e5ee23e2d21ff4422c7a4c1ee",
-      "pseudonym": "Adored-Disparity"
-    },
-    "reactionCount": 0,
-    "replyAddress": "0x0bda5d16f76cd1d3485bcc7a44bc6fa7db004cdd",
-    "reportCount": 0,
-    "userAddress": "0xce533188d53a16ed580fd5121dedf166d3482677"
-  }
-}
-```
+      ```json theme={null}
+      {
+        "topic": "comments",
+        "type": "comment_removed",
+        "timestamp": 1782753357257,
+        "payload": {
+          "id": "1763355",
+          "body": "That's a good point about the definition.",
+          "parentEntityType": "Event",
+          "parentEntityID": 18396,
+          "userAddress": "0xce533188d53a16ed580fd5121dedf166d3482677"
+        }
+      }
+      ```
 
-A reply to the above comment — note `parentCommentID` references the parent:
+      #### New Reaction
 
-```json theme={null}
-{
-  "topic": "comments",
-  "type": "comment_created",
-  "timestamp": 1753454985123,
-  "payload": {
-    "body": "I agree, the resolution criteria should be clearer.",
-    "createdAt": "2025-07-25T14:49:45.120000Z",
-    "id": "1763356",
-    "parentCommentID": "1763355",
-    "parentEntityID": 18396,
-    "parentEntityType": "Event",
-    "profile": {
-      "baseAddress": "0x1234567890abcdef1234567890abcdef12345678",
-      "displayUsernamePublic": true,
-      "name": "trader",
-      "proxyWallet": "0x9876543210fedcba9876543210fedcba98765432",
-      "pseudonym": "Bright-Analysis"
-    },
-    "reactionCount": 0,
-    "replyAddress": "0x0bda5d16f76cd1d3485bcc7a44bc6fa7db004cdd",
-    "reportCount": 0,
-    "userAddress": "0x1234567890abcdef1234567890abcdef12345678"
-  }
-}
-```
+      ```json theme={null}
+      {
+        "topic": "comments",
+        "type": "reaction_created",
+        "timestamp": 1782753357257,
+        "payload": {
+          "id": "8675309",
+          "commentID": 1763355,
+          "reactionType": "HEART",
+          "icon": "❤️",
+          "userAddress": "0xce533188d53a16ed580fd5121dedf166d3482677",
+          "createdAt": "2025-07-25T14:50:04.120000Z"
+        }
+      }
+      ```
 
-### Comment Payload Fields
+      #### Removed Reaction
 
-| Field              | Type   | Description                                                               |
-| ------------------ | ------ | ------------------------------------------------------------------------- |
-| `body`             | string | The text content of the comment                                           |
-| `createdAt`        | string | ISO 8601 timestamp when the comment was created                           |
-| `id`               | string | Unique identifier for this comment                                        |
-| `parentCommentID`  | string | ID of the parent comment if this is a reply (null for top-level comments) |
-| `parentEntityID`   | number | ID of the parent entity (event, market, etc.)                             |
-| `parentEntityType` | string | Type of parent entity (`Event`, `Market`)                                 |
-| `profile`          | object | Profile information of the comment author                                 |
-| `reactionCount`    | number | Current number of reactions on this comment                               |
-| `replyAddress`     | string | Polygon address for replies (may differ from userAddress)                 |
-| `reportCount`      | number | Current number of reports on this comment                                 |
-| `userAddress`      | string | Polygon address of the comment author                                     |
-
-### Profile Object Fields
-
-| Field                   | Type    | Description                                |
-| ----------------------- | ------- | ------------------------------------------ |
-| `baseAddress`           | string  | User profile address                       |
-| `displayUsernamePublic` | boolean | Whether the username is displayed publicly |
-| `name`                  | string  | User's display name                        |
-| `proxyWallet`           | string  | Proxy wallet address used for transactions |
-| `pseudonym`             | string  | Generated pseudonym for the user           |
-
-### Comment Hierarchy
-
-Comments support nested threading:
-
-* **Top-level comments**: `parentCommentID` is null or empty
-* **Reply comments**: `parentCommentID` contains the ID of the parent comment
-* All comments are associated with a `parentEntityID` and `parentEntityType` (`Event` or `Market`)
-
-## Troubleshooting
-
-<Accordion title="Connection drops unexpectedly">
-  Send `PING` messages every 5 seconds to keep the connection alive. Connection errors will trigger automatic reconnection attempts.
-</Accordion>
-
-<Accordion title="Not receiving messages after subscribing">
-  Verify your subscription message is valid JSON with the correct `action`, `topic`, and `type` fields. Invalid subscription messages may result in connection closure.
-</Accordion>
-
-<Accordion title="Authentication failures">
-  If subscribing to user-specific streams, ensure your `gamma_auth` object includes a valid wallet `address`. Authentication failures will prevent subscription to protected topics.
-</Accordion>
+      ```json theme={null}
+      {
+        "topic": "comments",
+        "type": "reaction_removed",
+        "timestamp": 1782753357257,
+        "payload": {
+          "id": "8675309",
+          "commentID": 1763355,
+          "reactionType": "HEART",
+          "userAddress": "0xce533188d53a16ed580fd5121dedf166d3482677"
+        }
+      }
+      ```
+    </Accordion>
+  </Tab>
+</Tabs>

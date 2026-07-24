@@ -2,42 +2,46 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Overview
+# SDKs & APIs
 
-> Learn about Polymarket's developer tooling roadmap.
+> Choose how to integrate with Polymarket.
 
-We are improving Polymarket's developer integration surface across SDKs, APIs, and frontend tooling. The unified TypeScript and Python SDKs are the first beta release in this effort and are currently being hardened before a stable release. Once stable, these SDKs will supersede the existing SDKs, and we will provide a documented migration path.
+Choose the interface that best fits your application. Use an SDK for a unified,
+typed integration, or work with the APIs directly when you need lower-level
+control.
 
-<Steps>
-  <Step title="Beta TypeScript and Python SDKs">
-    Current beta release of the unified SDKs for early integrators.
-  </Step>
-
-  <Step title="Stable TypeScript and Python SDKs">
-    Next, harden the beta SDKs, resolve feedback from integrators, and publish
-    the documented migration path from the existing SDKs.
-  </Step>
-
-  <Step title="Unified API">
-    A cohesive API surface across Polymarket developer interfaces.
-  </Step>
-
-  <Step title="Rust SDK">
-    A unified SDK for systems-level integrations and backend services.
-  </Step>
-
-  <Step title="React SDK">
-    Frontend-oriented tooling for React applications on top of the same unified
-    model.
-  </Step>
-</Steps>
-
-<CardGroup cols={2}>
-  <Card title="TypeScript SDK" href="/dev-tooling/typescript">
-    Beta documentation for the unified TypeScript SDK.
+<CardGroup cols={3}>
+  <Card title="TypeScript SDK" icon="https://mintcdn.com/polymarket-292d1b1b/1lJ_npwaE_MShiVL/images/icons/typescript.svg?fit=max&auto=format&n=1lJ_npwaE_MShiVL&q=85&s=151a411953a3aa74c5505188c336ae09" href="/getting-started/typescript" width="40" height="40" data-path="images/icons/typescript.svg">
+    Build services, bots, scripts, and applications with `@polymarket/client`.
   </Card>
 
-  <Card title="Python SDK" href="/dev-tooling/python">
-    Beta documentation for the unified Python SDK.
+  <Card title="Python SDK" icon="python" href="/getting-started/python">
+    Build services, notebooks, scripts, and data workflows with
+    `polymarket-client`.
+  </Card>
+
+  <Card title="API" icon="globe" href="/getting-started/api">
+    Build directly against Polymarket REST APIs and WebSocket streams.
   </Card>
 </CardGroup>
+
+<Note>
+  A unified Rust SDK is in development. For now, see the [Rust migration
+  guide](/getting-started/migrate-from-previous-sdks#rust).
+</Note>
+
+## Compare Options
+
+|                            | TypeScript SDK                           | Python SDK                       | API                                        |
+| -------------------------- | ---------------------------------------- | -------------------------------- | ------------------------------------------ |
+| Best for                   | Node.js applications, bots, and services | Services, scripts, and notebooks | Unsupported runtimes and low-level control |
+| Data models                | Typed models                             | Typed models                     | Raw JSON                                   |
+| Polymarket surfaces        | One client interface                     | One client interface             | Service-specific APIs                      |
+| Authentication and signing | SDK helpers                              | SDK helpers                      | Implement directly                         |
+| Pagination                 | Consistent paginator                     | Consistent paginator             | Varies by API                              |
+| Realtime                   | SDK subscriptions                        | SDK subscriptions                | Connect to each WebSocket surface          |
+
+## Existing Integrations
+
+Already using an earlier Polymarket SDK? Follow the [SDK migration
+guide](/getting-started/migrate-from-previous-sdks) to update your integration.

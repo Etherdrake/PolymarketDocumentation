@@ -20,7 +20,8 @@ the view no longer needs live data.
 
 <Tabs>
   <Tab title="TypeScript">
-    Subscribe from a `PublicClient` and iterate over the merged event stream.
+    Subscribe from a `PublicClient` or `SecureClient` and iterate over the merged
+    event stream.
 
     ```ts theme={null}
     import { createPublicClient } from "@polymarket/client";
@@ -53,7 +54,8 @@ the view no longer needs live data.
   </Tab>
 
   <Tab title="Python">
-    Subscribe from an `AsyncPublicClient` and iterate over the merged event stream.
+    Subscribe from an `AsyncPublicClient` or `AsyncSecureClient` and iterate over
+    the merged event stream.
 
     ```python theme={null}
     from polymarket import AsyncPublicClient
@@ -149,7 +151,7 @@ Use best bid and offer updates for top-of-book quotes.
     After subscribing, the stream yields `PerpsBboEvent` objects like this.
 
     <CodeGroup>
-      ```ts Type theme={null}
+      ```ts PerpsBboEvent Type theme={null}
       type PerpsBboEvent = {
         topic: "perps.bbo";
         type: "bbo";
@@ -166,7 +168,7 @@ Use best bid and offer updates for top-of-book quotes.
       };
       ```
 
-      ```json Example theme={null}
+      ```json PerpsBboEvent Example theme={null}
       {
         "topic": "perps.bbo",
         "type": "bbo",
@@ -267,7 +269,7 @@ Use order book updates for depth across bid and ask price levels.
     After subscribing, the stream yields `PerpsBookEvent` objects like this.
 
     <CodeGroup>
-      ```ts Type theme={null}
+      ```ts PerpsBookEvent Type theme={null}
       type PerpsBookEvent = {
         topic: "perps.book";
         type: "book";
@@ -282,7 +284,7 @@ Use order book updates for depth across bid and ask price levels.
       };
       ```
 
-      ```json Example theme={null}
+      ```json PerpsBookEvent Example theme={null}
       {
         "topic": "perps.book",
         "type": "book",
@@ -379,7 +381,7 @@ analytics.
     After subscribing, the stream yields `PerpsTradeEvent` objects like this.
 
     <CodeGroup>
-      ```ts Type theme={null}
+      ```ts PerpsTradeEvent Type theme={null}
       type PerpsTradeEvent = {
         topic: "perps.trades";
         type: "trade";
@@ -398,7 +400,7 @@ analytics.
       };
       ```
 
-      ```json Example theme={null}
+      ```json PerpsTradeEvent Example theme={null}
       {
         "topic": "perps.trades",
         "type": "trade",
@@ -518,7 +520,7 @@ funding state.
     After subscribing, the stream yields `PerpsTickerEvent` objects like this.
 
     <CodeGroup>
-      ```ts Type theme={null}
+      ```ts PerpsTickerEvent Type theme={null}
       type PerpsTickerEvent = {
         topic: "perps.tickers";
         type: "ticker";
@@ -538,7 +540,7 @@ funding state.
       };
       ```
 
-      ```json Example theme={null}
+      ```json PerpsTickerEvent Example theme={null}
       {
         "topic": "perps.tickers",
         "type": "ticker",
@@ -682,7 +684,7 @@ Use statistics for 24-hour volume, opening price, and the rolling kline window.
     After subscribing, the stream yields `PerpsStatisticEvent` objects like this.
 
     <CodeGroup>
-      ```ts Type theme={null}
+      ```ts PerpsStatisticEvent Type theme={null}
       type PerpsStatisticEvent = {
         topic: "perps.statistics";
         type: "statistic";
@@ -706,7 +708,7 @@ Use statistics for 24-hour volume, opening price, and the rolling kline window.
       };
       ```
 
-      ```json Example theme={null}
+      ```json PerpsStatisticEvent Example theme={null}
       {
         "topic": "perps.statistics",
         "type": "statistic",
@@ -860,7 +862,7 @@ Use candles to update charts with live OHLCV data.
     After subscribing, the stream yields `PerpsCandleEvent` objects like this.
 
     <CodeGroup>
-      ```ts Type theme={null}
+      ```ts PerpsCandleEvent Type theme={null}
       type PerpsCandleEvent = {
         topic: "perps.candles";
         type: "candle";
@@ -883,7 +885,7 @@ Use candles to update charts with live OHLCV data.
       };
       ```
 
-      ```json Example theme={null}
+      ```json PerpsCandleEvent Example theme={null}
       {
         "topic": "perps.candles",
         "type": "candle",

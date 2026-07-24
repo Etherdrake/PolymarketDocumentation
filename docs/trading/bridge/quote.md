@@ -36,7 +36,31 @@ curl -X POST https://bridge.polymarket.com/quote \
 
 ### Response
 
-The quote response includes:
+The quote response includes an estimated output amount, a fee breakdown, and a `quoteId` you can log for your own records. To track the transfer itself once it's underway, poll [`/status`](/trading/bridge/status) with your bridge address.
+
+```json theme={null}
+{
+  "estCheckoutTimeMs": 45000,
+  "estInputUsd": 10,
+  "estOutputUsd": 9.94,
+  "estToTokenBaseUnit": "9940000",
+  "quoteId": "0x00c34ba467184b0146406d62b0e60aaa24ed52460bd456222b6155a0d9de0ad5",
+  "estFeeBreakdown": {
+    "gasUsd": 0.02,
+    "appFeeLabel": "Bridge fee",
+    "appFeePercent": 0.3,
+    "appFeeUsd": 0.03,
+    "fillCostPercent": 0.1,
+    "fillCostUsd": 0.01,
+    "maxSlippage": 0.5,
+    "minReceived": 9.89,
+    "swapImpact": 0.05,
+    "swapImpactUsd": 0.005,
+    "totalImpact": 0.6,
+    "totalImpactUsd": 0.06
+  }
+}
+```
 
 | Field                | Type   | Description                             |
 | -------------------- | ------ | --------------------------------------- |

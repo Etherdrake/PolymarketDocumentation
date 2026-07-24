@@ -21,10 +21,10 @@ The program is designed to:
 </Note>
 
 <Tip>
-  Both `min_incentive_size` and `max_incentive_spread` can be fetched alongside
-  full market objects via the CLOB API and [Markets
-  API](/market-data/fetching-markets). Reward allocations for an epoch can also
-  be fetched via the Markets API.
+  Each incentivized market defines a minimum qualifying order size, maximum
+  qualifying spread, and reward allocation. See [Liquidity Reward
+  Settings](/market-data/market-details#liquidity-reward-settings) to read the
+  current configuration for a market.
 </Tip>
 
 ***
@@ -166,17 +166,3 @@ Polymarket is distributing liquidity incentives for World Cup 2026 markets from 
 | Semifinals            | \$13,423    | \$24,927     | \$38,350      |
 | Third Place           | \$5,460     | \$10,140     | \$15,600      |
 | Final                 | \$18,200    | \$33,800     | \$52,000      |
-
-***
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Trading" icon="chart-line" href="/market-makers/trading">
-    Order entry and quoting best practices
-  </Card>
-
-  <Card title="Maker Rebates" icon="receipt" href="/market-makers/maker-rebates">
-    Earn USDC rebates on eligible crypto and sports markets
-  </Card>
-</CardGroup>

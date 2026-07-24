@@ -2,696 +2,1506 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Deposit Wallets
+# Wallets and Authentication
 
-> Create deposit wallets, execute wallet actions, and place POLY_1271 orders
+> Connect or create a Polymarket account for trading.
 
-Deposit wallets are the wallet path for **new API users**. Existing Safe and
-Proxy users are unaffected and can continue using their current wallet setup.
+Start by identifying the account's wallet type. You can then connect an existing Polymarket account or create new accounts for your users.
 
-For newly-created polymarket.com accounts using the deposit wallet flow, a
-deposit wallet is automatically deployed for you.
+## Wallet Types
 
-<Info>
-  This guide is for developers integrating directly with the APIs or SDKs. It
-  does not change existing user balances, existing proxy wallets, or existing
-  Safes.
-</Info>
+A Deposit Wallet is the default smart wallet for trading on Polymarket. Your wallet type depends on how and when the account wallet was created.
 
-## Where Deposit Wallets Fit
+| Wallet type        | When it applies                                                                              |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| **Deposit Wallet** | All Polymarket account wallets deployed on or after May 4, 2026 use it.                      |
+| **Proxy Wallet**   | A legacy smart wallet created through Magic Link or Google authentication on polymarket.com. |
+| **Safe Wallet**    | A legacy smart wallet created with an external signer such as MetaMask or Rabby Wallet.      |
 
-| Area                 | Existing Safe/Proxy users           | New API user deposit wallet flow                 |
-| -------------------- | ----------------------------------- | ------------------------------------------------ |
-| Wallet type          | Existing proxy wallet or Safe       | Deposit wallet                                   |
-| Wallet deployment    | Existing relayer Safe/proxy flow    | Relayer `WALLET-CREATE`                          |
-| Deployment signature | Existing Safe/proxy deployment flow | No user signature in the `WALLET-CREATE` payload |
-| Wallet calls         | Safe/proxy relayer transactions     | Relayer `WALLET` batches                         |
-| Order signature type | `0`, `1`, or `2`                    | `3`, also called `POLY_1271`                     |
-| Order maker          | EOA, proxy, or Safe                 | Deposit wallet address                           |
-| Order signer field   | EOA for existing types              | Deposit wallet address                           |
-| Signing key          | User EOA or session signer          | Deposit wallet owner or approved session signer  |
+## Connect Your Account
 
-## Mental Model
+Connect an existing polymarket.com account to trade with its funds and positions. Copy the account wallet address from the profile menu:
 
-A deposit wallet is a per-user ERC-1967 proxy deployed by a deposit wallet
-factory. The wallet holds pUSD and conditional tokens on-chain.
+<Frame>
+  <img className="hidden lg:block" src="https://mintcdn.com/polymarket-292d1b1b/1lJ_npwaE_MShiVL/images/deposit-wallet-desktop.png?fit=max&auto=format&n=1lJ_npwaE_MShiVL&q=85&s=6be3b87c53d6718f973db37e134ee944" alt="Polymarket profile menu showing the account wallet address on desktop" width="1280" height="274" data-path="images/deposit-wallet-desktop.png" />
 
-The owner or session signer signs two different kinds of payloads:
+  <img className="block lg:hidden" src="https://mintcdn.com/polymarket-292d1b1b/1lJ_npwaE_MShiVL/images/deposit-wallet-mobile.png?fit=max&auto=format&n=1lJ_npwaE_MShiVL&q=85&s=4d6f87ed5440c5297e60d6331c47dc73" alt="Polymarket profile menu showing the account wallet address on mobile" width="529" height="274" data-path="images/deposit-wallet-mobile.png" />
+</Frame>
 
-1. A **deposit wallet Batch** for on-chain wallet calls. This is submitted to the
-   relayer as a `WALLET` transaction.
-2. A **CLOB order** with `signatureType = 3`. The CLOB validates this through
-   ERC-1271 on the deposit wallet.
+Create a Relayer API key under polymarket.com → Settings → API Keys → Relayer API Keys:
 
-These signatures are not interchangeable. A `WALLET` batch uses a normal
-65-byte EIP-712 signature over the `DepositWallet` `Batch` type. A CLOB order
-uses an ERC-7739-wrapped `POLY_1271` signature and is longer than a normal ECDSA
-signature.
+<Frame>
+  <img src="https://mintcdn.com/polymarket-292d1b1b/1lJ_npwaE_MShiVL/images/relay-api-key-tutorial.png?fit=max&auto=format&n=1lJ_npwaE_MShiVL&q=85&s=674de7b1f46982a57fbe2bf57b905963" alt="Creating a Relayer API key from Polymarket settings" width="1269" height="785" data-path="images/relay-api-key-tutorial.png" />
+</Frame>
 
-## Integration Flow
-
-<Steps>
-  <Step title="Create or identify the owner signer">
-    Use the EOA or session signer that will own the deposit wallet. This signer is
-    also the key that signs deposit wallet batches and CLOB order payloads unless
-    your session signer flow delegates signing elsewhere.
-  </Step>
-
-  <Step title="Deploy the deposit wallet">
-    Submit a relayer `WALLET-CREATE` request. The body only needs the transaction
-    type, owner address, and deposit wallet factory address.
-
-    The deposit wallet address is deterministic. TypeScript relayer users can call
-    `deriveDepositWalletAddress()`, and Python relayer users can call
-    `get_expected_deposit_wallet()`. Other integrations should store the address
-    returned by onboarding or derive it with the deterministic formula below.
-  </Step>
-
-  <Step title="Fund the deposit wallet">
-    Transfer pUSD to the deposit wallet address. pUSD held by the EOA does not count
-    as CLOB buying power for deposit wallet orders.
-  </Step>
-
-  <Step title="Approve trading contracts from the wallet">
-    Approvals must be made **from the deposit wallet**, not from the owner EOA. Build
-    ERC-20 or ERC-1155 approval calldata and submit it through a relayer `WALLET`
-    batch.
-  </Step>
-
-  <Step title="Sync CLOB balances">
-    After funding or changing allowances, call the CLOB balance allowance update
-    endpoint through the SDK or API. The request must use `signature_type = 3`.
-  </Step>
-
-  <Step title="Place orders with POLY_1271">
-    Initialize the CLOB client with the deposit wallet as the funder and
-    `POLY_1271` as the signature type. Orders must have both `maker` and `signer`
-    set to the deposit wallet address.
-  </Step>
-</Steps>
-
-## SDK Users
-
-Use a relayer client or the raw relayer API for wallet deployment and wallet
-batches. Use the CLOB client for order signing, posting, cancelling, balances,
-and account data.
+This key authorizes gasless wallet operations for the account. Copy the **Signer Address** and **API Key** shown after creation.
 
 <Tabs>
   <Tab title="TypeScript">
-    Use the TypeScript clients with deposit wallet support:
-    [@polymarket/builder-relayer-client](https://www.npmjs.com/package/@polymarket/builder-relayer-client)
-    and
-    [@polymarket/clob-client-v2](https://www.npmjs.com/package/@polymarket/clob-client-v2).
+    With the wallet address and Relayer API key ready, connect the account with
+    `createSecureClient`.
 
-    ```bash theme={null}
-    npm install @polymarket/builder-relayer-client @polymarket/clob-client-v2 @polymarket/builder-signing-sdk viem
-    ```
+    <Steps>
+      <Step title="Create a Secure Client">
+        First, provide the signer and account wallet. Include the Relayer API
+        key to authorize gasless wallet operations.
 
-    ### Deploy the Wallet
+        ```ts theme={null}
+        import { createSecureClient, relayerApiKey } from "@polymarket/client";
+        import { privateKey } from "@polymarket/client/viem";
 
-    ```typescript theme={null}
-    import {
-      BuilderApiKeyCreds,
-      BuilderConfig,
-    } from "@polymarket/builder-signing-sdk";
-    import { RelayClient } from "@polymarket/builder-relayer-client";
-    import { createWalletClient, Hex, http } from "viem";
-    import { privateKeyToAccount } from "viem/accounts";
-    import { polygon } from "viem/chains";
+        const client = await createSecureClient({
+          wallet: process.env.POLYMARKET_WALLET_ADDRESS,
+          signer: privateKey(process.env.SIGNER_PRIVATE_KEY),
+          apiKey: relayerApiKey({
+            key: process.env.RELAYER_API_KEY!,
+            address: process.env.RELAYER_API_KEY_ADDRESS!,
+          }),
+        });
+        ```
 
-    const relayerUrl = process.env.RELAYER_URL!;
-    const chainId = Number(process.env.CHAIN_ID ?? 137);
-    const account = privateKeyToAccount(process.env.PRIVATE_KEY as Hex);
-    const walletClient = createWalletClient({
-      account,
-      chain: polygon,
-      transport: http(process.env.RPC_URL),
+        <Note>
+          This example uses Viem with a private key. See [Wallet
+          Integrations](/getting-started/typescript#wallet-integrations) to connect a
+          signer from another supported wallet library.
+        </Note>
+      </Step>
+
+      <Step title="Inspect the Account">
+        Then, inspect the resolved account identity and wallet type.
+
+        `client.account` contains the signer, account wallet, and wallet type for the session.
+
+        <CodeGroup>
+          ```ts AccountIdentity Type theme={null}
+          type AccountIdentity = {
+            signer: EvmAddress;
+            wallet: EvmAddress;
+            walletType: WalletType;
+          };
+
+          enum WalletType {
+            EOA = 0,
+            POLY_PROXY = 1,
+            GNOSIS_SAFE = 2,
+            DEPOSIT_WALLET = 3,
+          }
+          ```
+
+          ```json AccountIdentity Example theme={null}
+          {
+            "signer": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+            "wallet": "0x2e234dae75c793f67a35089c9d99245e1c58470b",
+            "walletType": 3
+          }
+          ```
+        </CodeGroup>
+      </Step>
+    </Steps>
+
+    That's it—you have connected your account.
+  </Tab>
+
+  <Tab title="Python">
+    With the wallet address and Relayer API key ready, connect the account with
+    `AsyncSecureClient.create` (`SecureClient.create` is available for
+    synchronous workflows).
+
+    <Steps>
+      <Step title="Create a Secure Client">
+        First, create an `AsyncSecureClient` or `SecureClient` with the private
+        key and account wallet.
+        Include the Relayer API key to authorize gasless wallet operations.
+
+        <CodeGroup>
+          ```python Async theme={null}
+          import os
+
+          from polymarket import AsyncSecureClient, RelayerApiKey
+
+          client = await AsyncSecureClient.create(
+              private_key=os.environ["SIGNER_PRIVATE_KEY"],
+              wallet=os.environ["POLYMARKET_WALLET_ADDRESS"],
+              api_key=RelayerApiKey(
+                  key=os.environ["POLYMARKET_RELAYER_API_KEY"],
+                  address=os.environ["POLYMARKET_RELAYER_API_KEY_ADDRESS"],
+              ),
+          )
+          ```
+
+          ```python Sync theme={null}
+          import os
+
+          from polymarket import RelayerApiKey, SecureClient
+
+          client = SecureClient.create(
+              private_key=os.environ["SIGNER_PRIVATE_KEY"],
+              wallet=os.environ["POLYMARKET_WALLET_ADDRESS"],
+              api_key=RelayerApiKey(
+                  key=os.environ["POLYMARKET_RELAYER_API_KEY"],
+                  address=os.environ["POLYMARKET_RELAYER_API_KEY_ADDRESS"],
+              ),
+          )
+          ```
+        </CodeGroup>
+      </Step>
+
+      <Step title="Inspect the Account">
+        Then, inspect the resolved account wallet and wallet type.
+
+        `client.wallet` and `client.wallet_type` contain the resolved account wallet and wallet type for the session.
+
+        <CodeGroup>
+          ```python Async theme={null}
+          EvmAddress = NewType("EvmAddress", str)
+
+          WalletType: TypeAlias = Literal["EOA", "POLY_PROXY", "GNOSIS_SAFE", "DEPOSIT_WALLET"]
+
+          class AsyncSecureClient:
+              wallet: EvmAddress
+              wallet_type: WalletType
+          ```
+
+          ```python Sync theme={null}
+          EvmAddress = NewType("EvmAddress", str)
+
+          WalletType: TypeAlias = Literal["EOA", "POLY_PROXY", "GNOSIS_SAFE", "DEPOSIT_WALLET"]
+
+          class SecureClient:
+              wallet: EvmAddress
+              wallet_type: WalletType
+          ```
+        </CodeGroup>
+      </Step>
+    </Steps>
+
+    That's it—you have connected your account.
+  </Tab>
+
+  <Tab title="API">
+    Authenticate with the CLOB and create L2 credentials.
+
+    <Steps>
+      <Step title="Create an L1 Signature">
+        First, create an L1 signature to attest to ownership of the signer
+        address. See [API Authentication](/getting-started/api#authentication)
+        for the complete signing flow.
+
+        ```json clobAuthTypedData theme={null}
+        {
+          "domain": {
+            "name": "ClobAuthDomain",
+            "version": "1",
+            "chainId": 137
+          },
+          "types": {
+            "ClobAuth": [
+              { "name": "address", "type": "address" },
+              { "name": "timestamp", "type": "string" },
+              { "name": "nonce", "type": "uint256" },
+              { "name": "message", "type": "string" }
+            ]
+          },
+          "primaryType": "ClobAuth",
+          "message": {
+            "address": "<signer_address>",
+            "timestamp": "<unix_seconds>",
+            "nonce": "<nonce>",
+            "message": "This message attests that I control the given wallet"
+          }
+        }
+        ```
+
+        Sign `clobAuthTypedData` with the signer that controls
+        `<signer_address>`. The returned signature is `<clob_l1_signature>`.
+      </Step>
+
+      <Step title="Create L2 Credentials">
+        Then, create L2 credentials by sending the signer address, timestamp,
+        nonce, and L1 signature to the CLOB.
+
+        <CodeGroup>
+          ```bash Create theme={null}
+          curl -X POST "https://clob.polymarket.com/auth/api-key" \
+            -H "POLY_ADDRESS: <signer_address>" \
+            -H "POLY_SIGNATURE: <clob_l1_signature>" \
+            -H "POLY_TIMESTAMP: <unix_seconds>" \
+            -H "POLY_NONCE: <nonce>"
+          ```
+
+          ```bash Derive theme={null}
+          curl "https://clob.polymarket.com/auth/derive-api-key" \
+            -H "POLY_ADDRESS: <signer_address>" \
+            -H "POLY_SIGNATURE: <clob_l1_signature>" \
+            -H "POLY_TIMESTAMP: <unix_seconds>" \
+            -H "POLY_NONCE: <nonce>"
+          ```
+        </CodeGroup>
+
+        Store the returned L2 credentials for authenticating private requests,
+        including requests that place orders:
+
+        ```json Response theme={null}
+        {
+          "apiKey": "<clob_api_key>",
+          "secret": "<clob_api_secret>",
+          "passphrase": "<clob_api_passphrase>"
+        }
+        ```
+      </Step>
+    </Steps>
+
+    That's it—you have connected your account.
+  </Tab>
+</Tabs>
+
+## Create New Accounts
+
+Create a polymarket.com account to serve as your builder account. It represents your integration and owns the builder profile and API credentials used to create Deposit Wallets for your users. Each wallet remains controlled by its signer.
+
+In the builder account, open polymarket.com → Settings → Builders and create an API key:
+
+<Frame>
+  <img src="https://mintcdn.com/polymarket-292d1b1b/1lJ_npwaE_MShiVL/images/builder-key-1.png?fit=max&auto=format&n=1lJ_npwaE_MShiVL&q=85&s=70d5709ef4dbf6bc276ef7caa41cdb23" alt="Open Settings, select Builders, and create a Builder API key" width="1512" height="1040" data-path="images/builder-key-1.png" />
+</Frame>
+
+<Frame>
+  <img src="https://mintcdn.com/polymarket-292d1b1b/1lJ_npwaE_MShiVL/images/builder-key-2.png?fit=max&auto=format&n=1lJ_npwaE_MShiVL&q=85&s=509d270f5f5ff4dc882d7d8b7db17679" alt="Copy the generated Builder API key, secret, and passphrase" width="1494" height="1052" data-path="images/builder-key-2.png" />
+</Frame>
+
+Copy the **API Key**, **Secret**, and **Passphrase** shown after creation.
+
+<Warning>
+  Builder API credentials are secrets. Keep them on your server, and never
+  expose or share them.
+</Warning>
+
+<Tabs>
+  <Tab title="TypeScript">
+    With the Builder API key ready, create the new account with
+    `createSecureClient`.
+
+    <Steps>
+      <Step title="Create a Deposit Wallet">
+        First, create a `SecureClient` with the signer and Builder API key. The SDK
+        derives the signer's Deposit Wallet address and deploys the wallet
+        automatically.
+
+        ```ts theme={null}
+        import { createSecureClient } from "@polymarket/client";
+        import { builderApiKey } from "@polymarket/client/node";
+        import { privateKey } from "@polymarket/client/viem";
+
+        const client = await createSecureClient({
+          signer: privateKey(process.env.SIGNER_PRIVATE_KEY),
+          apiKey: builderApiKey({
+            key: process.env.POLYMARKET_BUILDER_API_KEY!,
+            secret: process.env.POLYMARKET_BUILDER_SECRET!,
+            passphrase: process.env.POLYMARKET_BUILDER_PASSPHRASE!,
+          }),
+        });
+        ```
+
+        <Note>
+          This example uses Viem with a private key. See [Wallet
+          Integrations](/getting-started/typescript#wallet-integrations) to connect a
+          signer from another supported wallet library.
+        </Note>
+      </Step>
+
+      <Step title="Inspect the Account">
+        Then, inspect the resolved account identity and wallet type.
+
+        `client.account` contains the signer, account wallet, and wallet type for the session.
+
+        <CodeGroup>
+          ```ts AccountIdentity Type theme={null}
+          type AccountIdentity = {
+            signer: EvmAddress;
+            wallet: EvmAddress;
+            walletType: WalletType;
+          };
+
+          enum WalletType {
+            EOA = 0,
+            POLY_PROXY = 1,
+            GNOSIS_SAFE = 2,
+            DEPOSIT_WALLET = 3,
+          }
+          ```
+
+          ```json AccountIdentity Example theme={null}
+          {
+            "signer": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+            "wallet": "0x2e234dae75c793f67a35089c9d99245e1c58470b",
+            "walletType": 3
+          }
+          ```
+        </CodeGroup>
+      </Step>
+    </Steps>
+
+    That's it—you have created the new account.
+  </Tab>
+
+  <Tab title="Python">
+    With the Builder API key ready, create the new account with
+    `AsyncSecureClient.create` (`SecureClient.create` is available for
+    synchronous workflows).
+
+    <Steps>
+      <Step title="Create a Deposit Wallet">
+        First, create an `AsyncSecureClient` or `SecureClient` with the private
+        key and Builder API key.
+        The SDK derives the signer's Deposit Wallet address and deploys the
+        wallet automatically.
+
+        <CodeGroup>
+          ```python Async theme={null}
+          import os
+
+          from polymarket import AsyncSecureClient, BuilderApiKey
+
+          client = await AsyncSecureClient.create(
+              private_key=os.environ["SIGNER_PRIVATE_KEY"],
+              api_key=BuilderApiKey(
+                  key=os.environ["POLYMARKET_BUILDER_API_KEY"],
+                  secret=os.environ["POLYMARKET_BUILDER_SECRET"],
+                  passphrase=os.environ["POLYMARKET_BUILDER_PASSPHRASE"],
+              ),
+          )
+          ```
+
+          ```python Sync theme={null}
+          import os
+
+          from polymarket import BuilderApiKey, SecureClient
+
+          client = SecureClient.create(
+              private_key=os.environ["SIGNER_PRIVATE_KEY"],
+              api_key=BuilderApiKey(
+                  key=os.environ["POLYMARKET_BUILDER_API_KEY"],
+                  secret=os.environ["POLYMARKET_BUILDER_SECRET"],
+                  passphrase=os.environ["POLYMARKET_BUILDER_PASSPHRASE"],
+              ),
+          )
+          ```
+        </CodeGroup>
+      </Step>
+
+      <Step title="Inspect the Account">
+        Then, inspect the resolved account wallet and wallet type.
+
+        `client.wallet` and `client.wallet_type` contain the resolved account wallet and wallet type for the session.
+
+        <CodeGroup>
+          ```python Async theme={null}
+          EvmAddress = NewType("EvmAddress", str)
+
+          WalletType: TypeAlias = Literal["EOA", "POLY_PROXY", "GNOSIS_SAFE", "DEPOSIT_WALLET"]
+
+          class AsyncSecureClient:
+              wallet: EvmAddress
+              wallet_type: WalletType
+          ```
+
+          ```python Sync theme={null}
+          EvmAddress = NewType("EvmAddress", str)
+
+          WalletType: TypeAlias = Literal["EOA", "POLY_PROXY", "GNOSIS_SAFE", "DEPOSIT_WALLET"]
+
+          class SecureClient:
+              wallet: EvmAddress
+              wallet_type: WalletType
+          ```
+        </CodeGroup>
+      </Step>
+    </Steps>
+
+    That's it—you have created the new account.
+  </Tab>
+
+  <Tab title="API">
+    With the Builder API key ready, deploy a Deposit Wallet for each new signer
+    through the Relayer.
+
+    <Steps>
+      <Step title="Prepare the Deployment Request">
+        First, prepare a `WALLET-CREATE` request for each new signer.
+
+        ```json wallet_create_body theme={null}
+        {
+          "type": "WALLET-CREATE",
+          "from": "<signer_address>",
+          "to": "0x00000000000Fb5C9ADea0298D729A0CB3823Cc07",
+          "metadata": "Deploy Deposit Wallet"
+        }
+        ```
+
+        Create a Unix timestamp in seconds, then sign the exact serialized request body with the Builder API key `secret`.
+
+        ```text theme={null}
+        request_timestamp = <unix_seconds>
+        method = "POST"
+        request_path = "/submit"
+
+        message = request_timestamp + method + request_path + wallet_create_body
+        builder_signature = urlsafeBase64WithPadding(
+          HMAC-SHA256(base64Decode(<builder_api_secret>), message)
+        )
+        ```
+      </Step>
+
+      <Step title="Deploy the Deposit Wallet">
+        Then, submit the signed request to the Relayer.
+
+        ```bash theme={null}
+        curl -X POST "https://relayer-v2.polymarket.com/submit" \
+          -H "Content-Type: application/json" \
+          -H "POLY_BUILDER_API_KEY: <builder_api_key>" \
+          -H "POLY_BUILDER_TIMESTAMP: <request_timestamp>" \
+          -H "POLY_BUILDER_PASSPHRASE: <builder_api_passphrase>" \
+          -H "POLY_BUILDER_SIGNATURE: <builder_signature>" \
+          -d '{
+            "type": "WALLET-CREATE",
+            "from": "<signer_address>",
+            "to": "0x00000000000Fb5C9ADea0298D729A0CB3823Cc07",
+            "metadata": "Deploy Deposit Wallet"
+          }'
+        ```
+
+        The response includes the Relayer transaction ID.
+
+        ```json Response theme={null}
+        {
+          "transactionID": "<transaction_id>",
+          "state": "STATE_NEW"
+        }
+        ```
+      </Step>
+
+      <Step title="Confirm the Deployment">
+        Then, poll the Relayer transaction until it reaches `STATE_CONFIRMED`.
+
+        ```bash theme={null}
+        curl "https://relayer-v2.polymarket.com/transaction?id=<transaction_id>"
+        ```
+
+        The confirmed transaction includes the new Deposit Wallet address as `proxyAddress`.
+
+        ```json Response theme={null}
+        [
+          {
+            "transactionID": "<transaction_id>",
+            "transactionHash": "<transaction_hash>",
+            "proxyAddress": "<deposit_wallet_address>",
+            "state": "STATE_CONFIRMED"
+          }
+        ]
+        ```
+
+        Treat `STATE_FAILED` and `STATE_INVALID` as terminal failures.
+      </Step>
+
+      <Step title="Create an L1 Signature">
+        Then, create an L1 signature to attest to ownership of the signer
+        address. See [API Authentication](/getting-started/api#authentication)
+        for the complete signing flow.
+
+        ```json clobAuthTypedData theme={null}
+        {
+          "domain": {
+            "name": "ClobAuthDomain",
+            "version": "1",
+            "chainId": 137
+          },
+          "types": {
+            "ClobAuth": [
+              { "name": "address", "type": "address" },
+              { "name": "timestamp", "type": "string" },
+              { "name": "nonce", "type": "uint256" },
+              { "name": "message", "type": "string" }
+            ]
+          },
+          "primaryType": "ClobAuth",
+          "message": {
+            "address": "<signer_address>",
+            "timestamp": "<unix_seconds>",
+            "nonce": "<nonce>",
+            "message": "This message attests that I control the given wallet"
+          }
+        }
+        ```
+
+        Sign `clobAuthTypedData` with the signer that controls `<signer_address>`. The returned signature is `<clob_l1_signature>`.
+      </Step>
+
+      <Step title="Create L2 Credentials">
+        Finally, create L2 credentials by sending the signer address,
+        timestamp, nonce, and L1 signature to the CLOB.
+
+        <CodeGroup>
+          ```bash Create theme={null}
+          curl -X POST "https://clob.polymarket.com/auth/api-key" \
+            -H "POLY_ADDRESS: <signer_address>" \
+            -H "POLY_SIGNATURE: <clob_l1_signature>" \
+            -H "POLY_TIMESTAMP: <unix_seconds>" \
+            -H "POLY_NONCE: <nonce>"
+          ```
+
+          ```bash Derive theme={null}
+          curl "https://clob.polymarket.com/auth/derive-api-key" \
+            -H "POLY_ADDRESS: <signer_address>" \
+            -H "POLY_SIGNATURE: <clob_l1_signature>" \
+            -H "POLY_TIMESTAMP: <unix_seconds>" \
+            -H "POLY_NONCE: <nonce>"
+          ```
+        </CodeGroup>
+
+        Store the returned L2 credentials for authenticated requests and order placement.
+
+        ```json Response theme={null}
+        {
+          "apiKey": "<clob_api_key>",
+          "secret": "<clob_api_secret>",
+          "passphrase": "<clob_api_passphrase>"
+        }
+        ```
+      </Step>
+    </Steps>
+
+    That's it—you have created the new account.
+  </Tab>
+</Tabs>
+
+## Execute Gasless Transactions
+
+Approve token spending, transfer funds, and manage positions from the account
+wallet without paying gas.
+
+<Tabs>
+  <Tab title="TypeScript">
+    `SecureClient` provides named methods for supported wallet actions. Each
+    method returns a `TransactionHandle`; call `.wait()` to wait for the action
+    to settle.
+
+    Create a `SecureClient` with either a Relayer or Builder API key:
+
+    <CodeGroup>
+      ```ts Relayer API Key theme={null}
+      import { createSecureClient, relayerApiKey } from "@polymarket/client";
+
+      const client = await createSecureClient({
+        signer,
+        wallet: process.env.POLYMARKET_WALLET_ADDRESS,
+        apiKey: relayerApiKey({
+          key: process.env.POLYMARKET_RELAYER_API_KEY!,
+          address: process.env.POLYMARKET_RELAYER_API_KEY_ADDRESS!,
+        }),
+      });
+      ```
+
+      ```ts Builder API Key theme={null}
+      import { createSecureClient } from "@polymarket/client";
+      import { builderApiKey } from "@polymarket/client/node";
+
+      const client = await createSecureClient({
+        signer,
+        wallet: process.env.POLYMARKET_WALLET_ADDRESS,
+        apiKey: builderApiKey({
+          key: process.env.POLYMARKET_BUILDER_API_KEY!,
+          secret: process.env.POLYMARKET_BUILDER_SECRET!,
+          passphrase: process.env.POLYMARKET_BUILDER_PASSPHRASE!,
+        }),
+      });
+      ```
+    </CodeGroup>
+
+    Use the method that matches the wallet action you want to perform:
+
+    | Action                         | Method                     | Documentation                                         |
+    | ------------------------------ | -------------------------- | ----------------------------------------------------- |
+    | Approve ERC-20 spending        | `approveErc20()`           | Below                                                 |
+    | Approve an ERC-1155 operator   | `approveErc1155ForAll()`   | Below                                                 |
+    | Transfer ERC-20 tokens         | `transferErc20()`          | Below                                                 |
+    | Set up trading approvals       | `setupTradingApprovals()`  | [Set Up Trading Approvals](#set-up-trading-approvals) |
+    | Split, merge, or redeem tokens | Position lifecycle methods | [Manage Positions](/trading/positions/manage)         |
+    | Fund a Perps account           | `depositToPerps()`         | [Fund Your Account](/perps/fund-your-account)         |
+
+    **Approve ERC-20 spending**
+
+    Set an allowance for a contract to spend an ERC-20 token from the account
+    wallet. Pass `"max"` to approve the maximum amount.
+
+    ```ts theme={null}
+    const approval = await client.approveErc20({
+      tokenAddress: "<token_address>",
+      spenderAddress: "<spender_address>",
+      amount: "max",
     });
 
-    const builderCreds: BuilderApiKeyCreds = {
-      key: process.env.BUILDER_API_KEY!,
-      secret: process.env.BUILDER_SECRET!,
-      passphrase: process.env.BUILDER_PASS_PHRASE!,
-    };
+    await approval.wait();
+    ```
 
-    const builderConfig = new BuilderConfig({
-      localBuilderCreds: builderCreds,
+    **Approve an ERC-1155 operator**
+
+    Allow an operator to manage every ERC-1155 token held by the account wallet.
+    Set `approved` to `false` to revoke access.
+
+    ```ts theme={null}
+    const approval = await client.approveErc1155ForAll({
+      tokenAddress: "<token_address>",
+      operatorAddress: "<operator_address>",
+      approved: true,
     });
 
-    const relayer = new RelayClient(
-      relayerUrl,
-      chainId,
-      walletClient,
-      builderConfig,
-    );
-
-    const depositWalletAddress = await relayer.deriveDepositWalletAddress();
-    const response = await relayer.deployDepositWallet();
-    const confirmed = await response.wait();
+    await approval.wait();
     ```
 
-    `deployDepositWallet()` submits a `WALLET-CREATE` transaction. It does not add a
-    user signature to the deployment body.
+    **Transfer ERC-20 tokens**
 
-    ### Execute a Wallet Batch
+    Transfer an ERC-20 token from the account wallet. `amount` is expressed in the
+    token's base units.
 
-    ```typescript theme={null}
-    import type { DepositWalletCall } from "@polymarket/builder-relayer-client";
-
-    const calls: DepositWalletCall[] = [
-      {
-        target: process.env.PUSD_ADDRESS!,
-        value: "0",
-        data: approveCalldata,
-      },
-    ];
-
-    const deadline = Math.floor(Date.now() / 1000 + 600).toString();
-    const response = await relayer.executeDepositWalletBatch(
-      calls,
-      depositWalletAddress,
-      deadline,
-    );
-    const confirmed = await response.wait();
-    ```
-
-    The TypeScript relayer client fetches the current `WALLET` nonce before signing
-    and submitting the batch. The SDK signs the batch with this EIP-712 domain before
-    submitting it to the relayer:
-
-    ```typescript theme={null}
-    {
-      name: "DepositWallet",
-      version: "1",
-      chainId,
-      verifyingContract: depositWalletAddress,
-    }
-    ```
-
-    ### Trade From the Deposit Wallet
-
-    ```typescript theme={null}
-    import {
-      AssetType,
-      ClobClient,
-      OrderType,
-      Side,
-      SignatureTypeV2,
-    } from "@polymarket/clob-client-v2";
-
-    const creds = {
-      key: process.env.CLOB_API_KEY!,
-      secret: process.env.CLOB_SECRET!,
-      passphrase: process.env.CLOB_PASS_PHRASE!,
-    };
-
-    const clob = new ClobClient({
-      host: process.env.CLOB_API_URL!,
-      chain: chainId,
-      signer: walletClient,
-      creds,
-      signatureType: SignatureTypeV2.POLY_1271,
-      funderAddress: depositWalletAddress,
+    ```ts theme={null}
+    const transfer = await client.transferErc20({
+      tokenAddress: "<token_address>",
+      recipientAddress: "<recipient_address>",
+      amount: 1_000_000n,
     });
 
-    await clob.updateBalanceAllowance({ asset_type: AssetType.COLLATERAL });
-
-    const order = await clob.createAndPostOrder(
-      {
-        tokenID: process.env.TOKEN_ID!,
-        price: 0.5,
-        size: 10,
-        side: Side.BUY,
-      },
-      { tickSize: "0.01", negRisk: false },
-      OrderType.GTC,
-    );
+    await transfer.wait();
     ```
   </Tab>
 
   <Tab title="Python">
-    Use the Python builder relayer client with deposit wallet support:
-    [py-builder-relayer-client](https://pypi.org/project/py-builder-relayer-client/).
+    `AsyncSecureClient` provides named methods for supported wallet actions.
+    Each method returns a transaction handle; call `await handle.wait()` to
+    wait for the action to settle. The same methods are available on the
+    synchronous `SecureClient`.
 
-    ```bash theme={null}
-    pip install py-builder-relayer-client
-    ```
+    Create an `AsyncSecureClient` with either a Relayer or Builder API key:
 
-    ### Deploy the Wallet
+    <CodeGroup>
+      ```python Relayer API Key theme={null}
+      import os
 
-    ```python theme={null}
-    import os
+      from polymarket import AsyncSecureClient, RelayerApiKey
 
-    from py_builder_relayer_client.client import RelayClient
-    from py_builder_signing_sdk.config import BuilderApiKeyCreds, BuilderConfig
+      client = await AsyncSecureClient.create(
+          private_key=os.environ["SIGNER_PRIVATE_KEY"],
+          wallet=os.environ["POLYMARKET_WALLET_ADDRESS"],
+          api_key=RelayerApiKey(
+              key=os.environ["POLYMARKET_RELAYER_API_KEY"],
+              address=os.environ["POLYMARKET_RELAYER_API_KEY_ADDRESS"],
+          ),
+      )
+      ```
 
-    builder_config = BuilderConfig(
-        local_builder_creds=BuilderApiKeyCreds(
-            key=os.environ["BUILDER_API_KEY"],
-            secret=os.environ["BUILDER_SECRET"],
-            passphrase=os.environ["BUILDER_PASS_PHRASE"],
-        )
-    )
+      ```python Builder API Key theme={null}
+      import os
 
-    relayer = RelayClient(
-        os.environ["RELAYER_URL"],
-        int(os.environ.get("CHAIN_ID", "137")),
-        os.environ["PRIVATE_KEY"],
-        builder_config,
-    )
+      from polymarket import AsyncSecureClient, BuilderApiKey
 
-    deposit_wallet = relayer.get_expected_deposit_wallet()
-    response = relayer.deploy_deposit_wallet()
-    confirmed = response.wait()
-    ```
+      client = await AsyncSecureClient.create(
+          private_key=os.environ["SIGNER_PRIVATE_KEY"],
+          wallet=os.environ["POLYMARKET_WALLET_ADDRESS"],
+          api_key=BuilderApiKey(
+              key=os.environ["POLYMARKET_BUILDER_API_KEY"],
+              secret=os.environ["POLYMARKET_BUILDER_SECRET"],
+              passphrase=os.environ["POLYMARKET_BUILDER_PASSPHRASE"],
+          ),
+      )
+      ```
+    </CodeGroup>
 
-    `get_expected_deposit_wallet()` derives the deterministic wallet address from
-    the signer and the chain's deposit wallet configuration.
+    Use the method that matches the wallet action you want to perform:
 
-    ### Execute a Wallet Batch
+    | Action                         | Method                      | Documentation                                         |
+    | ------------------------------ | --------------------------- | ----------------------------------------------------- |
+    | Approve ERC-20 spending        | `approve_erc20()`           | Below                                                 |
+    | Approve an ERC-1155 operator   | `approve_erc1155_for_all()` | Below                                                 |
+    | Transfer ERC-20 tokens         | `transfer_erc20()`          | Below                                                 |
+    | Set up trading approvals       | `setup_trading_approvals()` | [Set Up Trading Approvals](#set-up-trading-approvals) |
+    | Split, merge, or redeem tokens | Position lifecycle methods  | [Manage Positions](/trading/positions/manage)         |
+    | Fund a Perps account           | `deposit_to_perps()`        | [Fund Your Account](/perps/fund-your-account)         |
 
-    ```python theme={null}
-    import time
+    **Approve ERC-20 spending**
 
-    from py_builder_relayer_client.models import DepositWalletCall, TransactionType
-
-    nonce_payload = relayer.get_nonce(
-        relayer.signer.address(),
-        TransactionType.WALLET.value,
-    )
-    wallet_nonce = str(nonce_payload["nonce"])
-
-    call = DepositWalletCall(
-        target=os.environ["PUSD_ADDRESS"],
-        value="0",
-        data=approve_calldata,
-    )
-
-    response = relayer.execute_deposit_wallet_batch(
-        calls=[call],
-        wallet_address=deposit_wallet,
-        nonce=wallet_nonce,
-        deadline=str(int(time.time()) + 600),
-    )
-    confirmed = response.wait()
-    ```
-
-    The Python relayer client mirrors the TypeScript wire format for `WALLET-CREATE`
-    and `WALLET` requests, while keeping builder API key auth in the Python client.
-
-    ### Trade From the Deposit Wallet
-
-    Use the Python CLOB client with deposit wallet order support:
-    [py-clob-client-v2](https://pypi.org/project/py-clob-client-v2/).
-
-    ```bash theme={null}
-    pip install py-clob-client-v2
-    ```
+    Set an allowance for a contract to spend an ERC-20 token from the account
+    wallet. Pass `"max"` to approve the maximum amount.
 
     ```python theme={null}
-    import os
-
-    from py_clob_client_v2 import (
-        ApiCreds,
-        AssetType,
-        BalanceAllowanceParams,
-        ClobClient,
-        OrderArgs,
-        OrderType,
-        PartialCreateOrderOptions,
-        Side,
-        SignatureTypeV2,
+    approval = await client.approve_erc20(
+        token_address="<token_address>",
+        spender_address="<spender_address>",
+        amount="max",
     )
 
-    creds = ApiCreds(
-        api_key=os.environ["CLOB_API_KEY"],
-        api_secret=os.environ["CLOB_SECRET"],
-        api_passphrase=os.environ["CLOB_PASS_PHRASE"],
+    await approval.wait()
+    ```
+
+    **Approve an ERC-1155 operator**
+
+    Allow an operator to manage every ERC-1155 token held by the account wallet.
+    Set `approved` to `False` to revoke access.
+
+    ```python theme={null}
+    approval = await client.approve_erc1155_for_all(
+        token_address="<token_address>",
+        operator_address="<operator_address>",
+        approved=True,
     )
 
-    clob = ClobClient(
-        host=os.environ["CLOB_API_URL"],
-        chain_id=int(os.environ.get("CHAIN_ID", "137")),
-        key=os.environ["PRIVATE_KEY"],
-        creds=creds,
-        signature_type=SignatureTypeV2.POLY_1271,
-        funder=deposit_wallet,
+    await approval.wait()
+    ```
+
+    **Transfer ERC-20 tokens**
+
+    Transfer an ERC-20 token from the account wallet. `amount` is expressed in the
+    token's base units.
+
+    ```python theme={null}
+    transfer = await client.transfer_erc20(
+        token_address="<token_address>",
+        recipient_address="<recipient_address>",
+        amount=1_000_000,
     )
 
-    clob.update_balance_allowance(
-        BalanceAllowanceParams(
-            asset_type=AssetType.COLLATERAL,
-            signature_type=SignatureTypeV2.POLY_1271,
-        )
-    )
-
-    response = clob.create_and_post_order(
-        order_args=OrderArgs(
-            token_id=os.environ["TOKEN_ID"],
-            price=0.50,
-            size=10,
-            side=Side.BUY,
-        ),
-        options=PartialCreateOrderOptions(tick_size="0.01", neg_risk=False),
-        order_type=OrderType.GTC,
-    )
+    await transfer.wait()
     ```
   </Tab>
 
-  <Tab title="Rust">
-    ### Deploy the Wallet and Execute Wallet Batches
+  <Tab title="API">
+    A Deposit Wallet executes one or more contract calls as an ordered batch.
+    The signer authorizes the complete batch, and the Relayer submits it
+    gaslessly.
 
-    The Rust SDK supports the CLOB order path for deposit wallets. It does not
-    include a builder relayer client. Use the TypeScript or Python relayer client
-    above, or the raw API flow below, to submit `WALLET-CREATE` and `WALLET`
-    transactions.
+    <Note>
+      The following steps show the Deposit Wallet path. For Safe or Proxy Wallet
+      flows, use an SDK that handles the wallet-specific payloads.
+    </Note>
 
-    Use the Rust CLOB client with deposit wallet support:
-    [polymarket\_client\_sdk\_v2](https://crates.io/crates/polymarket_client_sdk_v2).
+    <Steps>
+      <Step title="Build the Call List">
+        First, encode each contract call and add it to the batch in execution order.
 
-    ```bash theme={null}
-    cargo add polymarket_client_sdk_v2 --features clob
-    ```
+        ```json theme={null}
+        [
+          {
+            "target": "<contract_address>",
+            "value": "0",
+            "data": "<encoded_calldata>"
+          }
+        ]
+        ```
 
-    Once the deposit wallet is deployed, funded, and approved, pass the deposit
-    wallet address as the Rust CLOB client funder.
+        `target` is the contract to call, `value` is the amount of native POL to send in
+        wei, and `data` is the ABI-encoded function call. Use `"0"` for `value` when the
+        call does not transfer POL.
+      </Step>
 
-    ### Trade From the Deposit Wallet
+      <Step title="Fetch the Wallet Nonce">
+        Then, fetch a fresh `WALLET` nonce for the signer using the API key for your
+        integration.
 
-    ```rust theme={null}
-    use std::str::FromStr as _;
+        <CodeGroup>
+          ```bash Relayer API Key theme={null}
+          curl -G "https://relayer-v2.polymarket.com/v1/account/transactions/params" \
+            -H "RELAYER_API_KEY: <relayer_api_key>" \
+            -H "RELAYER_API_KEY_ADDRESS: <signer_address>" \
+            --data-urlencode "address=<signer_address>" \
+            --data-urlencode "type=WALLET"
+          ```
 
-    use polymarket_client_sdk_v2::auth::{LocalSigner, Signer as _};
-    use polymarket_client_sdk_v2::clob::types::request::UpdateBalanceAllowanceRequest;
-    use polymarket_client_sdk_v2::clob::types::{AssetType, OrderType, Side, SignatureType};
-    use polymarket_client_sdk_v2::clob::{Client, Config};
-    use polymarket_client_sdk_v2::types::{Address, Decimal, U256};
-    use polymarket_client_sdk_v2::{POLYGON, PRIVATE_KEY_VAR};
+          ```bash Builder API Key theme={null}
+          curl -G "https://relayer-v2.polymarket.com/v1/account/transactions/params" \
+            -H "POLY_BUILDER_API_KEY: <builder_api_key>" \
+            -H "POLY_BUILDER_TIMESTAMP: <request_timestamp>" \
+            -H "POLY_BUILDER_PASSPHRASE: <builder_api_passphrase>" \
+            -H "POLY_BUILDER_SIGNATURE: <builder_signature>" \
+            --data-urlencode "address=<signer_address>" \
+            --data-urlencode "type=WALLET"
+          ```
+        </CodeGroup>
 
-    let host = std::env::var("CLOB_API_URL")?;
-    let token_id = U256::from_str(&std::env::var("TOKEN_ID")?)?;
-    let deposit_wallet = Address::from_str(&std::env::var("DEPOSIT_WALLET")?)?;
-    let signer =
-        LocalSigner::from_str(&std::env::var(PRIVATE_KEY_VAR)?)?.with_chain_id(Some(POLYGON));
+        For Builder API keys, create `builder_signature` from the request timestamp,
+        method, and path. See [Create New Accounts](#create-new-accounts) for the
+        complete signing flow.
 
-    let client = Client::new(&host, Config::default())?
-        .authentication_builder(&signer)
-        .funder(deposit_wallet)
-        .signature_type(SignatureType::Poly1271)
-        .authenticate()
-        .await?;
+        ```json Response theme={null}
+        {
+          "address": "<signer_address>",
+          "nonce": "<wallet_nonce>"
+        }
+        ```
+      </Step>
 
-    client
-        .update_balance_allowance(
-            UpdateBalanceAllowanceRequest::builder()
-                .asset_type(AssetType::Collateral)
-                .build(),
-        )
-        .await?;
+      <Step title="Create the Batch Typed Data">
+        Build a Deposit Wallet `Batch` containing the wallet address, fresh nonce,
+        future deadline, and call list.
 
-    let _response = client
-        .limit_order()
-        .token_id(token_id)
-        .side(Side::Buy)
-        .price(Decimal::from_str("0.50")?)
-        .size(Decimal::from_str("10")?)
-        .order_type(OrderType::GTC)
-        .build_sign_and_post(&signer)
-        .await?;
-    ```
+        ```json walletBatchTypedData theme={null}
+        {
+          "domain": {
+            "name": "DepositWallet",
+            "version": "1",
+            "chainId": 137,
+            "verifyingContract": "<deposit_wallet_address>"
+          },
+          "types": {
+            "Call": [
+              { "name": "target", "type": "address" },
+              { "name": "value", "type": "uint256" },
+              { "name": "data", "type": "bytes" }
+            ],
+            "Batch": [
+              { "name": "wallet", "type": "address" },
+              { "name": "nonce", "type": "uint256" },
+              { "name": "deadline", "type": "uint256" },
+              { "name": "calls", "type": "Call[]" }
+            ]
+          },
+          "primaryType": "Batch",
+          "message": {
+            "wallet": "<deposit_wallet_address>",
+            "nonce": "<wallet_nonce>",
+            "deadline": "<unix_seconds>",
+            "calls": [
+              {
+                "target": "<contract_address>",
+                "value": "0",
+                "data": "<encoded_calldata>"
+              }
+            ]
+          }
+        }
+        ```
+      </Step>
 
-    The Rust client sets `signatureType = 3` and builds the wrapped ERC-1271 order
-    signature when `SignatureType::Poly1271` and a deposit wallet funder are
-    configured.
+      <Step title="Sign the Batch">
+        Sign the typed data with the signer that controls the Deposit Wallet. The
+        example below uses Viem.
+
+        ```ts theme={null}
+        import { privateKeyToAccount } from "viem/accounts";
+
+        const signer = privateKeyToAccount(
+          process.env.SIGNER_PRIVATE_KEY as `0x${string}`,
+        );
+        const walletBatchSignature = await signer.signTypedData(walletBatchTypedData);
+        ```
+      </Step>
+
+      <Step title="Submit the Batch">
+        Submit the signed batch using the same call list and API key for your
+        integration.
+
+        <CodeGroup>
+          ```bash Relayer API Key theme={null}
+          curl -X POST "https://relayer-v2.polymarket.com/submit" \
+            -H "Content-Type: application/json" \
+            -H "RELAYER_API_KEY: <relayer_api_key>" \
+            -H "RELAYER_API_KEY_ADDRESS: <signer_address>" \
+            -d '{
+              "type": "WALLET",
+              "from": "<signer_address>",
+              "to": "0x00000000000Fb5C9ADea0298D729A0CB3823Cc07",
+              "nonce": "<wallet_nonce>",
+              "signature": "<wallet_batch_signature>",
+              "metadata": "<wallet_action_description>",
+              "depositWalletParams": {
+                "depositWallet": "<deposit_wallet_address>",
+                "deadline": "<unix_seconds>",
+                "calls": [
+                  {
+                    "target": "<contract_address>",
+                    "value": "0",
+                    "data": "<encoded_calldata>"
+                  }
+                ]
+              }
+            }'
+          ```
+
+          ```bash Builder API Key theme={null}
+          curl -X POST "https://relayer-v2.polymarket.com/submit" \
+            -H "Content-Type: application/json" \
+            -H "POLY_BUILDER_API_KEY: <builder_api_key>" \
+            -H "POLY_BUILDER_TIMESTAMP: <request_timestamp>" \
+            -H "POLY_BUILDER_PASSPHRASE: <builder_api_passphrase>" \
+            -H "POLY_BUILDER_SIGNATURE: <builder_signature>" \
+            -d '{
+              "type": "WALLET",
+              "from": "<signer_address>",
+              "to": "0x00000000000Fb5C9ADea0298D729A0CB3823Cc07",
+              "nonce": "<wallet_nonce>",
+              "signature": "<wallet_batch_signature>",
+              "metadata": "<wallet_action_description>",
+              "depositWalletParams": {
+                "depositWallet": "<deposit_wallet_address>",
+                "deadline": "<unix_seconds>",
+                "calls": [
+                  {
+                    "target": "<contract_address>",
+                    "value": "0",
+                    "data": "<encoded_calldata>"
+                  }
+                ]
+              }
+            }'
+          ```
+        </CodeGroup>
+
+        For Builder API keys, sign the request timestamp, method, path, and exact
+        serialized body as described in [Create New Accounts](#create-new-accounts).
+
+        The response includes the transaction ID used in the next step.
+
+        ```json Response theme={null}
+        {
+          "transactionID": "<transaction_id>",
+          "state": "STATE_NEW"
+        }
+        ```
+      </Step>
+
+      <Step title="Confirm the Transaction">
+        Poll the transaction until it reaches `STATE_CONFIRMED`.
+
+        <CodeGroup>
+          ```bash Relayer API Key theme={null}
+          curl "https://relayer-v2.polymarket.com/v1/account/transactions/<transaction_id>" \
+            -H "RELAYER_API_KEY: <relayer_api_key>" \
+            -H "RELAYER_API_KEY_ADDRESS: <signer_address>"
+          ```
+
+          ```bash Builder API Key theme={null}
+          curl "https://relayer-v2.polymarket.com/v1/account/transactions/<transaction_id>" \
+            -H "POLY_BUILDER_API_KEY: <builder_api_key>" \
+            -H "POLY_BUILDER_TIMESTAMP: <request_timestamp>" \
+            -H "POLY_BUILDER_PASSPHRASE: <builder_api_passphrase>" \
+            -H "POLY_BUILDER_SIGNATURE: <builder_signature>"
+          ```
+        </CodeGroup>
+
+        ```json Response theme={null}
+        {
+          "transaction_id": "<transaction_id>",
+          "transaction_hash": "<transaction_hash>",
+          "state": "STATE_CONFIRMED",
+          "error_msg": null
+        }
+        ```
+
+        Treat `STATE_FAILED` and `STATE_INVALID` as terminal failures.
+      </Step>
+    </Steps>
   </Tab>
 </Tabs>
 
-## API Users
+## Set Up Trading Approvals
 
-Direct API integrations need to implement the same two relayer operations and
-the same CLOB order signature shape used by the SDKs.
+Set up the ERC-20 and ERC-1155 approvals that allow Polymarket's exchange
+contracts to spend the account wallet's pUSD and Conditional Tokens when
+placing orders. For Deposit Wallets, Safe Wallets, and Proxy Wallets, these
+approvals are submitted as a gasless transaction.
 
-### Deploy a Deposit Wallet
+<Tabs>
+  <Tab title="TypeScript">
+    Create a `SecureClient` with either a Relayer or Builder API key:
 
-Submit this body to the relayer `/submit` endpoint:
+    <CodeGroup>
+      ```ts Relayer API Key theme={null}
+      import { createSecureClient, relayerApiKey } from "@polymarket/client";
 
-```json theme={null}
-{
-  "type": "WALLET-CREATE",
-  "from": "0xOwnerAddress",
-  "to": "0x00000000000Fb5C9ADea0298D729A0CB3823Cc07"
-}
-```
+      const client = await createSecureClient({
+        signer,
+        wallet: process.env.POLYMARKET_WALLET_ADDRESS,
+        apiKey: relayerApiKey({
+          key: process.env.POLYMARKET_RELAYER_API_KEY!,
+          address: process.env.POLYMARKET_RELAYER_API_KEY_ADDRESS!,
+        }),
+      });
+      ```
 
-Field meanings:
+      ```ts Builder API Key theme={null}
+      import { createSecureClient } from "@polymarket/client";
+      import { builderApiKey } from "@polymarket/client/node";
 
-| Field  | Description                                                         |
-| ------ | ------------------------------------------------------------------- |
-| `type` | Must be `WALLET-CREATE`                                             |
-| `from` | Owner address for the deposit wallet                                |
-| `to`   | Deposit wallet factory address for the active chain and environment |
+      const client = await createSecureClient({
+        signer,
+        wallet: process.env.POLYMARKET_WALLET_ADDRESS,
+        apiKey: builderApiKey({
+          key: process.env.POLYMARKET_BUILDER_API_KEY!,
+          secret: process.env.POLYMARKET_BUILDER_SECRET!,
+          passphrase: process.env.POLYMARKET_BUILDER_PASSPHRASE!,
+        }),
+      });
+      ```
+    </CodeGroup>
 
-Current factory addresses:
+    Call `setupTradingApprovals()` to configure the required allowances:
 
-| Chain                 | Deposit wallet factory                       |
-| --------------------- | -------------------------------------------- |
-| Polygon mainnet `137` | `0x00000000000Fb5C9ADea0298D729A0CB3823Cc07` |
+    ```ts theme={null}
+    await client.setupTradingApprovals();
+    ```
 
-There is no user signature field in this payload. After submission, poll the
-relayer transaction until it reaches `STATE_CONFIRMED` before treating the
-deposit wallet as ready. `STATE_MINED` or `GET /deployed?...&type=WALLET` can
-indicate that the wallet exists onchain before the relayer has completed wallet
-registry updates, so submitting a deposit wallet batch before confirmation may
-fail with a wallet registration error. Store the deployed wallet address from
-the `WalletDeployed` event, from your onboarding flow, or derive it
-deterministically using the SDK's chain config.
+    The method checks existing approvals and submits only what is missing, so it is safe to call more than once.
 
-#### Wallet Implementation
+    Order placement can recover from missing allowances automatically. Setting them up in advance keeps that work out of your first order.
+  </Tab>
 
-All new deposit wallets are **ERC-1967 BeaconProxy clones** that delegate to
-a shared **deposit wallet beacon** holding the wallet implementation. This
-lets the implementation be upgraded once without changing any user's deposit
-wallet address. Deposit wallets created before the factory upgrade are
-**ERC-1967 UUPS clones** that hold an implementation address in their own
-ERC-1967 implementation slot. Those legacy wallets remain at their original
-addresses and continue to work.
+  <Tab title="Python">
+    Create an `AsyncSecureClient` with either a Relayer or Builder API key (the
+    same workflow is available with the synchronous `SecureClient`):
 
-Users who prefer to manage upgrades themselves can opt out of beacon upgrades
-at the contract level by pausing the wallet and opting out after the pause
-period.
+    <CodeGroup>
+      ```python Relayer API Key theme={null}
+      import os
 
-| Chain                 | Deposit wallet beacon                        |
-| --------------------- | -------------------------------------------- |
-| Polygon mainnet `137` | `0x7A18EDfe055488A3128f01F563e5B479D92ffc3a` |
+      from polymarket import AsyncSecureClient, RelayerApiKey
 
-#### Deterministic Address Derivation
+      client = await AsyncSecureClient.create(
+          private_key=os.environ["SIGNER_PRIVATE_KEY"],
+          wallet=os.environ["POLYMARKET_WALLET_ADDRESS"],
+          api_key=RelayerApiKey(
+              key=os.environ["POLYMARKET_RELAYER_API_KEY"],
+              address=os.environ["POLYMARKET_RELAYER_API_KEY_ADDRESS"],
+          ),
+      )
+      ```
 
-The TypeScript and Python relayer clients pick the correct clone shape inside
-`deriveDepositWalletAddress()` and `get_expected_deposit_wallet()`, so SDK
-users do not need to handle the two shapes manually. Direct API integrations
-that derive addresses themselves should follow the same algorithm.
+      ```python Builder API Key theme={null}
+      import os
 
-Both clone shapes share the same outer CREATE2 inputs and differ only in the
-init code hash:
+      from polymarket import AsyncSecureClient, BuilderApiKey
+
+      client = await AsyncSecureClient.create(
+          private_key=os.environ["SIGNER_PRIVATE_KEY"],
+          wallet=os.environ["POLYMARKET_WALLET_ADDRESS"],
+          api_key=BuilderApiKey(
+              key=os.environ["POLYMARKET_BUILDER_API_KEY"],
+              secret=os.environ["POLYMARKET_BUILDER_SECRET"],
+              passphrase=os.environ["POLYMARKET_BUILDER_PASSPHRASE"],
+          ),
+      )
+      ```
+    </CodeGroup>
+
+    Call `setup_trading_approvals()` to configure the required allowances:
+
+    ```python theme={null}
+    await client.setup_trading_approvals()
+    ```
+
+    The method checks existing approvals and submits only what is missing, so it is safe to call more than once.
+
+    Order placement can recover from missing allowances automatically. Setting them up in advance keeps that work out of your first order.
+  </Tab>
+
+  <Tab title="API">
+    Configure both CLOB exchange contracts so a Deposit Wallet can buy and sell
+    in standard and neg-risk markets.
+
+    <Note>
+      The following steps show the Deposit Wallet path. For Safe or Proxy Wallet
+      flows, use an SDK that handles the wallet-specific payloads. For EOA trading,
+      see [Set Up EOA Trading](#set-up-eoa-trading).
+    </Note>
+
+    <Steps>
+      <Step title="Check the Required Approvals">
+        First, check each allowance before building the transaction so the batch
+        contains only missing approvals.
+
+        | Token              | Contract to approve | Contract call                               |
+        | ------------------ | ------------------- | ------------------------------------------- |
+        | pUSD               | Standard Exchange   | `approve(StandardExchange, maxUint256)`     |
+        | pUSD               | Neg Risk Exchange   | `approve(NegRiskExchange, maxUint256)`      |
+        | Conditional Tokens | Standard Exchange   | `setApprovalForAll(StandardExchange, true)` |
+        | Conditional Tokens | Neg Risk Exchange   | `setApprovalForAll(NegRiskExchange, true)`  |
+
+        Read the current values with `allowance(wallet, exchange)` on pUSD and `isApprovedForAll(wallet, exchange)` on Conditional Tokens.
+
+        | Contract           | Address                                      |
+        | ------------------ | -------------------------------------------- |
+        | pUSD               | `0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB` |
+        | Conditional Tokens | `0x4D97DCd97eC945f40cF65F87097ACe5EA0476045` |
+        | Standard Exchange  | `0xE111180000d2663C0091e4f400237545B87B996B` |
+        | Neg Risk Exchange  | `0xe2222d279d744050d28e00520010520000310F59` |
+      </Step>
+
+      <Step title="Build the Approval Call List">
+        Then, encode the missing ERC-20 and ERC-1155 approval calls.
+
+        <CodeGroup>
+          ```solidity ERC-20 Approval theme={null}
+          function approve(address spender, uint256 amount) returns (bool);
+          ```
+
+          ```solidity ERC-1155 Approval theme={null}
+          function setApprovalForAll(address operator, bool approved);
+          ```
+        </CodeGroup>
+
+        Build one call for each missing approval. This example includes all four.
+
+        ```json theme={null}
+        [
+          {
+            "target": "0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB",
+            "value": "0",
+            "data": "<approve_standard_exchange_calldata>"
+          },
+          {
+            "target": "0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB",
+            "value": "0",
+            "data": "<approve_neg_risk_exchange_calldata>"
+          },
+          {
+            "target": "0x4D97DCd97eC945f40cF65F87097ACe5EA0476045",
+            "value": "0",
+            "data": "<approve_standard_exchange_operator_calldata>"
+          },
+          {
+            "target": "0x4D97DCd97eC945f40cF65F87097ACe5EA0476045",
+            "value": "0",
+            "data": "<approve_neg_risk_exchange_operator_calldata>"
+          }
+        ]
+        ```
+      </Step>
+
+      <Step title="Execute the Approval Batch">
+        Use the approval call list as the `calls` in [Execute Gasless
+        Transactions](#execute-gasless-transactions). Fetch a fresh nonce, sign the
+        complete batch, submit it, and wait for `STATE_CONFIRMED` before continuing.
+      </Step>
+
+      <Step title="Sync CLOB Allowances">
+        Finally, update the CLOB allowance cache:
+
+        <CodeGroup>
+          ```bash Collateral theme={null}
+          curl -G "https://clob.polymarket.com/balance-allowance/update" \
+            -H "POLY_ADDRESS: <signer_address>" \
+            -H "POLY_SIGNATURE: <clob_l2_signature>" \
+            -H "POLY_TIMESTAMP: <clob_request_timestamp>" \
+            -H "POLY_API_KEY: <clob_api_key>" \
+            -H "POLY_PASSPHRASE: <clob_api_passphrase>" \
+            --data-urlencode "asset_type=COLLATERAL" \
+            --data-urlencode "signature_type=3"
+          ```
+
+          ```bash Conditional Token theme={null}
+          curl -G "https://clob.polymarket.com/balance-allowance/update" \
+            -H "POLY_ADDRESS: <signer_address>" \
+            -H "POLY_SIGNATURE: <clob_l2_signature>" \
+            -H "POLY_TIMESTAMP: <clob_request_timestamp>" \
+            -H "POLY_API_KEY: <clob_api_key>" \
+            -H "POLY_PASSPHRASE: <clob_api_passphrase>" \
+            --data-urlencode "asset_type=CONDITIONAL" \
+            --data-urlencode "token_id=<token_id>" \
+            --data-urlencode "signature_type=3"
+          ```
+        </CodeGroup>
+
+        Using the signer address and CLOB API credentials from [API
+        Authentication](/getting-started/api#authentication), create a fresh
+        `<clob_request_timestamp>` and generate `<clob_l2_signature>` without a request
+        body. The query parameters are not part of the signed path:
+
+        ```text theme={null}
+        message = <clob_request_timestamp> + "GET" + "/balance-allowance/update"
+
+        clob_l2_signature = urlsafeBase64WithPadding(
+          HMAC-SHA256(base64Decode(<clob_api_secret>), message)
+        )
+        ```
+
+        Refresh the conditional-token allowance for each token before its first sell order.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+***
+
+## Advanced Options
+
+Explore additional wallet and authentication patterns for advanced integrations.
+
+### Derive a Deposit Wallet Address
+
+If you need to compute a Deposit Wallet address before deployment, use the
+deterministic derivation algorithm below.
+
+<Note>
+  Deposit Wallets deployed before the June 29, 2026 upgrade use a UUPS proxy.
+  Deposit Wallets deployed after the upgrade use a beacon proxy. The following
+  algorithm derives the address for a new Deposit Wallet with a beacon proxy.
+</Note>
 
 ```text theme={null}
-walletId = bytes32(owner)                  // owner address left-padded to 32 bytes
+factory = 0x00000000000Fb5C9ADea0298D729A0CB3823Cc07
+beacon  = 0x7A18EDfe055488A3128f01F563e5B479D92ffc3a
+
+walletId = bytes32(signer)                  // left-pad the signer to 32 bytes
 args     = abi.encode(factory, walletId)
 salt     = keccak256(args)
 
-// UUPS clones
-uupsBytecodeHash = SoladyLibClone.initCodeHashERC1967(implementation, args)
-uupsWallet       = CREATE2(factory, salt, uupsBytecodeHash)
-
-// BeaconProxy clones
-beaconBytecodeHash = SoladyLibClone.initCodeHashERC1967BeaconProxy(beacon, args)
-beaconWallet       = CREATE2(factory, salt, beaconBytecodeHash)
+beaconInitCodeHash = SoladyLibClone.initCodeHashERC1967BeaconProxy(beacon, args)
+depositWallet      = CREATE2(factory, salt, beaconInitCodeHash)
 ```
 
-To resolve a user's address, probe the factory's `BEACON()` view (selector
-`0x49493a4d`) and check whether the UUPS address is already deployed:
+See [Contract Addresses](/resources/contracts#wallet-factory-contracts) for the
+current Deposit Wallet factory and beacon.
 
-1. Compute `uupsWallet`.
-2. `eth_call` the factory with data `0x49493a4d`. If the call reverts or
-   returns the zero address, the factory does not expose a beacon — return
-   `uupsWallet`.
-3. If the call returns a non-zero address, check `eth_getCode(uupsWallet)`.
-   If it has bytecode, the user already has a UUPS wallet there — return
-   `uupsWallet`.
-4. Otherwise, compute and return `beaconWallet` using the address returned
-   from `BEACON()`.
+### Set Up EOA Trading
 
-### Submit a Deposit Wallet Batch
+If your EOA is allowlisted for trading, use it as the account wallet. Every
+onchain action—including token approvals, ERC-20 transfers, splits, merges, and
+redemptions—is submitted directly from the EOA and requires POL for gas.
 
-For wallet actions such as token approvals, transfers, withdrawals, splits, or
-merges, fetch the current `WALLET` nonce for the owner address, then sign a
-`Batch` with the owner or session signer:
+<Tabs>
+  <Tab title="TypeScript">
+    Pass the signer address as `wallet`. The SDK identifies the account as an
+    EOA and skips Deposit Wallet deployment.
 
-```http theme={null}
-GET /nonce?address=0xOwnerAddress&type=WALLET
-```
+    ```ts theme={null}
+    import { createSecureClient } from "@polymarket/client";
+    import { privateKey } from "@polymarket/client/viem";
 
-```typescript theme={null}
-const types = {
-  Call: [
-    { name: "target", type: "address" },
-    { name: "value", type: "uint256" },
-    { name: "data", type: "bytes" },
-  ],
-  Batch: [
-    { name: "wallet", type: "address" },
-    { name: "nonce", type: "uint256" },
-    { name: "deadline", type: "uint256" },
-    { name: "calls", type: "Call[]" },
-  ],
-};
+    const signer = privateKey(process.env.SIGNER_PRIVATE_KEY);
+    const client = await createSecureClient({
+      signer,
+      wallet: await signer.getAddress(),
+    });
+    ```
 
-const domain = {
-  name: "DepositWallet",
-  version: "1",
-  chainId,
-  verifyingContract: depositWalletAddress,
-};
+    Methods such as `approveErc20()`, `approveErc1155ForAll()`, `transferErc20()`,
+    and the position lifecycle methods submit transactions directly from the
+    signer. For example, set up every required trading approval:
 
-const message = {
-  wallet: depositWalletAddress,
-  nonce,
-  deadline,
-  calls,
-};
-```
+    ```ts theme={null}
+    await client.setupTradingApprovals();
+    ```
+  </Tab>
 
-Submit the signed batch to the relayer:
+  <Tab title="Python">
+    Pass the signer address as `wallet`. The SDK identifies the account as an
+    EOA and skips Deposit Wallet deployment.
 
-```json theme={null}
-{
-  "type": "WALLET",
-  "from": "0xOwnerAddress",
-  "to": "0x00000000000Fb5C9ADea0298D729A0CB3823Cc07",
-  "nonce": "0",
-  "signature": "0x65ByteBatchSignature",
-  "depositWalletParams": {
-    "depositWallet": "0xDepositWallet",
-    "deadline": "1760000000",
-    "calls": [
-      {
-        "target": "0xTokenOrContract",
-        "value": "0",
-        "data": "0xCalldata"
-      }
-    ]
-  }
-}
-```
+    ```python theme={null}
+    import os
 
-The `signature` in a `WALLET` request is a normal 65-byte EIP-712 signature with
-a `0x` prefix. This is different from the CLOB order signature described below.
-After submitting a `WALLET` batch, poll its relayer transaction until
-`STATE_CONFIRMED` before relying on its effects for later deposit wallet
-actions.
+    from polymarket import AsyncSecureClient
 
-### Place CLOB Orders
+    client = await AsyncSecureClient.create(
+        private_key=os.environ["SIGNER_PRIVATE_KEY"],
+        wallet=os.environ["POLYMARKET_SIGNER_ADDRESS"],
+    )
+    ```
 
-For deposit wallet orders, the raw order inside the `/order` request must use
-`signatureType = 3`:
+    Methods such as `approve_erc20()`, `approve_erc1155_for_all()`,
+    `transfer_erc20()`, and the position lifecycle methods submit transactions
+    directly from the signer. For example, set up every required trading approval:
 
-```json theme={null}
-{
-  "deferExec": false,
-  "order": {
-    "salt": 123456789,
-    "maker": "0xDepositWallet",
-    "signer": "0xDepositWallet",
-    "tokenId": "TOKEN_ID",
-    "makerAmount": "5000000",
-    "takerAmount": "10000000",
-    "side": "BUY",
-    "expiration": "0",
-    "signatureType": 3,
-    "timestamp": "1760000000",
-    "metadata": "0x0000000000000000000000000000000000000000000000000000000000000000",
-    "builder": "0x0000000000000000000000000000000000000000000000000000000000000000",
-    "signature": "0xWrapped1271Signature"
-  },
-  "owner": "CLOB_API_KEY",
-  "orderType": "GTC"
-}
-```
+    ```python theme={null}
+    await client.setup_trading_approvals()
+    ```
+  </Tab>
 
-The signature is not the raw order EIP-712 signature. It is an ERC-7739-wrapped
-signature that lets the deposit wallet validate the order through ERC-1271.
+  <Tab title="API">
+    <Steps>
+      <Step title="Set Up Trading Approvals">
+        First, approve both CLOB exchange contracts to spend pUSD and manage
+        Conditional Tokens. Submit each required approval transaction from the
+        EOA and pay gas with POL held at that address.
 
-The owner or session signer signs a nested `TypedDataSign` payload under the
-correct CTF Exchange V2 domain. The nested wallet fields are:
+        See [Set Up Trading Approvals](#set-up-trading-approvals) for the required approvals and contract addresses.
+      </Step>
 
-| Field               | Value                                                                |
-| ------------------- | -------------------------------------------------------------------- |
-| `name`              | `DepositWallet`                                                      |
-| `version`           | `1`                                                                  |
-| `chainId`           | Current chain ID                                                     |
-| `verifyingContract` | Deposit wallet address                                               |
-| `salt`              | `0x0000000000000000000000000000000000000000000000000000000000000000` |
+      <Step title="Create an L1 Signature">
+        Then, create an L1 signature to attest to ownership of the EOA. See [API
+        Authentication](/getting-started/api#authentication) for the complete
+        signing flow.
 
-The SDKs build this wrapper for you when you configure `POLY_1271` and the
-deposit wallet funder address.
+        ```json clobAuthTypedData theme={null}
+        {
+          "domain": {
+            "name": "ClobAuthDomain",
+            "version": "1",
+            "chainId": 137
+          },
+          "types": {
+            "ClobAuth": [
+              { "name": "address", "type": "address" },
+              { "name": "timestamp", "type": "string" },
+              { "name": "nonce", "type": "uint256" },
+              { "name": "message", "type": "string" }
+            ]
+          },
+          "primaryType": "ClobAuth",
+          "message": {
+            "address": "<signer_address>",
+            "timestamp": "<unix_seconds>",
+            "nonce": "<nonce>",
+            "message": "This message attests that I control the given wallet"
+          }
+        }
+        ```
+
+        Sign `clobAuthTypedData` with the EOA. The returned signature is `<clob_l1_signature>`.
+      </Step>
+
+      <Step title="Create L2 Credentials">
+        Finally, create L2 credentials by sending the signer address,
+        timestamp, nonce, and L1 signature to the CLOB.
+
+        <CodeGroup>
+          ```bash Create theme={null}
+          curl -X POST "https://clob.polymarket.com/auth/api-key" \
+            -H "POLY_ADDRESS: <signer_address>" \
+            -H "POLY_SIGNATURE: <clob_l1_signature>" \
+            -H "POLY_TIMESTAMP: <unix_seconds>" \
+            -H "POLY_NONCE: <nonce>"
+          ```
+
+          ```bash Derive theme={null}
+          curl "https://clob.polymarket.com/auth/derive-api-key" \
+            -H "POLY_ADDRESS: <signer_address>" \
+            -H "POLY_SIGNATURE: <clob_l1_signature>" \
+            -H "POLY_TIMESTAMP: <unix_seconds>" \
+            -H "POLY_NONCE: <nonce>"
+          ```
+        </CodeGroup>
+
+        Store the returned L2 credentials for authenticated requests and order placement.
+
+        ```json Response theme={null}
+        {
+          "apiKey": "<clob_api_key>",
+          "secret": "<clob_api_secret>",
+          "passphrase": "<clob_api_passphrase>"
+        }
+        ```
+      </Step>
+    </Steps>
+
+    See [Place a Limit Order](/trading/place-orders#place-a-limit-order) for the
+    complete direct API order flow.
+  </Tab>
+</Tabs>
+
+### Remote Builder Signing
+
+Remote Builder Signing keeps Builder API credentials on your server while a TypeScript client requests signed headers for Builder-authenticated actions.
+
+<Steps>
+  <Step title="Create a Signing Endpoint">
+    Authenticate and authorize the caller on your server, then sign the request
+    details supplied by the client.
+
+    ```ts theme={null}
+    import { buildHmacSignature } from "@polymarket/client";
+
+    export async function POST(request: Request): Promise<Response> {
+      const { body, method, path } = await request.json();
+      const timestamp = Math.floor(Date.now() / 1000);
+
+      return Response.json({
+        POLY_BUILDER_API_KEY: process.env.POLYMARKET_BUILDER_API_KEY!,
+        POLY_BUILDER_PASSPHRASE: process.env.POLYMARKET_BUILDER_PASSPHRASE!,
+        POLY_BUILDER_SIGNATURE: await buildHmacSignature(
+          process.env.POLYMARKET_BUILDER_SECRET!,
+          timestamp,
+          method,
+          path,
+          body,
+        ),
+        POLY_BUILDER_TIMESTAMP: `${timestamp}`,
+      });
+    }
+    ```
+  </Step>
+
+  <Step title="Connect the Client">
+    Pass the user's signer and the signing endpoint to the client. Authenticate
+    signing requests with the application's session credentials or custom
+    headers.
+
+    <CodeGroup>
+      ```ts Cookie Session theme={null}
+      import { createSecureClient, remoteBuilderSigning } from "@polymarket/client";
+
+      const client = await createSecureClient({
+        signer,
+        apiKey: remoteBuilderSigning({
+          url: "/api/builder/sign",
+          credentials: "include",
+        }),
+      });
+      ```
+
+      ```ts Custom Headers theme={null}
+      import { createSecureClient, remoteBuilderSigning } from "@polymarket/client";
+
+      const client = await createSecureClient({
+        signer,
+        apiKey: remoteBuilderSigning({
+          url: "/api/builder/sign",
+          headers: {
+            Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.…",
+          },
+        }),
+      });
+      ```
+    </CodeGroup>
+
+    The Builder API credentials remain on the server; the client receives only the headers for the request being authorized.
+  </Step>
+</Steps>
+
+### Opt Out of Beacon Upgrades
+
+Deposit Wallets deployed after June 29, 2026 use an [ERC-1967 beacon
+proxy](https://eips.ethereum.org/EIPS/eip-1967#beacon-contract-address). This
+proxy pattern resolves the implementation for multiple wallets through a shared
+beacon, allowing Polymarket to send implementation upgrades without changing
+their addresses. The wallet owner can instead pin the wallet to the
+implementation that is current when it opts out. The owner-only calls below are
+submitted directly and require POL for gas.
 
 <Warning>
-  If you sign the CLOB order as a normal EOA order, or if `maker` and `signer`
-  are not both the deposit wallet address, the order will fail ERC-1271
-  validation. `POLY_1271` is supported on V2 orders only.
+  An opted-out wallet does not receive future security fixes, bug fixes, or
+  features delivered through beacon upgrades. Review the current implementation
+  and accept responsibility for maintaining the wallet before opting out.
 </Warning>
 
-### Sync Balance and Allowance
+<Steps>
+  <Step title="Pause the Wallet">
+    Send a direct onchain transaction from the wallet owner to call `pause()` on
+    the Deposit Wallet.
+  </Step>
 
-After funding the deposit wallet or approving contracts from it, update the CLOB
-balance cache using `signature_type = 3`.
+  <Step title="Wait for the Timelock">
+    Read `timelockDelay()` from the Deposit Wallet factory and wait until that
+    interval has elapsed after the wallet was paused.
+  </Step>
 
-```http theme={null}
-GET /balance-allowance/update?asset_type=COLLATERAL&signature_type=3
-```
+  <Step title="Opt Out">
+    Send another transaction from the wallet owner to call `optOut()` on the
+    Deposit Wallet. This pins the wallet to the beacon implementation that is
+    current when the transaction executes.
+  </Step>
 
-For conditional tokens, include the token ID:
+  <Step title="Unpause the Wallet">
+    Call `unpause()` from the wallet owner to clear the paused state.
+  </Step>
+</Steps>
 
-```http theme={null}
-GET /balance-allowance/update?asset_type=CONDITIONAL&token_id=TOKEN_ID&signature_type=3
-```
-
-Use normal CLOB L2 authentication headers for these requests. Relayer auth and
-CLOB auth are separate systems.
-
-## Common Issues
-
-<AccordionGroup>
-  <Accordion title="Order is rejected as invalid signature">
-    Check all four signature inputs: `signatureType` must be `3`, order `maker` must
-    be the deposit wallet, order `signer` must be the deposit wallet, and the order
-    signature must be the ERC-7739-wrapped `POLY_1271` signature. Also confirm the
-    order was signed against the correct CTF Exchange V2 verifying contract for the
-    market.
-  </Accordion>
-
-  <Accordion title="Wallet batch is rejected">
-    Fetch the current `WALLET` nonce fresh from the relayer before signing the batch.
-    Confirm the deadline is still in the future and within the relayer's accepted
-    range. The `WALLET` batch signature should be a normal 65-byte EIP-712 signature
-    over `DepositWallet` `Batch`.
-  </Accordion>
-
-  <Accordion title="Order says not enough balance">
-    Confirm pUSD is held by the deposit wallet address. Then update the CLOB balance
-    cache with `signature_type = 3`. pUSD sitting on the owner EOA does not fund
-    deposit wallet orders.
-  </Accordion>
-
-  <Accordion title="Allowance is missing">
-    Approvals must come from the deposit wallet. An EOA `approve()` transaction does
-    not approve spending from the deposit wallet. Submit approval calldata through a
-    relayer `WALLET` batch.
-  </Accordion>
-
-  <Accordion title="Direct API auth is confusing">
-    Relayer auth and CLOB auth are independent. Use the auth method required by your
-    relayer environment for `/submit`. Use CLOB L1/L2 authentication for order and
-    balance endpoints. Do not reuse relayer cookies or headers as CLOB auth.
-  </Accordion>
-</AccordionGroup>
+To resume receiving beacon upgrades, repeat the pause and timelock steps, call
+`optIn()`, and then unpause the wallet. Review the beacon's current default
+implementation before opting back in.

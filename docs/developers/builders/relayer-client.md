@@ -2,431 +2,718 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Gasless Transactions
+# Manage Positions
 
-> Execute onchain operations without paying gas fees
+> Learn how to manage outcome-token inventory from creation through redemption.
 
-Polymarket's **Relayer Client** enables gasless transactions for your users. Instead of requiring users to hold POL for gas, Polymarket's infrastructure pays all transaction fees. This creates a seamless experience where users only need pUSD to trade.
+Manage positions outside the order book by splitting collateral into complete
+sets of outcome tokens, merging balanced tokens back into collateral, or
+redeeming winning tokens after resolution.
 
-## How It Works
+Choose an operation based on how you want to change your position:
 
-The relayer acts as a transaction sponsor:
+| Operation | Use it when                                                                   |
+| --------- | ----------------------------------------------------------------------------- |
+| Split     | You need to convert collateral into a complete set of outcome tokens.         |
+| Merge     | You hold balanced outcome tokens and want to convert them back to collateral. |
+| Redeem    | A market has resolved and you want to claim collateral for winning positions. |
 
-1. Your app creates a transaction
-2. The user signs it with their private key
-3. Your app sends it to Polymarket's relayer
-4. The relayer submits it onchain and pays the gas fee
-5. The transaction executes from the user's wallet
+Choose the integration surface you will use to submit position operations.
 
-## What Is Covered
+<Tabs>
+  <Tab title="TypeScript">
+    The examples on this page assume you have a `SecureClient` configured with
+    either a Relayer API key or a Builder API key.
 
-Polymarket pays gas for all operations routed through the relayer:
+    <CodeGroup>
+      ```ts Relayer API Key theme={null}
+      import { createSecureClient, relayerApiKey } from "@polymarket/client";
+      import { privateKey } from "@polymarket/client/viem";
 
-| Operation             | Description                                       |
-| --------------------- | ------------------------------------------------- |
-| **Wallet deployment** | Deploy deposit wallets for new API users          |
-| **Token approvals**   | Approve contracts to spend pUSD or outcome tokens |
-| **CTF operations**    | Split, merge, and redeem positions                |
-| **Transfers**         | Move tokens between addresses                     |
+      const client = await createSecureClient({
+        signer: privateKey(process.env.SIGNER_PRIVATE_KEY),
+        wallet: process.env.POLYMARKET_WALLET_ADDRESS,
+        apiKey: relayerApiKey({
+          key: process.env.POLYMARKET_RELAYER_API_KEY!,
+          address: process.env.POLYMARKET_RELAYER_API_KEY_ADDRESS!,
+        }),
+      });
+      ```
 
-## Authentication
+      ```ts Builder API Key theme={null}
+      import { createSecureClient } from "@polymarket/client";
+      import { builderApiKey } from "@polymarket/client/node";
+      import { privateKey } from "@polymarket/client/viem";
 
-The relayer uses **Relayer API Keys**. You can create one from [Settings > API Keys](https://polymarket.com/settings?tab=api-keys) on the Polymarket website.
+      const client = await createSecureClient({
+        signer: privateKey(process.env.SIGNER_PRIVATE_KEY),
+        wallet: process.env.POLYMARKET_WALLET_ADDRESS,
+        apiKey: builderApiKey({
+          key: process.env.POLYMARKET_BUILDER_API_KEY!,
+          secret: process.env.POLYMARKET_BUILDER_SECRET!,
+          passphrase: process.env.POLYMARKET_BUILDER_PASSPHRASE!,
+        }),
+      });
+      ```
+    </CodeGroup>
 
-<Note>
-  **Already have a builder signing key?** Your existing HMAC-based builder API
-  key keeps working with the Relayer — no need to rotate or reissue. Order
-  attribution is now associated with the native `builderCode` field in CLOB V2.
-  See [Migrating to CLOB V2](/v2-migration#builder-program) for context.
-</Note>
+    See [Wallets and
+    Authentication](/trading/wallets-auth#execute-gasless-transactions) for the
+    complete wallet setup and Relayer authorization flow.
+  </Tab>
 
-Include these headers with your requests:
+  <Tab title="Python">
+    The examples on this page assume you have an `AsyncSecureClient` configured
+    with either a Relayer API key or a Builder API key.
 
-| Header                    | Description                   |
-| ------------------------- | ----------------------------- |
-| `RELAYER_API_KEY`         | Your Relayer API key          |
-| `RELAYER_API_KEY_ADDRESS` | The address that owns the key |
+    <CodeGroup>
+      ```python Relayer API Key theme={null}
+      import os
 
-<Info>
-  If you want to use the Relayer API Key directly without the SDK, see the
-  [Relayer API Reference](/api-reference/relayer).
-</Info>
+      from polymarket import AsyncSecureClient, RelayerApiKey
 
-## Prerequisites
+      client = await AsyncSecureClient.create(
+          private_key=os.environ["SIGNER_PRIVATE_KEY"],
+          wallet=os.environ["POLYMARKET_WALLET_ADDRESS"],
+          api_key=RelayerApiKey(
+              key=os.environ["POLYMARKET_RELAYER_API_KEY"],
+              address=os.environ["POLYMARKET_RELAYER_API_KEY_ADDRESS"],
+          ),
+      )
+      ```
 
-Before using the relayer, you need:
+      ```python Builder API Key theme={null}
+      import os
 
-| Requirement                  | Source                                                              |
-| ---------------------------- | ------------------------------------------------------------------- |
-| Relayer API Key              | [Settings > API Keys](https://polymarket.com/settings?tab=api-keys) |
-| User's private key or signer | Your wallet integration                                             |
-| pUSD balance                 | For trading (not for gas)                                           |
+      from polymarket import AsyncSecureClient, BuilderApiKey
 
-## Installation
+      client = await AsyncSecureClient.create(
+          private_key=os.environ["SIGNER_PRIVATE_KEY"],
+          wallet=os.environ["POLYMARKET_WALLET_ADDRESS"],
+          api_key=BuilderApiKey(
+              key=os.environ["POLYMARKET_BUILDER_API_KEY"],
+              secret=os.environ["POLYMARKET_BUILDER_SECRET"],
+              passphrase=os.environ["POLYMARKET_BUILDER_PASSPHRASE"],
+          ),
+      )
+      ```
+    </CodeGroup>
 
-<CodeGroup>
-  ```bash npm theme={null}
-  npm install @polymarket/builder-relayer-client
-  ```
+    The synchronous `SecureClient` provides the same methods and supports both
+    API key types.
 
-  ```bash pip theme={null}
-  pip install py-builder-relayer-client
-  ```
-</CodeGroup>
+    See [Wallets and
+    Authentication](/trading/wallets-auth#execute-gasless-transactions) for the
+    complete wallet setup and Relayer authorization flow.
+  </Tab>
 
-## Client Setup
+  <Tab title="API">
+    The examples on this page assume you can authenticate Relayer API requests
+    with either a Relayer API key or a Builder API key. The examples below use
+    a Relayer API key:
 
-Initialize the relayer client with your Relayer API Key:
+    ```bash theme={null}
+    RELAYER_API_KEY="<relayer_api_key>"
+    RELAYER_API_KEY_ADDRESS="<signer_address>"
+    ```
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  import { createWalletClient, http, Hex } from "viem";
-  import { privateKeyToAccount } from "viem/accounts";
-  import { polygon } from "viem/chains";
-  import { RelayClient } from "@polymarket/builder-relayer-client";
+    See [Execute Gasless
+    Transactions](/trading/wallets-auth#execute-gasless-transactions) for the
+    complete wallet setup and Relayer authorization flow.
+  </Tab>
 
-  const account = privateKeyToAccount(process.env.PRIVATE_KEY as Hex);
-  const wallet = createWalletClient({
-    account,
-    chain: polygon,
-    transport: http(process.env.RPC_URL),
-  });
+  <Tab title="Solidity">
+    The examples on this page use these Polygon contracts:
 
-  const client = new RelayClient({
-    host: "https://relayer-v2.polymarket.com/",
-    chain: 137,
-    signer: wallet,
-    relayerApiKey: process.env.RELAYER_API_KEY!,
-    relayerApiKeyAddress: process.env.RELAYER_API_KEY_ADDRESS!,
-  });
-  ```
+    | Contract                      | Address                                                                                                                    |
+    | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+    | pUSD                          | [`0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB`](https://polygonscan.com/address/0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB) |
+    | Conditional Tokens            | [`0x4D97DCd97eC945f40cF65F87097ACe5EA0476045`](https://polygonscan.com/address/0x4D97DCd97eC945f40cF65F87097ACe5EA0476045) |
+    | `CtfCollateralAdapter`        | [`0xAdA100Db00Ca00073811820692005400218FcE1f`](https://polygonscan.com/address/0xAdA100Db00Ca00073811820692005400218FcE1f) |
+    | `NegRiskCtfCollateralAdapter` | [`0xadA2005600Dec949baf300f4C6120000bDB6eAab`](https://polygonscan.com/address/0xadA2005600Dec949baf300f4C6120000bDB6eAab) |
+  </Tab>
+</Tabs>
 
-  ```python Python theme={null}
-  import os
-  from py_builder_relayer_client.client import RelayClient
+## Split a Position
 
-  client = RelayClient(
-      host="https://relayer-v2.polymarket.com",
-      chain=137,
-      signer=os.getenv("PRIVATE_KEY"),
-      relayer_api_key=os.environ["RELAYER_API_KEY"],
-      relayer_api_key_address=os.environ["RELAYER_API_KEY_ADDRESS"],
-  )
-  ```
-</CodeGroup>
+Splitting converts pUSD into a complete set of outcome tokens. Every 1 pUSD
+produces 1 YES token and 1 NO token.
 
-<Warning>
-  Never expose your Relayer API Key in client-side code. Use environment
-  variables or a secrets manager.
-</Warning>
-
-## Wallet Types
-
-Use deposit wallets for new API users. Existing Safe and Proxy users can keep
-using their current wallet type and signature flow.
-
-| Type               | Deployment                               | Best For                            |
-| ------------------ | ---------------------------------------- | ----------------------------------- |
-| **Deposit Wallet** | Call `deployDepositWallet()`             | New API users                       |
-| **Safe**           | Call `deploy()` before first transaction | Existing Safe integrations          |
-| **Proxy**          | Auto-deploys on first transaction        | Existing Polymarket.com proxy users |
-
-<Info>
-  For the new deposit wallet flow, including `WALLET-CREATE`, signed `WALLET`
-  batches, and `POLY_1271` CLOB orders, see the [Deposit Wallet
-  Guide](/trading/deposit-wallets).
-</Info>
-
-<CodeGroup>
-  ```typescript Safe Wallet (TypeScript) theme={null}
-  import { RelayClient, RelayerTxType } from "@polymarket/builder-relayer-client";
-
-  const client = new RelayClient({
-    host: "https://relayer-v2.polymarket.com/",
-    chain: 137,
-    signer: wallet,
-    relayerApiKey: process.env.RELAYER_API_KEY!,
-    relayerApiKeyAddress: process.env.RELAYER_API_KEY_ADDRESS!,
-    txType: RelayerTxType.SAFE,
-  });
-
-  // Deploy before first transaction
-  const response = await client.deploy();
-  const result = await response.wait();
-  console.log("Safe Address:", result?.proxyAddress);
-  ```
-
-  ```python Safe Wallet (Python) theme={null}
-  from py_builder_relayer_client.client import RelayClient
-
-  # client initialized with relayer credentials (see Client Setup above)
-
-  # Deploy before first transaction
-  response = client.deploy()
-  result = response.wait()
-  print("Safe Address:", result.get("proxyAddress"))
-  ```
-
-  ```typescript Proxy Wallet (TypeScript) theme={null}
-  import { RelayClient, RelayerTxType } from "@polymarket/builder-relayer-client";
-
-  const client = new RelayClient({
-    host: "https://relayer-v2.polymarket.com/",
-    chain: 137,
-    signer: wallet,
-    relayerApiKey: process.env.RELAYER_API_KEY!,
-    relayerApiKeyAddress: process.env.RELAYER_API_KEY_ADDRESS!,
-    txType: RelayerTxType.PROXY,
-  });
-
-  // No deploy needed - auto-deploys on first transaction
-  ```
-
-  ```python Proxy Wallet (Python) theme={null}
-  from py_builder_relayer_client.client import RelayClient
-
-  # client initialized with relayer credentials (see Client Setup above)
-  # No deploy needed - auto-deploys on first transaction
-  ```
-</CodeGroup>
-
-## Executing Transactions
-
-Use the `execute` method to send transactions through the relayer:
-
-```typescript theme={null}
-interface Transaction {
-  to: string; // Target contract address
-  data: string; // Encoded function call
-  value: string; // POL to send (usually "0")
-}
-
-const response = await client.execute(transactions, "Description");
-const result = await response.wait();
+```text theme={null}
+100 pUSD → 100 YES tokens + 100 NO tokens
 ```
 
-### Token Approval
+Before splitting, ensure you have:
 
-Approve contracts to spend tokens:
+1. Enough pUSD in the wallet for the amount you want to split.
+2. Approved the collateral adapter for the market type to spend the wallet's
+   pUSD.
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  import { encodeFunctionData, maxUint256 } from "viem";
+<Tabs>
+  <Tab title="TypeScript">
+    Call `splitPosition()` on a `SecureClient`. The client identifies the
+    market type from the condition ID and selects the correct collateral
+    adapter.
 
-  const pUSD = "0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB";
-  const CTF = "0x4D97DCd97eC945f40cF65F87097ACe5EA0476045";
+    ```ts theme={null}
+    const transaction = await client.splitPosition({
+      conditionId: market.conditionId,
+      amount: 1_000_000n,
+    });
 
-  const approveTx = {
-    to: pUSD,
-    data: encodeFunctionData({
-      abi: [
+    const outcome = await transaction.wait();
+
+    // outcome.transactionHash: TxHash
+    // outcome.transactionId: TransactionId | null
+    ```
+
+    `amount` is denominated in pUSD base units, so `1_000_000n` splits 1 pUSD
+    into 1 YES token and 1 NO token. `wait()` returns a `TransactionOutcome`
+    after the transaction settles.
+  </Tab>
+
+  <Tab title="Python">
+    Call `split_position()` on an `AsyncSecureClient`. The synchronous
+    `SecureClient` provides the same method. Both clients identify the market
+    type from the condition ID and select the correct collateral adapter.
+
+    ```python theme={null}
+    transaction = await client.split_position(
+        condition_id=market.condition_id,
+        amount=1_000_000,
+    )
+
+    outcome = await transaction.wait()
+
+    # outcome.transaction_hash: TransactionHash
+    # outcome.transaction_id: str | None
+    ```
+
+    `amount` is denominated in pUSD base units, so `1_000_000` splits 1 pUSD
+    into 1 YES token and 1 NO token. `wait()` returns a `TransactionOutcome`
+    after the transaction settles.
+  </Tab>
+
+  <Tab title="API">
+    Build the `splitPosition` call, then execute it as a gasless wallet
+    transaction.
+
+    <Steps>
+      <Step title="Build the Split Call">
+        Select the call target from the market response's `negRisk` value:
+
+        | `negRisk` | Call target                   | Address                                      |
+        | --------- | ----------------------------- | -------------------------------------------- |
+        | `false`   | `CtfCollateralAdapter`        | `0xAdA100Db00Ca00073811820692005400218FcE1f` |
+        | `true`    | `NegRiskCtfCollateralAdapter` | `0xadA2005600Dec949baf300f4C6120000bDB6eAab` |
+
+        ABI-encode this function call:
+
+        ```solidity theme={null}
+        function splitPosition(
+            address collateralToken,
+            bytes32 parentCollectionId,
+            bytes32 conditionId,
+            uint256[] partition,
+            uint256 amount
+        );
+        ```
+
+        | Argument             | Value                                        |
+        | -------------------- | -------------------------------------------- |
+        | `collateralToken`    | `0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB` |
+        | `parentCollectionId` | 32 zero bytes                                |
+        | `conditionId`        | `<market_condition_id>`                      |
+        | `partition`          | `[1, 2]`                                     |
+        | `amount`             | `<amount_in_pusd_base_units>`                |
+
+        Place the encoded calldata in the wallet call:
+
+        ```json theme={null}
         {
-          name: "approve",
-          type: "function",
-          inputs: [
-            { name: "spender", type: "address" },
-            { name: "amount", type: "uint256" },
-          ],
-          outputs: [{ type: "bool" }],
-        },
-      ],
-      functionName: "approve",
-      args: [CTF, maxUint256],
-    }),
-    value: "0",
-  };
+          "target": "<collateral_adapter_address>",
+          "value": "0",
+          "data": "<encoded_split_position_calldata>"
+        }
+        ```
+      </Step>
 
-  const response = await client.execute([approveTx], "Approve pUSD for CTF");
-  await response.wait();
-  ```
+      <Step title="Execute the Split">
+        For a Deposit Wallet, include the split call in the signed wallet batch and
+        submit it with the Relayer API key:
 
-  ```python Python theme={null}
-  from web3 import Web3
+        ```bash theme={null}
+        curl -X POST "https://relayer-v2.polymarket.com/submit" \
+          -H "Content-Type: application/json" \
+          -H "RELAYER_API_KEY: $RELAYER_API_KEY" \
+          -H "RELAYER_API_KEY_ADDRESS: $RELAYER_API_KEY_ADDRESS" \
+          --data '{
+            "type": "WALLET",
+            "from": "<signer_address>",
+            "to": "0x00000000000Fb5C9ADea0298D729A0CB3823Cc07",
+            "nonce": "<wallet_nonce>",
+            "signature": "<wallet_batch_signature>",
+            "metadata": "Split position",
+            "depositWalletParams": {
+              "depositWallet": "<deposit_wallet_address>",
+              "deadline": "<unix_seconds>",
+              "calls": [
+                {
+                  "target": "<collateral_adapter_address>",
+                  "value": "0",
+                  "data": "<encoded_split_position_calldata>"
+                }
+              ]
+            }
+          }'
+        ```
 
-  pUSD = "0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB"
-  CTF = "0x4D97DCd97eC945f40cF65F87097ACe5EA0476045"
-  MAX_UINT256 = 2**256 - 1
+        See [Execute Gasless
+        Transactions](/trading/wallets-auth#execute-gasless-transactions) for nonce
+        creation, wallet-batch signing, and confirmation. Wait for
+        `STATE_CONFIRMED` before using the new balances.
+      </Step>
+    </Steps>
+  </Tab>
 
-  approve_tx = {
-      "to": pUSD,
-      "data": Web3().eth.contract(
-          address=pUSD,
-          abi=[{
-              "name": "approve",
-              "type": "function",
-              "inputs": [
-                  {"name": "spender", "type": "address"},
-                  {"name": "amount", "type": "uint256"}
-              ],
-              "outputs": [{"type": "bool"}]
-          }]
-      ).encode_abi(abi_element_identifier="approve", args=[CTF, MAX_UINT256]),
-      "value": "0"
-  }
+  <Tab title="Solidity">
+    Splitting pUSD through a collateral adapter follows this flow:
 
-  response = client.execute([approve_tx], "Approve pUSD for CTF")
-  response.wait()
-  ```
-</CodeGroup>
+    * Approve the collateral adapter to spend the amount of pUSD being split.
+    * Call the adapter with the market's condition ID and the amount.
+    * The adapter executes the underlying CTF operation and mints equal YES and NO
+      balances atomically.
 
-### Redeem Positions
+    <Steps>
+      <Step title="Approve pUSD">
+        First, call `approve()` on the pUSD contract. Approve
+        `CtfCollateralAdapter` for a standard market or
+        `NegRiskCtfCollateralAdapter` for a negative-risk market:
 
-Exchange winning tokens for pUSD after market resolution:
+        ```solidity theme={null}
+        function approve(address spender, uint256 amount) external returns (bool);
+        ```
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  import { encodeFunctionData } from "viem";
+        | Argument  | Value                                      |
+        | --------- | ------------------------------------------ |
+        | `spender` | The collateral adapter for the market type |
+        | `amount`  | The amount of pUSD to split, in base units |
+      </Step>
 
-  const redeemTx = {
-    to: CTF_ADDRESS,
-    data: encodeFunctionData({
-      abi: [
+      <Step title="Split the Position">
+        Then, call `splitPosition()` on the same contract you approved:
+        `CtfCollateralAdapter` for standard markets or
+        `NegRiskCtfCollateralAdapter` for negative-risk markets:
+
+        ```solidity theme={null}
+        function splitPosition(
+            address collateralToken,
+            bytes32 parentCollectionId,
+            bytes32 conditionId,
+            uint256[] partition,
+            uint256 amount
+        );
+        ```
+
+        | Argument             | Value                                        |
+        | -------------------- | -------------------------------------------- |
+        | `collateralToken`    | `0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB` |
+        | `parentCollectionId` | 32 zero bytes                                |
+        | `conditionId`        | The market's condition ID                    |
+        | `partition`          | `[1, 2]`                                     |
+        | `amount`             | The amount of pUSD to split, in base units   |
+
+        The call mints the same amount of YES and NO tokens to the caller.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+## Merge Positions
+
+Merging converts a complete set of outcome tokens back into pUSD. Every 1 YES
+token and 1 NO token returns 1 pUSD.
+
+```text theme={null}
+100 YES tokens + 100 NO tokens → 100 pUSD
+```
+
+Before merging, ensure you have:
+
+1. Equal amounts of YES and NO tokens.
+2. Approved the collateral adapter for the market type to transfer the wallet's
+   outcome tokens.
+
+<Tabs>
+  <Tab title="TypeScript">
+    Call `mergePositions()` on a `SecureClient`. The client identifies the
+    market type, selects the correct collateral adapter, and checks the
+    wallet's mergeable balance.
+
+    ```ts theme={null}
+    const transaction = await client.mergePositions({
+      conditionId: market.conditionId,
+      amount: "max",
+    });
+
+    const outcome = await transaction.wait();
+
+    // outcome.transactionHash: TxHash
+    // outcome.transactionId: TransactionId | null
+    ```
+
+    Pass a base-unit `bigint` to merge a specific amount. `"max"` merges the
+    smaller of the wallet's YES and NO balances. `wait()` returns a
+    `TransactionOutcome` after the transaction settles.
+  </Tab>
+
+  <Tab title="Python">
+    Call `merge_positions()` on an `AsyncSecureClient`. The synchronous
+    `SecureClient` provides the same method. Both clients identify the market
+    type, select the correct collateral adapter, and check the wallet's
+    mergeable balance.
+
+    ```python theme={null}
+    transaction = await client.merge_positions(
+        condition_id=market.condition_id,
+        amount="max",
+    )
+
+    outcome = await transaction.wait()
+
+    # outcome.transaction_hash: TransactionHash
+    # outcome.transaction_id: str | None
+    ```
+
+    Pass a base-unit `int` to merge a specific amount. `"max"` merges the
+    smaller of the wallet's YES and NO balances. `wait()` returns a
+    `TransactionOutcome` after the transaction settles.
+  </Tab>
+
+  <Tab title="API">
+    Build the `mergePositions` call, then execute it as a gasless wallet
+    transaction.
+
+    <Steps>
+      <Step title="Build the Merge Call">
+        Use `CtfCollateralAdapter` at
+        `0xAdA100Db00Ca00073811820692005400218FcE1f` when `negRisk` is `false`, or
+        `NegRiskCtfCollateralAdapter` at
+        `0xadA2005600Dec949baf300f4C6120000bDB6eAab` when it is `true`.
+
+        ABI-encode this function call:
+
+        ```solidity theme={null}
+        function mergePositions(
+            address collateralToken,
+            bytes32 parentCollectionId,
+            bytes32 conditionId,
+            uint256[] partition,
+            uint256 amount
+        );
+        ```
+
+        | Argument             | Value                                        |
+        | -------------------- | -------------------------------------------- |
+        | `collateralToken`    | `0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB` |
+        | `parentCollectionId` | 32 zero bytes                                |
+        | `conditionId`        | `<market_condition_id>`                      |
+        | `partition`          | `[1, 2]`                                     |
+        | `amount`             | `<amount_in_pusd_base_units>`                |
+
+        Place the encoded calldata in the wallet call:
+
+        ```json theme={null}
         {
-          name: "redeemPositions",
-          type: "function",
-          inputs: [
-            { name: "collateralToken", type: "address" },
-            { name: "parentCollectionId", type: "bytes32" },
-            { name: "conditionId", type: "bytes32" },
-            { name: "indexSets", type: "uint256[]" },
-          ],
-          outputs: [],
-        },
-      ],
-      functionName: "redeemPositions",
-      args: [collateralToken, parentCollectionId, conditionId, indexSets],
-    }),
-    value: "0",
-  };
+          "target": "<collateral_adapter_address>",
+          "value": "0",
+          "data": "<encoded_merge_positions_calldata>"
+        }
+        ```
+      </Step>
 
-  const response = await client.execute([redeemTx], "Redeem positions");
-  await response.wait();
-  ```
+      <Step title="Execute the Merge">
+        For a Deposit Wallet, include the merge call in the signed wallet batch and
+        submit it with the Relayer API key:
 
-  ```python Python theme={null}
-  CTF = "0x4D97DCd97eC945f40cF65F87097ACe5EA0476045"
+        ```bash theme={null}
+        curl -X POST "https://relayer-v2.polymarket.com/submit" \
+          -H "Content-Type: application/json" \
+          -H "RELAYER_API_KEY: $RELAYER_API_KEY" \
+          -H "RELAYER_API_KEY_ADDRESS: $RELAYER_API_KEY_ADDRESS" \
+          --data '{
+            "type": "WALLET",
+            "from": "<signer_address>",
+            "to": "0x00000000000Fb5C9ADea0298D729A0CB3823Cc07",
+            "nonce": "<wallet_nonce>",
+            "signature": "<wallet_batch_signature>",
+            "metadata": "Merge positions",
+            "depositWalletParams": {
+              "depositWallet": "<deposit_wallet_address>",
+              "deadline": "<unix_seconds>",
+              "calls": [
+                {
+                  "target": "<collateral_adapter_address>",
+                  "value": "0",
+                  "data": "<encoded_merge_positions_calldata>"
+                }
+              ]
+            }
+          }'
+        ```
 
-  redeem_tx = {
-      "to": CTF,
-      "data": Web3().eth.contract(
-          address=CTF,
-          abi=[{
-              "name": "redeemPositions",
-              "type": "function",
-              "inputs": [
-                  {"name": "collateralToken", "type": "address"},
-                  {"name": "parentCollectionId", "type": "bytes32"},
-                  {"name": "conditionId", "type": "bytes32"},
-                  {"name": "indexSets", "type": "uint256[]"}
-              ],
-              "outputs": []
-          }]
-      ).encode_abi(
-          abi_element_identifier="redeemPositions",
-          args=[collateral_token, parent_collection_id, condition_id, index_sets]
-      ),
-      "value": "0"
-  }
+        See [Execute Gasless
+        Transactions](/trading/wallets-auth#execute-gasless-transactions) for nonce
+        creation, wallet-batch signing, and confirmation. Wait for
+        `STATE_CONFIRMED` before using the updated balances.
+      </Step>
+    </Steps>
+  </Tab>
 
-  response = client.execute([redeem_tx], "Redeem positions")
-  response.wait()
-  ```
-</CodeGroup>
+  <Tab title="Solidity">
+    Merging outcome tokens through a collateral adapter follows this flow:
 
-### Batch Transactions
+    * Approve the collateral adapter to transfer the caller's outcome tokens.
+    * Call the adapter with the market's condition ID and the amount to merge.
+    * The adapter burns equal YES and NO balances and returns pUSD atomically.
 
-Execute multiple operations atomically in a single call:
+    <Steps>
+      <Step title="Approve Outcome Tokens">
+        First, call `setApprovalForAll()` on the Conditional Tokens contract.
+        Approve `CtfCollateralAdapter` for a standard market or
+        `NegRiskCtfCollateralAdapter` for a negative-risk market:
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  const approveTx = {
-    to: pUSD,
-    data: encodeFunctionData({
-      abi: erc20Abi,
-      functionName: "approve",
-      args: [CTF, maxUint256],
-    }),
-    value: "0",
-  };
+        ```solidity theme={null}
+        function setApprovalForAll(address operator, bool approved) external;
+        ```
 
-  const transferTx = {
-    to: pUSD,
-    data: encodeFunctionData({
-      abi: erc20Abi,
-      functionName: "transfer",
-      args: [recipientAddress, parseUnits("50", 6)],
-    }),
-    value: "0",
-  };
+        | Argument   | Value                                      |
+        | ---------- | ------------------------------------------ |
+        | `operator` | The collateral adapter for the market type |
+        | `approved` | `true`                                     |
+      </Step>
 
-  // Both execute atomically
-  const response = await client.execute(
-    [approveTx, transferTx],
-    "Approve and transfer",
-  );
-  await response.wait();
-  ```
+      <Step title="Merge the Positions">
+        Then, call `mergePositions()` on the same contract you approved:
+        `CtfCollateralAdapter` for standard markets or
+        `NegRiskCtfCollateralAdapter` for negative-risk markets:
 
-  ```python Python theme={null}
-  approve_tx = {
-      "to": pUSD,
-      "data": contract.encode_abi(
-          abi_element_identifier="approve",
-          args=[CTF, MAX_UINT256]
-      ),
-      "value": "0"
-  }
+        ```solidity theme={null}
+        function mergePositions(
+            address collateralToken,
+            bytes32 parentCollectionId,
+            bytes32 conditionId,
+            uint256[] partition,
+            uint256 amount
+        );
+        ```
 
-  transfer_tx = {
-      "to": pUSD,
-      "data": contract.encode_abi(
-          abi_element_identifier="transfer",
-          args=[recipient_address, 50 * 10**6]
-      ),
-      "value": "0"
-  }
+        | Argument             | Value                                        |
+        | -------------------- | -------------------------------------------- |
+        | `collateralToken`    | `0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB` |
+        | `parentCollectionId` | 32 zero bytes                                |
+        | `conditionId`        | The market's condition ID                    |
+        | `partition`          | `[1, 2]`                                     |
+        | `amount`             | The amount of each outcome token to merge    |
 
-  # Both execute atomically
-  response = client.execute([approve_tx, transfer_tx], "Approve and transfer")
-  response.wait()
-  ```
-</CodeGroup>
+        `amount` cannot exceed either outcome-token balance. The call returns the
+        same amount of pUSD to the caller.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
 
-<Tip>
-  Batching reduces latency and ensures all transactions succeed or fail
-  together.
-</Tip>
+## Redeem Resolved Positions
 
-## Transaction States
+Redeeming converts outcome tokens into pUSD after a market resolves. Each
+winning token returns 1 pUSD, while losing tokens return 0.
 
-Track transaction progress through these states:
+```text theme={null}
+Market resolves YES:
+100 YES tokens → 100 pUSD
+100 NO tokens  → 0 pUSD
+```
 
-| State             | Terminal | Description                     |
-| ----------------- | -------- | ------------------------------- |
-| `STATE_NEW`       | No       | Transaction received by relayer |
-| `STATE_EXECUTED`  | No       | Submitted onchain               |
-| `STATE_MINED`     | No       | Included in a block             |
-| `STATE_CONFIRMED` | Yes      | Finalized successfully          |
-| `STATE_FAILED`    | Yes      | Failed permanently              |
-| `STATE_INVALID`   | Yes      | Rejected as invalid             |
+<Note>
+  There is no redemption deadline. Winning tokens remain redeemable at any time
+  after resolution.
+</Note>
 
-## Contract Addresses
+Before redeeming, ensure you have:
 
-See [Contracts](/resources/contracts) for all Polymarket smart contract addresses on Polygon.
+1. A resolved market.
+2. Outcome tokens for the market.
+3. Approved the collateral adapter for the market type to transfer the wallet's
+   outcome tokens.
 
-## Resources
+<Tabs>
+  <Tab title="TypeScript">
+    Call `redeemPositions()` on a `SecureClient`. The client uses the condition
+    ID to select the correct collateral adapter for the market type.
 
-* [Builder Relayer Client (TypeScript)](https://github.com/Polymarket/builder-relayer-client)
-* [Builder Relayer Client (Python)](https://github.com/Polymarket/py-builder-relayer-client)
+    ```ts theme={null}
+    const transaction = await client.redeemPositions({
+      conditionId: market.conditionId,
+    });
 
-## Next Steps
+    const outcome = await transaction.wait();
 
-<CardGroup cols={2}>
-  <Card title="Negative Risk Markets" icon="scale-balanced" href="/advanced/neg-risk">
-    Learn about capital-efficient trading for multi-outcome events.
-  </Card>
+    // outcome.transactionHash: TxHash
+    // outcome.transactionId: TransactionId | null
+    ```
 
-  <Card title="Positions & Tokens" icon="coins" href="/concepts/positions-tokens">
-    Understand token operations like split, merge, and redeem.
-  </Card>
-</CardGroup>
+    Redemption has no amount parameter: it redeems the wallet's balances for
+    both outcomes. `wait()` returns a `TransactionOutcome` after the transaction
+    settles.
+  </Tab>
+
+  <Tab title="Python">
+    Call `redeem_positions()` on an `AsyncSecureClient`. The synchronous
+    `SecureClient` provides the same method. Both clients use the condition ID
+    to select the correct collateral adapter for the market type.
+
+    ```python theme={null}
+    transaction = await client.redeem_positions(
+        condition_id=market.condition_id,
+    )
+
+    outcome = await transaction.wait()
+
+    # outcome.transaction_hash: TransactionHash
+    # outcome.transaction_id: str | None
+    ```
+
+    Redemption has no amount parameter: it redeems the wallet's balances for
+    both outcomes. `wait()` returns a `TransactionOutcome` after the transaction
+    settles.
+  </Tab>
+
+  <Tab title="API">
+    Build the `redeemPositions` call for a resolved market, then execute it as a
+    gasless wallet transaction.
+
+    <Steps>
+      <Step title="Build the Redemption Call">
+        Use `CtfCollateralAdapter` at
+        `0xAdA100Db00Ca00073811820692005400218FcE1f` when `negRisk` is `false`, or
+        `NegRiskCtfCollateralAdapter` at
+        `0xadA2005600Dec949baf300f4C6120000bDB6eAab` when it is `true`.
+
+        ABI-encode this function call:
+
+        ```solidity theme={null}
+        function redeemPositions(
+            address collateralToken,
+            bytes32 parentCollectionId,
+            bytes32 conditionId,
+            uint256[] indexSets
+        );
+        ```
+
+        | Argument             | Value                                        |
+        | -------------------- | -------------------------------------------- |
+        | `collateralToken`    | `0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB` |
+        | `parentCollectionId` | 32 zero bytes                                |
+        | `conditionId`        | `<market_condition_id>`                      |
+        | `indexSets`          | `[1, 2]`                                     |
+
+        Place the encoded calldata in the wallet call:
+
+        ```json theme={null}
+        {
+          "target": "<collateral_adapter_address>",
+          "value": "0",
+          "data": "<encoded_redeem_positions_calldata>"
+        }
+        ```
+      </Step>
+
+      <Step title="Execute the Redemption">
+        For a Deposit Wallet, include the redemption call in the signed wallet batch
+        and submit it with the Relayer API key:
+
+        ```bash theme={null}
+        curl -X POST "https://relayer-v2.polymarket.com/submit" \
+          -H "Content-Type: application/json" \
+          -H "RELAYER_API_KEY: $RELAYER_API_KEY" \
+          -H "RELAYER_API_KEY_ADDRESS: $RELAYER_API_KEY_ADDRESS" \
+          --data '{
+            "type": "WALLET",
+            "from": "<signer_address>",
+            "to": "0x00000000000Fb5C9ADea0298D729A0CB3823Cc07",
+            "nonce": "<wallet_nonce>",
+            "signature": "<wallet_batch_signature>",
+            "metadata": "Redeem positions",
+            "depositWalletParams": {
+              "depositWallet": "<deposit_wallet_address>",
+              "deadline": "<unix_seconds>",
+              "calls": [
+                {
+                  "target": "<collateral_adapter_address>",
+                  "value": "0",
+                  "data": "<encoded_redeem_positions_calldata>"
+                }
+              ]
+            }
+          }'
+        ```
+
+        See [Execute Gasless
+        Transactions](/trading/wallets-auth#execute-gasless-transactions) for nonce
+        creation, wallet-batch signing, and confirmation. Wait for
+        `STATE_CONFIRMED` before using the payout.
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="Solidity">
+    Redeeming outcome tokens through a collateral adapter follows this flow:
+
+    * Approve the collateral adapter to transfer the caller's outcome tokens.
+    * After resolution, call the adapter with the market's condition ID.
+    * The adapter burns both outcome balances and returns the winning payout in
+      pUSD atomically.
+
+    <Steps>
+      <Step title="Approve Outcome Tokens">
+        First, call `setApprovalForAll()` on the Conditional Tokens contract.
+        Approve `CtfCollateralAdapter` for a standard market or
+        `NegRiskCtfCollateralAdapter` for a negative-risk market:
+
+        ```solidity theme={null}
+        function setApprovalForAll(address operator, bool approved) external;
+        ```
+
+        | Argument   | Value                                      |
+        | ---------- | ------------------------------------------ |
+        | `operator` | The collateral adapter for the market type |
+        | `approved` | `true`                                     |
+      </Step>
+
+      <Step title="Redeem the Positions">
+        Then, call `redeemPositions()` on the same contract you approved:
+        `CtfCollateralAdapter` for standard markets or
+        `NegRiskCtfCollateralAdapter` for negative-risk markets:
+
+        ```solidity theme={null}
+        function redeemPositions(
+            address collateralToken,
+            bytes32 parentCollectionId,
+            bytes32 conditionId,
+            uint256[] indexSets
+        );
+        ```
+
+        | Argument             | Value                                        |
+        | -------------------- | -------------------------------------------- |
+        | `collateralToken`    | `0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB` |
+        | `parentCollectionId` | 32 zero bytes                                |
+        | `conditionId`        | The market's condition ID                    |
+        | `indexSets`          | `[1, 2]`                                     |
+
+        The call redeems the caller's full balances for both index sets and returns
+        only the winning payout.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>

@@ -2,139 +2,136 @@
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Conditional Token Framework
+# How Positions Work
 
-> Onchain token mechanics powering Polymarket positions
+> Understand the onchain token mechanics that power Polymarket positions.
 
-All outcomes on Polymarket are tokenized using the **Conditional Token Framework (CTF)**, an open standard developed by Gnosis. Understanding CTF operations enables advanced trading strategies, market making, and direct smart contract interactions.
+Polymarket tokenizes market outcomes using the [Conditional Token Framework
+(CTF)](https://github.com/gnosis/conditional-tokens-contracts), an open standard
+developed by Gnosis. Understanding CTF explains how positions are created,
+combined, and redeemed onchain.
 
-## What is CTF
+## What Is CTF?
 
-The Conditional Token Framework creates **ERC1155 tokens** representing outcomes of prediction markets. Each binary market has two tokens:
+CTF creates ERC-1155 tokens that represent prediction-market outcomes. Each
+binary market has two outcome tokens:
 
-| Token   | Redeems for | Condition            |
-| ------- | ----------- | -------------------- |
-| **Yes** | \$1.00 pUSD | Event occurs         |
-| **No**  | \$1.00 pUSD | Event does not occur |
+| Token   | Redeems for | Condition                |
+| ------- | ----------- | ------------------------ |
+| **YES** | \$1.00 pUSD | The event occurs         |
+| **NO**  | \$1.00 pUSD | The event does not occur |
 
-These tokens are always **fully collateralized** — every Yes/No pair is backed by exactly \$1.00 pUSD locked in the CTF contract.
+These tokens are fully collateralized. Every YES and NO pair is backed by
+exactly `$1` of collateral locked through the CTF contracts.
 
 ## Core Operations
 
-CTF provides three fundamental operations:
+CTF provides three operations for moving between collateral and positions:
 
 <CardGroup cols={3}>
-  <Card title="Split" icon="scissors" href="/trading/ctf/split">
-    Convert pUSD into Yes + No token pairs
+  <Card title="Split" icon="scissors" href="/trading/positions/manage#split-a-position">
+    Convert pUSD into a YES and NO token pair.
   </Card>
 
-  <Card title="Merge" icon="merge" href="/trading/ctf/merge">
-    Convert Yes + No pairs back to pUSD
+  <Card title="Merge" icon="merge" href="/trading/positions/manage#merge-positions">
+    Convert a YES and NO token pair back into pUSD.
   </Card>
 
-  <Card title="Redeem" icon="hand-holding-dollar" href="/trading/ctf/redeem">
-    Exchange winning tokens for pUSD after resolution
+  <Card title="Redeem" icon="hand-holding-dollar" href="/trading/positions/manage#redeem-resolved-positions">
+    Exchange resolved outcome tokens for their payout.
   </Card>
 </CardGroup>
 
 ## Token Flow
 
 <Frame>
-  <img src="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/token-flow.png?fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=36f5a57946ac2b83136e17b6c06b358c" alt="" className="dark:hidden" width="1596" height="952" data-path="images/core-concepts/token-flow.png" />
+  <img src="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/core-concepts/token-flow.png?fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=36f5a57946ac2b83136e17b6c06b358c" alt="pUSD can be split into YES and NO outcome tokens, which can be traded, merged, or redeemed after resolution." className="dark:hidden" width="1596" height="952" data-path="images/core-concepts/token-flow.png" />
 
-  <img src="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/token-flow.png?fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=69d150ea49ffa18cd7f24689342b1bec" alt="" className="hidden dark:block" width="1596" height="952" data-path="images/dark/core-concepts/token-flow.png" />
+  <img src="https://mintcdn.com/polymarket-292d1b1b/FOMte3ewbG-LVy3k/images/dark/core-concepts/token-flow.png?fit=max&auto=format&n=FOMte3ewbG-LVy3k&q=85&s=69d150ea49ffa18cd7f24689342b1bec" alt="pUSD can be split into YES and NO outcome tokens, which can be traded, merged, or redeemed after resolution." className="hidden dark:block" width="1596" height="952" data-path="images/dark/core-concepts/token-flow.png" />
 </Frame>
 
 ## Token Identifiers
 
-Each outcome token has a unique **position ID** (also called token ID or asset ID), computed onchain in three steps.
+Each outcome token has a unique **position ID**, which is used as its ERC-1155
+token ID. CTF computes it onchain in three steps.
 
-### Step 1 - Condition ID
+<Steps>
+  <Step title="Compute the Condition ID">
+    ```solidity theme={null}
+    getConditionId(oracle, questionId, outcomeSlotCount)
+    ```
 
-```
-getConditionId(oracle, questionId, outcomeSlotCount)
-```
+    | Parameter          | Type      | Value                                                            |
+    | ------------------ | --------- | ---------------------------------------------------------------- |
+    | `oracle`           | `address` | [UMA CTF Adapter](https://github.com/Polymarket/uma-ctf-adapter) |
+    | `questionId`       | `bytes32` | Hash of the UMA ancillary data                                   |
+    | `outcomeSlotCount` | `uint`    | `2` for binary markets                                           |
+  </Step>
 
-| Parameter          | Type      | Value                                                            |
-| ------------------ | --------- | ---------------------------------------------------------------- |
-| `oracle`           | `address` | [UMA CTF Adapter](https://github.com/Polymarket/uma-ctf-adapter) |
-| `questionId`       | `bytes32` | Hash of the UMA ancillary data                                   |
-| `outcomeSlotCount` | `uint`    | `2` for all binary markets                                       |
+  <Step title="Compute the Collection IDs">
+    ```solidity theme={null}
+    getCollectionId(parentCollectionId, conditionId, indexSet)
+    ```
 
-### Step 2 - Collection IDs
+    | Parameter            | Type      | Value                                                             |
+    | -------------------- | --------- | ----------------------------------------------------------------- |
+    | `parentCollectionId` | `bytes32` | `bytes32(0)` for top-level positions                              |
+    | `conditionId`        | `bytes32` | Condition ID from the previous step                               |
+    | `indexSet`           | `uint`    | `1` (`0b01`) for the first outcome or `2` (`0b10`) for the second |
 
-```
-getCollectionId(parentCollectionId, conditionId, indexSet)
-```
+    The `indexSet` is a bitmask identifying which outcome slots belong to a
+    collection. It must be a nonempty proper subset of the condition's outcome
+    slots. A binary market has one collection for each outcome.
+  </Step>
 
-| Parameter            | Type      | Value                                                           |
-| -------------------- | --------- | --------------------------------------------------------------- |
-| `parentCollectionId` | `bytes32` | `bytes32(0)` — always zero for top-level positions              |
-| `conditionId`        | `bytes32` | The condition ID from step 1                                    |
-| `indexSet`           | `uint`    | `1` (`0b01`) for the first outcome, `2` (`0b10`) for the second |
+  <Step title="Compute the Position IDs">
+    ```solidity theme={null}
+    getPositionId(collateralToken, collectionId)
+    ```
 
-The `indexSet` is a bitmask denoting which outcome slots belong to a collection. It must be a nonempty proper subset of the condition's outcome slots. Binary markets always have exactly two collections — one per outcome.
+    | Parameter         | Type      | Value                                |
+    | ----------------- | --------- | ------------------------------------ |
+    | `collateralToken` | `IERC20`  | pUSD contract address on Polygon     |
+    | `collectionId`    | `bytes32` | Collection ID for one market outcome |
 
-### Step 3 - Position IDs
+    The resulting position IDs are the ERC-1155 token IDs for the market's YES and
+    NO outcomes. Most integrations should read these token IDs from market data.
+    Computing them manually is only necessary for direct contract integrations.
+  </Step>
+</Steps>
 
-```
-getPositionId(collateralToken, collectionId)
-```
+## Standard and Negative-Risk Markets
 
-| Parameter         | Type      | Value                                     |
-| ----------------- | --------- | ----------------------------------------- |
-| `collateralToken` | `IERC20`  | pUSD contract address on Polygon          |
-| `collectionId`    | `bytes32` | One of the two collection IDs from step 2 |
+Polymarket uses different CTF configurations for standard and negative-risk
+markets:
 
-The two resulting position IDs are the ERC1155 token IDs for the Yes and No outcomes of the market.
+| Feature           | Standard markets    | Negative-risk markets      |
+| ----------------- | ------------------- | -------------------------- |
+| CTF contract      | ConditionalTokens   | ConditionalTokens          |
+| Exchange contract | CTF Exchange        | Negative Risk CTF Exchange |
+| Multiple outcomes | Independent markets | Linked through conversion  |
 
-<Note>
-  You can look up token IDs directly via the Gamma API (`GET /markets` or `GET /events`
-  — the `tokens` array on each market contains both outcome token IDs). Computing them
-  manually is only necessary for direct smart contract integration.
-</Note>
-
-## Standard vs Neg Risk Markets
-
-Polymarket has two market types with different CTF configurations:
-
-| Feature           | Standard Markets    | Neg Risk Markets      |
-| ----------------- | ------------------- | --------------------- |
-| CTF Contract      | ConditionalTokens   | ConditionalTokens     |
-| Exchange Contract | CTF Exchange        | Neg Risk CTF Exchange |
-| Multi-outcome     | Independent markets | Linked via conversion |
-| `negRisk` flag    | `false`             | `true`                |
-
-For neg risk markets, an additional **conversion** operation allows exchanging a No token for Yes tokens in all other outcomes. See [Negative Risk Markets](/advanced/neg-risk) for details.
+For negative-risk markets, a conversion operation can exchange one NO token for
+YES tokens in the event's other outcomes. See [Negative Risk
+Markets](/concepts/negative-risk) for details.
 
 ## Contract Addresses
 
-See [Contracts](/resources/contracts) for all Polymarket smart contract addresses on Polygon.
-
-## Resources
-
-<CardGroup cols={2}>
-  <Card title="CTF Source Code" icon="github" href="https://github.com/gnosis/conditional-tokens-contracts">
-    Gnosis Conditional Tokens smart contracts
-  </Card>
-
-  <Card title="Code Examples" icon="code" href="https://github.com/Polymarket/examples/tree/main/examples">
-    Python and TypeScript examples for onchain operations
-  </Card>
-</CardGroup>
+See [Contracts](/resources/contracts) for Polymarket's current smart contract
+addresses on Polygon.
 
 ## Next Steps
 
 <CardGroup cols={3}>
-  <Card title="Split Tokens" icon="scissors" href="/trading/ctf/split">
-    Create outcome token pairs from pUSD
+  <Card title="Split a Position" icon="scissors" href="/trading/positions/manage#split-a-position">
+    Create outcome token pairs from pUSD.
   </Card>
 
-  <Card title="Merge Tokens" icon="merge" href="/trading/ctf/merge">
-    Convert token pairs back to pUSD
+  <Card title="Merge Positions" icon="merge" href="/trading/positions/manage#merge-positions">
+    Convert balanced token pairs back into pUSD.
   </Card>
 
-  <Card title="Redeem Tokens" icon="hand-holding-dollar" href="/trading/ctf/redeem">
-    Collect winnings after resolution
+  <Card title="Redeem Positions" icon="hand-holding-dollar" href="/trading/positions/manage#redeem-resolved-positions">
+    Collect payouts after resolution.
   </Card>
 </CardGroup>

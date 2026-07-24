@@ -117,17 +117,3 @@ You refer a new trader. From their very first trade and through every tier up to
     activity that breaks the Terms of Service.
   </Accordion>
 </AccordionGroup>
-
-***
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Taker Rebate Program" icon="trophy" href="/trading/taker-rebates">
-    Climb the tiers and earn daily pUSD rebates as you trade.
-  </Card>
-
-  <Card title="Fee Structure" icon="receipt" href="/trading/fees">
-    See how taker fees are calculated across market categories.
-  </Card>
-</CardGroup>

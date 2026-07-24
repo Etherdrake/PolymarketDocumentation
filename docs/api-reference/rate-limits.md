@@ -120,17 +120,3 @@ Base URL: `https://bridge.polymarket.com`
 | ----------------- | -------------- |
 | Relayer `/submit` | 25 req / 1 min |
 | User PNL API      | 200 req / 10s  |
-
-***
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Authentication" icon="key" href="/api-reference/authentication">
-    Learn how to authenticate trading requests.
-  </Card>
-
-  <Card title="Clients & SDKs" icon="cube" href="/api-reference/clients-sdks">
-    Official TypeScript, Python, and Rust libraries.
-  </Card>
-</CardGroup>

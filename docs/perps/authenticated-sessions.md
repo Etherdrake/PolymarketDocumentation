@@ -31,7 +31,7 @@ data, and receive private real-time updates.
 
         <Note>
           This example uses Viem for wallet signing. See the [TypeScript tooling
-          guide](/dev-tooling/typescript#wallet-integrations) for other wallet library
+          guide](/getting-started/typescript#wallet-integrations) for other wallet library
           integrations.
         </Note>
       </Step>
@@ -532,7 +532,7 @@ needs to continue in a new runtime context.
     where `PerpsCredentials` is:
 
     <CodeGroup>
-      ```ts Type theme={null}
+      ```ts PerpsCredentials Type theme={null}
       type PerpsCredentials = {
         proxy: EvmAddress;
         privateKey: PrivateKey;
@@ -541,7 +541,7 @@ needs to continue in a new runtime context.
       };
       ```
 
-      ```json Example theme={null}
+      ```json PerpsCredentials Example theme={null}
       {
         "proxy": "0x1111111111111111111111111111111111111111",
         "privateKey": "0x2222222222222222222222222222222222222222222222222222222222222222",
@@ -574,13 +574,13 @@ needs to continue in a new runtime context.
     where `PerpsCredentials` is:
 
     <CodeGroup>
-      ```python Type theme={null}
+      ```python PerpsCredentials Type theme={null}
       from polymarket import PerpsCredentials
 
       # credentials: PerpsCredentials
       ```
 
-      ```json Example theme={null}
+      ```json PerpsCredentials Example theme={null}
       {
         "proxy": "0x1111111111111111111111111111111111111111",
         "private_key": "0x2222222222222222222222222222222222222222222222222222222222222222",

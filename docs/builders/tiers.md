@@ -54,7 +54,7 @@ The Builder Program uses a tiered system to manage rate limits while rewarding h
 1. Go to [polymarket.com/settings?tab=builder](https://polymarket.com/settings?tab=builder)
 2. Create a builder profile
 3. Click **"+ Create New"** to generate API keys
-4. Attach your [builder code](/trading/orders/attribution) to CLOB orders for attribution; use a Relayer API key for gasless wallet operations
+4. Attach your [builder code](/trading/place-orders#builder-attribution) to CLOB orders for attribution; use a Relayer API key for gasless wallet operations
 
 **What's included:**
 
@@ -154,17 +154,3 @@ Ready to upgrade or have questions?
     daily Relay transactions by obtaining a [Relayer API key](https://polymarket.com/settings?tab=api-keys).
   </Accordion>
 </AccordionGroup>
-
-***
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Get API Keys" icon="key" href="/builders/api-keys">
-    Create your Builder API credentials.
-  </Card>
-
-  <Card title="Attribute Orders" icon="tag" href="/trading/orders/attribution">
-    Configure your client to credit trades to your account.
-  </Card>
-</CardGroup>

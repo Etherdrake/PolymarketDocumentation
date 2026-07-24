@@ -92,7 +92,8 @@ positions.
 
         try {
           const portfolio = await session.fetchPortfolio();
-          const deposits = await session.listDeposits().firstPage();
+          const pages = session.listDeposits();
+          const deposits = await pages.firstPage();
         } finally {
           await session.close();
         }
@@ -179,7 +180,8 @@ positions.
 
         try:
             portfolio = await session.fetch_portfolio()
-            deposits = await session.list_deposits().first_page()
+            pages = session.list_deposits()
+            deposits = await pages.first_page()
         finally:
             await session.close()
         ```
@@ -429,7 +431,8 @@ authenticated wallet.
     const session = await client.openPerpsSession();
 
     try {
-      const withdrawals = await session.listWithdrawals().firstPage();
+      const pages = session.listWithdrawals();
+      const withdrawals = await pages.firstPage();
     } finally {
       await session.close();
     }
@@ -456,7 +459,8 @@ authenticated wallet.
     session = await client.open_perps_session()
 
     try:
-        withdrawals = await session.list_withdrawals().first_page()
+        pages = session.list_withdrawals()
+        withdrawals = await pages.first_page()
     finally:
         await session.close()
     ```
@@ -660,8 +664,9 @@ authenticated session for private account history reads.
 
       try {
         const deposits: PerpsDeposit[] = [];
+        const pages = session.listDeposits();
 
-        for await (const page of session.listDeposits()) {
+        for await (const page of pages) {
           deposits.push(...page.items);
         }
       } finally {
@@ -676,8 +681,9 @@ authenticated session for private account history reads.
 
       try {
         const withdrawals: PerpsWithdrawal[] = [];
+        const pages = session.listWithdrawals();
 
-        for await (const page of session.listWithdrawals()) {
+        for await (const page of pages) {
           withdrawals.push(...page.items);
         }
       } finally {
@@ -696,8 +702,9 @@ authenticated session for private account history reads.
 
       try:
           deposits = []
+          pages = session.list_deposits()
 
-          async for page in session.list_deposits():
+          async for page in pages:
               deposits.extend(page.items)
       finally:
           await session.close()
@@ -708,8 +715,9 @@ authenticated session for private account history reads.
 
       try:
           withdrawals = []
+          pages = session.list_withdrawals()
 
-          async for page in session.list_withdrawals():
+          async for page in pages:
               withdrawals.extend(page.items)
       finally:
           await session.close()
