@@ -4,9 +4,14 @@
 
 # Rate Limits
 
-> API rate limits for all Polymarket endpoints
+> Cloudflare IP-based request limits for Polymarket APIs
 
-All API rate limits are enforced using Cloudflare's throttling system. When you exceed the limit for any endpoint, requests are throttled (delayed/queued) rather than immediately rejected. Limits reset on sliding time windows.
+The limits on this page are IP-based and enforced using Cloudflare's throttling system. When you exceed the limit for any endpoint, requests are throttled (delayed/queued) rather than immediately rejected. Limits reset on sliding time windows.
+
+<Note>
+  CLOB order and cancellation requests also use separate [per-signer
+  token-bucket limits](/api-reference/trading-rate-limits).
+</Note>
 
 ***
 
@@ -91,7 +96,7 @@ Base URL: `https://clob.polymarket.com`
 
 ### Trading
 
-Trading endpoints have both **burst** limits (short spikes allowed) and **sustained** limits (longer-term average).
+Cloudflare applies both **burst** limits (short spikes allowed) and **sustained** limits (longer-term average) to trading endpoints.
 
 | Endpoint                       | Burst Limit     | Sustained Limit      |
 | ------------------------------ | --------------- | -------------------- |
