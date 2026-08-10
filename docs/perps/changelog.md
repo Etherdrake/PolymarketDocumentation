@@ -8,10 +8,17 @@
 
 Notable changes to the Polymarket Perps API.
 
+<Update label="Aug 8, 2026" description="Position deleveraged notification added">
+  Added the <code>position\_deleveraged</code> notification, sent to the
+  counterparty of an auto-deleveraging match when its profitable position is
+  closed or reduced to settle a liquidation on the other side. Delivered on the
+  WebSocket <code>notifications</code> channel and in the notifications history.
+</Update>
+
 <Update label="Jul 6, 2026" description="Cancel all orders added">
   Added <code>DELETE /v1/trade/orders/all</code> to cancel all open orders in
   one request, optionally scoped to a single instrument. Available in the SDKs
-  as <code>cancelAllOrders</code> (TypeScript) and{" "}
+  as <code>cancelAllOrders</code> (TypeScript) and
   <code>cancel\_all\_orders</code> (Python).
 </Update>
 
@@ -52,8 +59,8 @@ Notable changes to the Polymarket Perps API.
     </li>
 
     <li>
-      Rate limit error messages now distinguish between{" "}
-      <code>ip\_rate\_limited</code>, <code>action\_rate\_limited</code>, and{" "}
+      Rate limit error messages now distinguish between
+      <code>ip\_rate\_limited</code>, <code>action\_rate\_limited</code>, and
       <code>message\_rate\_limited</code>.
     </li>
   </ul>
