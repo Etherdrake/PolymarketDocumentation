@@ -3157,13 +3157,25 @@
         "description": "Verifying contract address or the EIP-712 domain.",
         "example": "0x1234567890abcdef1234567890abcdef12345678"
       },
+      "cancel_only": {
+        "type": "boolean",
+        "description": "True while the exchange is in cancel-only (maintenance) mode — only order cancellation is accepted.",
+        "example": false
+      },
+      "engine_version": {
+        "type": "string",
+        "description": "Engine release version of the build serving this response.",
+        "example": "0.0.61"
+      },
       "Exchange": {
         "type": "object",
         "required": [
           "name",
           "version",
           "chain_id",
-          "contract"
+          "contract",
+          "cancel_only",
+          "engine_version"
         ],
         "properties": {
           "name": {
@@ -3177,6 +3189,12 @@
           },
           "contract": {
             "$ref": "#/components/schemas/contract"
+          },
+          "cancel_only": {
+            "$ref": "#/components/schemas/cancel_only"
+          },
+          "engine_version": {
+            "$ref": "#/components/schemas/engine_version"
           }
         }
       },
@@ -5485,6 +5503,11 @@
         "description": "Total account value in USD (equity + unrealized PnL)",
         "example": "13109.48"
       },
+      "available_order_margin": {
+        "type": "string",
+        "description": "Collateral available in USD for additional order initial margin after existing exposure, open orders, orders and isolated-margin additions awaiting risk processing, and pending withdrawals or transfers",
+        "example": "5055.79"
+      },
       "total_initial_margin": {
         "type": "string",
         "description": "Total initial margin in use across all positions",
@@ -5504,6 +5527,7 @@
         "type": "object",
         "required": [
           "total_account_value",
+          "available_order_margin",
           "total_initial_margin",
           "total_maintenance_margin",
           "total_position_value"
@@ -5511,6 +5535,9 @@
         "properties": {
           "total_account_value": {
             "$ref": "#/components/schemas/total_account_value"
+          },
+          "available_order_margin": {
+            "$ref": "#/components/schemas/available_order_margin"
           },
           "total_initial_margin": {
             "$ref": "#/components/schemas/total_initial_margin"
@@ -5607,7 +5634,11 @@
       },
       "liq": {
         "type": "boolean",
-        "description": "Whether the fill was a liquidation"
+        "description": "Liquidation flag for this leg of the fill. False on the counterparty leg of an auto-deleveraging match — that leg is flagged by `adl` instead"
+      },
+      "adl": {
+        "type": "boolean",
+        "description": "Whether the fill came from auto-deleveraging"
       },
       "AccountTradeData": {
         "type": "object",
@@ -5626,6 +5657,7 @@
           "pnl",
           "timestamp",
           "liquidation",
+          "adl",
           "hash"
         ],
         "properties": {
@@ -5667,6 +5699,9 @@
           },
           "liquidation": {
             "$ref": "#/components/schemas/liq"
+          },
+          "adl": {
+            "$ref": "#/components/schemas/adl"
           },
           "timestamp": {
             "$ref": "#/components/schemas/ts"
