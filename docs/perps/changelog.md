@@ -8,6 +8,16 @@
 
 Notable changes to the Polymarket Perps API.
 
+<Update label="Aug 10, 2026" description="Fills gain an adl flag; liq no longer set on ADL counterparty legs">
+  Fill entries now carry a required boolean `adl` field on both the WebSocket
+  `fills` channel and `GET /v1/account/fills`, set on both legs of an
+  auto-deleveraging match. Behavior change: the counterparty leg of an ADL match
+  previously reported `liq: true` on the WebSocket `fills` channel; it now
+  reports `liq: false`. `liq` marks only the leg whose own position is being
+  liquidated. Clients that detect forced closes via `liq` alone will no longer
+  see ADL counterparty fills — check `adl` as well.
+</Update>
+
 <Update label="Aug 8, 2026" description="Position deleveraged notification added">
   Added the <code>position\_deleveraged</code> notification, sent to the
   counterparty of an auto-deleveraging match when its profitable position is
@@ -15,10 +25,26 @@ Notable changes to the Polymarket Perps API.
   WebSocket <code>notifications</code> channel and in the notifications history.
 </Update>
 
+<Update label="Aug 7, 2026" description="Exchange info reports engine version and cancel-only state">
+  `GET /v1/info/exchange` now includes `engine_version`, the engine release
+  version of the build serving the response. The response also documents
+  `cancel_only`, which reports whether the exchange is in cancel-only
+  (maintenance) mode; the flag has been returned since maintenance mode shipped
+  on Jul 15.
+</Update>
+
+<Update label="Aug 6, 2026" description="Portfolio margin summary includes available order margin">
+  The portfolio response and <code>portfolio</code> WebSocket channel now
+  include <code>margin.available\_order\_margin</code>: the collateral available
+  for additional order initial margin after existing exposure, open orders,
+  orders and isolated-margin additions awaiting risk processing, and pending
+  withdrawals or transfers.
+</Update>
+
 <Update label="Jul 6, 2026" description="Cancel all orders added">
   Added <code>DELETE /v1/trade/orders/all</code> to cancel all open orders in
   one request, optionally scoped to a single instrument. Available in the SDKs
-  as <code>cancelAllOrders</code> (TypeScript) and
+  as <code>cancelAllOrders</code> (TypeScript) and{" "}
   <code>cancel\_all\_orders</code> (Python).
 </Update>
 
@@ -59,8 +85,8 @@ Notable changes to the Polymarket Perps API.
     </li>
 
     <li>
-      Rate limit error messages now distinguish between
-      <code>ip\_rate\_limited</code>, <code>action\_rate\_limited</code>, and
+      Rate limit error messages now distinguish between{" "}
+      <code>ip\_rate\_limited</code>, <code>action\_rate\_limited</code>, and{" "}
       <code>message\_rate\_limited</code>.
     </li>
   </ul>
