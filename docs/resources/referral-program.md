@@ -116,4 +116,9 @@ You refer a new trader. From their very first trade and through every tier up to
     not allowed. Polymarket may disqualify referrals and claw back rewards for
     activity that breaks the Terms of Service.
   </Accordion>
+
+  <Accordion title="Are third-party integrations using omnibus wallets eligible">
+    No. Third-party integrations using omnibus wallets are not eligible for the
+    Referral Program.
+  </Accordion>
 </AccordionGroup>
