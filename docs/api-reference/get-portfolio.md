@@ -7,7 +7,6 @@
 > Get current portfolio snapshot including open positions, margin summary, and withdrawable balance.
 
 
-<Badge color="gray" size="md">Request Weight: **2**</Badge>
 
 
 ## OpenAPI
@@ -121,12 +120,15 @@ components:
       type: object
       required:
         - total_account_value
+        - available_order_margin
         - total_initial_margin
         - total_maintenance_margin
         - total_position_value
       properties:
         total_account_value:
           $ref: '#/components/schemas/total_account_value'
+        available_order_margin:
+          $ref: '#/components/schemas/available_order_margin'
         total_initial_margin:
           $ref: '#/components/schemas/total_initial_margin'
         total_maintenance_margin:
@@ -222,7 +224,15 @@ components:
       description: Whether to use cross margin mode
     initial_margin:
       type: string
-      description: Initial margin in USD
+      description: |
+        Current collateral backing the position. For cross positions, this is
+        the required initial margin based on position size, mark price, the
+        applicable risk tier, and configured leverage. For isolated positions,
+        this is the position's current equity: signed allocated margin plus
+        unrealized PnL minus settled funding.
+
+        The legacy `initial_margin` name is retained for API compatibility;
+        `margin` would more accurately describe the field.
       example: '10.00'
     maintenance_margin_amount:
       type: string
@@ -242,7 +252,9 @@ components:
       example: '-0.01'
     return_on_equity:
       type: string
-      description: Return on equity as a decimal
+      description: >-
+        Unrealized PnL divided by the position's current required initial
+        margin, as a decimal.
       example: '-0.0027'
     cumulative_funding:
       type: string
@@ -252,6 +264,13 @@ components:
       type: string
       description: Total account value in USD (equity + unrealized PnL)
       example: '13109.48'
+    available_order_margin:
+      type: string
+      description: >-
+        Collateral available in USD for additional order initial margin after
+        existing exposure, open orders, orders and isolated-margin additions
+        awaiting risk processing, and pending withdrawals or transfers
+      example: '5055.79'
     total_initial_margin:
       type: string
       description: Total initial margin in use across all positions
@@ -271,11 +290,13 @@ components:
         (`401`/`404`/`429`/`500`) this is a stable, machine-readable snake_case
         identifier that is part of the API contract and safe to branch on, e.g.
         `insufficient_margin`, `insufficient_balance`, `order_not_found`,
-        `reduce_only_invalid`, `unauthorized`, `not_found`. For `400` it is a
-        human-readable validation detail whose wording may change. See the Error
-        handling guide for the domain identifiers. (Post-only / Fill-or-Kill
-        outcomes are order statuses such as `post_only_rejected`, not
-        rejections.)
+        `reduce_only_invalid`, `price_outside_bounds`, `position_not_found`,
+        `invalid_margin_mode`, `invalid_margin_amount`,
+        `margin_below_required_initial`, `account_liquidating`, `unauthorized`,
+        `not_found`. For `400` it is a human-readable validation detail whose
+        wording may change. See the Error handling guide for the domain
+        identifiers. (Post-only / Fill-or-Kill outcomes are order statuses such
+        as `post_only_rejected`, not rejections.)
       example: insufficient_margin
   responses:
     Error400Response:

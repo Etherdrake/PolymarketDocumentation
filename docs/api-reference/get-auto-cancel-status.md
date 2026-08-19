@@ -4,12 +4,11 @@
 
 # Get Auto-Cancel Status
 
-> Get the current auto-cancel dead-man-switch status for the authenticated
-account, including the armed deadline, today's trigger count, and when
-the daily counter resets.
+> Get the current auto-cancel status for the authenticated account: the
+armed deadline, how many times the switch has fired today, and when the
+daily counter resets.
 
 
-<Badge color="gray" size="md">Request Weight: **1**</Badge>
 
 
 ## OpenAPI
@@ -32,9 +31,9 @@ paths:
     get:
       summary: Get Auto-Cancel Status
       description: |
-        Get the current auto-cancel dead-man-switch status for the authenticated
-        account, including the armed deadline, today's trigger count, and when
-        the daily counter resets.
+        Get the current auto-cancel status for the authenticated account: the
+        armed deadline, how many times the switch has fired today, and when the
+        daily counter resets.
       operationId: getAutoCancel
       responses:
         '200':
@@ -72,10 +71,13 @@ components:
           $ref: '#/components/schemas/auto_cancel_next_reset'
     auto_cancel_deadline:
       type: integer
-      description: |
-        Unix-ms deadline for the per-account auto-cancel dead-man-switch.
-        Zero means no schedule is armed. When the deadline elapses, every
-        open order on the account is cancelled and the schedule clears.
+      description: >
+        Deadline of the armed auto-cancel schedule, in Unix milliseconds. Zero
+
+        means no schedule is armed. When the deadline passes, the exchange
+        cancels
+
+        every open order on the account and the schedule clears.
       example: 1767000045000
     auto_cancel_triggered:
       type: integer
@@ -87,7 +89,7 @@ components:
       type: integer
       description: |
         Maximum number of auto-cancel triggers allowed per UTC day.
-      example: 10
+      example: 1000
     auto_cancel_next_reset:
       type: integer
       description: |
@@ -140,11 +142,13 @@ components:
         (`401`/`404`/`429`/`500`) this is a stable, machine-readable snake_case
         identifier that is part of the API contract and safe to branch on, e.g.
         `insufficient_margin`, `insufficient_balance`, `order_not_found`,
-        `reduce_only_invalid`, `unauthorized`, `not_found`. For `400` it is a
-        human-readable validation detail whose wording may change. See the Error
-        handling guide for the domain identifiers. (Post-only / Fill-or-Kill
-        outcomes are order statuses such as `post_only_rejected`, not
-        rejections.)
+        `reduce_only_invalid`, `price_outside_bounds`, `position_not_found`,
+        `invalid_margin_mode`, `invalid_margin_amount`,
+        `margin_below_required_initial`, `account_liquidating`, `unauthorized`,
+        `not_found`. For `400` it is a human-readable validation detail whose
+        wording may change. See the Error handling guide for the domain
+        identifiers. (Post-only / Fill-or-Kill outcomes are order statuses such
+        as `post_only_rejected`, not rejections.)
       example: insufficient_margin
   responses:
     Error401Response:

@@ -4,9 +4,8 @@
 
 # Get Fees
 
-> Get the default fee schedule for each instrument type and category. Rates returned are the $0-tier defaults; the account's actual rate on each fill depends on its trailing 30-day volume tier.
+> Get the fee tier schedule for each instrument type and category.
 
-<Badge color="gray" size="md">Request Weight: **2**</Badge>
 
 
 ## OpenAPI
@@ -28,10 +27,7 @@ paths:
   /v1/info/fees:
     get:
       summary: Get Fees
-      description: >-
-        Get the default fee schedule for each instrument type and category.
-        Rates returned are the $0-tier defaults; the account's actual rate on
-        each fill depends on its trailing 30-day volume tier.
+      description: Get the fee tier schedule for each instrument type and category.
       operationId: getInfoFees
       responses:
         '200':
@@ -63,6 +59,7 @@ components:
         - category
         - taker_fee_rate
         - maker_fee_rate
+        - tiers
       properties:
         instrument_type:
           $ref: '#/components/schemas/instrument_type'
@@ -72,6 +69,10 @@ components:
           $ref: '#/components/schemas/taker_fee_rate'
         maker_fee_rate:
           $ref: '#/components/schemas/maker_fee_rate'
+        tiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeeTier'
     Error429:
       title: Error429
       type: object
@@ -113,16 +114,25 @@ components:
         - crypto
     taker_fee_rate:
       type: string
-      description: >-
-        Default taker fee rate for the $0 volume tier. Actual rate scales down
-        with the account's trailing 30-day volume tier.
-      example: '0.0004'
+      description: Taker fee rate
+      example: '0.0002'
     maker_fee_rate:
       type: string
-      description: >-
-        Default maker fee rate for the $0 volume tier. Positive at lower tiers,
-        zero at the $500M tier, and a rebate (negative) at the top tier.
-      example: '0.000125'
+      description: Maker fee rate
+      example: '-0.00005'
+    FeeTier:
+      type: object
+      required:
+        - min_volume_30d
+        - taker_fee_rate
+        - maker_fee_rate
+      properties:
+        min_volume_30d:
+          $ref: '#/components/schemas/min_volume_30d'
+        taker_fee_rate:
+          $ref: '#/components/schemas/taker_fee_rate'
+        maker_fee_rate:
+          $ref: '#/components/schemas/maker_fee_rate'
     error:
       type: string
       description: >-
@@ -130,12 +140,18 @@ components:
         (`401`/`404`/`429`/`500`) this is a stable, machine-readable snake_case
         identifier that is part of the API contract and safe to branch on, e.g.
         `insufficient_margin`, `insufficient_balance`, `order_not_found`,
-        `reduce_only_invalid`, `unauthorized`, `not_found`. For `400` it is a
-        human-readable validation detail whose wording may change. See the Error
-        handling guide for the domain identifiers. (Post-only / Fill-or-Kill
-        outcomes are order statuses such as `post_only_rejected`, not
-        rejections.)
+        `reduce_only_invalid`, `price_outside_bounds`, `position_not_found`,
+        `invalid_margin_mode`, `invalid_margin_amount`,
+        `margin_below_required_initial`, `account_liquidating`, `unauthorized`,
+        `not_found`. For `400` it is a human-readable validation detail whose
+        wording may change. See the Error handling guide for the domain
+        identifiers. (Post-only / Fill-or-Kill outcomes are order statuses such
+        as `post_only_rejected`, not rejections.)
       example: insufficient_margin
+    min_volume_30d:
+      type: string
+      description: Minimum rolling 30-day notional volume in USD required for this tier
+      example: '5000000'
   responses:
     Error429Response:
       description: >

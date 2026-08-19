@@ -1138,6 +1138,9 @@ needs.
 Use crypto price streams to keep reference values current alongside related
 markets.
 
+For time-weighted crypto prices, see [Chainlink TWAP
+Prices](/market-data/chainlink-twap).
+
 <Tip>
   Trading 15-minute crypto markets? [Request a sponsored Chainlink API
   key](https://pm-ds-request.streams.chain.link/) with onboarding support from

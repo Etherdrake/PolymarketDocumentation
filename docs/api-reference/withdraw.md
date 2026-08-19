@@ -14,7 +14,6 @@ The `ts` field is Unix seconds (not milliseconds) because the on-chain contract 
 against `block.timestamp`. It must also match the `uint64 ts` in the signed EIP-712 struct.
 
 
-<Badge color="gray" size="md">Request Weight: **1**</Badge>
 
 
 ## OpenAPI
@@ -161,7 +160,7 @@ components:
             token:
               $ref: '#/components/schemas/token'
             amount:
-              $ref: '#/components/schemas/amount'
+              $ref: '#/components/schemas/op_amount'
             to:
               $ref: '#/components/schemas/to'
     BaseOp:
@@ -200,11 +199,13 @@ components:
         (`401`/`404`/`429`/`500`) this is a stable, machine-readable snake_case
         identifier that is part of the API contract and safe to branch on, e.g.
         `insufficient_margin`, `insufficient_balance`, `order_not_found`,
-        `reduce_only_invalid`, `unauthorized`, `not_found`. For `400` it is a
-        human-readable validation detail whose wording may change. See the Error
-        handling guide for the domain identifiers. (Post-only / Fill-or-Kill
-        outcomes are order statuses such as `post_only_rejected`, not
-        rejections.)
+        `reduce_only_invalid`, `price_outside_bounds`, `position_not_found`,
+        `invalid_margin_mode`, `invalid_margin_amount`,
+        `margin_below_required_initial`, `account_liquidating`, `unauthorized`,
+        `not_found`. For `400` it is a human-readable validation detail whose
+        wording may change. See the Error handling guide for the domain
+        identifiers. (Post-only / Fill-or-Kill outcomes are order statuses such
+        as `post_only_rejected`, not rejections.)
       example: insufficient_margin
     Error429:
       title: Error429
@@ -240,12 +241,11 @@ components:
       type: string
       description: Token contract address in hex format
       example: '0xaf88d065e77c8cc2239327c5edb3a432268e5831'
-    amount:
+    op_amount:
       type: string
       description: >-
-        Raw token amount including decimals. For withdrawals this matches the
-        uint256 amount in the EIP-712 signature (e.g. "100000000" for 100 USDC
-        with 6 decimals).
+        Raw token amount in base units, matching the uint256 amount in the
+        EIP-712 signature (e.g. "100000000" for 100 USDC with 6 decimals).
       example: '100000000'
     to:
       type: string

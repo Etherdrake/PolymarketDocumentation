@@ -100,6 +100,18 @@ paths:
                 - MAKER_REBATE
                 - TAKER_REBATE
                 - REFERRAL_REWARD
+          description: >-
+            Comma-separated list of activity types to include. DEPOSIT and
+            WITHDRAWAL records also require `excludeDepositsWithdrawals=false`.
+        - in: query
+          name: excludeDepositsWithdrawals
+          schema:
+            type: boolean
+            default: true
+          description: >-
+            Excludes deposit and withdrawal records. The default `true` applies
+            even when `type` requests those records, so to get deposits and
+            withdrawals you must pass `false`.
         - in: query
           name: start
           schema:
@@ -213,14 +225,25 @@ components:
             - REFERRAL_REWARD
         size:
           type: number
+          description: >-
+            Token amount for this row. On `REDEEM` rows it is the number of
+            tokens burned for this row's outcome, so redeeming both sides of a
+            market returns one row per outcome instead of a single combined row.
         usdcSize:
           type: number
+          description: >-
+            USDC amount for this row. On `REDEEM` rows it is the payout for this
+            row's outcome and is `0` for a losing outcome; the rows of one
+            redemption sum to the total payout.
         transactionHash:
           type: string
         price:
           type: number
         asset:
           type: string
+          description: >-
+            Token ID this row refers to. Populated on `REDEEM` rows with the
+            token that row settles. Empty when the row is not token-specific.
         side:
           type: string
           enum:
@@ -228,12 +251,22 @@ components:
             - SELL
         outcomeIndex:
           type: integer
+          description: >-
+            Zero-based index of this row's outcome in the market's `outcomes`
+            array, so `outcome` always equals `outcomes[outcomeIndex]`. On
+            `REDEEM` rows it identifies the outcome the row settles, not the
+            market's winning outcome. `999` means the outcome could not be
+            determined, in which case `outcome` is empty.
         title:
           type: string
         slug:
           type: string
         icon:
           type: string
+          description: >-
+            Market artwork. Falls back to the market image, then to the parent
+            event's icon and image, when the market has no icon of its own.
+            Empty on `CONVERSION` rows.
         eventSlug:
           type: string
         outcome:

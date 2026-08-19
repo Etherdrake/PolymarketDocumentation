@@ -154,7 +154,8 @@ the market and include the constraints used later when building an order.
         "max_limit_notional": "1000000",
         "max_leverage": 10,
         "isolated_only": false,
-        "risk_tiers": [{ "lower_bound": "0", "max_leverage": 10 }]
+        "risk_tiers": [{ "lower_bound": "0", "max_leverage": 10 }],
+        "ui_live_time": null
       }
     ]
     ```
@@ -243,6 +244,7 @@ open position size.
       ],
       "margin": {
         "total_account_value": "1000",
+        "available_order_margin": "870",
         "total_initial_margin": "130",
         "total_maintenance_margin": "65",
         "total_position_value": "650"
@@ -1567,11 +1569,47 @@ filled position.
       [
         {
           "status": "err",
-          "error": "order_not_found"
+          "oid": 1234567890,
+          "error": "order_not_in_orderbook"
         }
       ]
       ```
     </CodeGroup>
+
+    A rejected result carries a stable `error` identifier, along with the `oid` or
+    `coid` it applies to. Branch on the identifier: it tells you whether the order is
+    gone for good or whether the cancel is worth sending again.
+
+    | Error                      | Description                                                                                                     | Retry                                    |
+    | -------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+    | `order_unknown`            | The `coid` does not resolve to a live order on your account. Only returned by `DELETE /v1/trade/orders-coid`.   | Only while your create is unacknowledged |
+    | `order_not_in_orderbook`   | The order does not exist in exchange state. It already terminated, or it never existed.                         | No — terminal                            |
+    | `order_in_flight`          | The order exists but is not cancellable yet: pending risk checks, queued, or on its way to the matching engine. | Yes — transient                          |
+    | `order_not_pending_engine` | An earlier cancel for the same order is already in flight and has not been applied to the book yet.             | No — wait for the first cancel           |
+    | `order_not_found`          | The take-profit or stop-loss order you tried to cancel does not exist.                                          | No — terminal                            |
+
+    `order_unknown` covers three cases that cannot be told apart: the create never
+    reached the exchange, it reached the exchange but is not visible to this read
+    yet, or the order already filled, canceled, or expired and released its `coid`.
+    Perps keeps no order history, so a `coid` that terminated looks identical to one
+    that never existed. This identifier is answered from a cached view of your live
+    orders that can briefly trail the exchange, so it is not proof the order is
+    absent — while your create is still unacknowledged, send the cancel again. Once
+    the create has been acknowledged, reconcile against your order updates and fills
+    instead of retrying.
+
+    `order_not_in_orderbook` means the exchange evaluated the cancel against its own
+    state and found no such order, so the result is authoritative. Nothing re-creates
+    a departed order, so retrying cannot change the outcome. Canceling an `oid` owned
+    by another account returns this same identifier, so order IDs are not probeable
+    across accounts.
+
+    <Note>
+      During maintenance the exchange can enter cancel-only mode: new orders are
+      rejected with `cancel_only_mode` while cancels keep working. Entering the
+      mode does not purge resting orders or change any of the semantics above — a
+      cancel reject means the same thing it does at any other time.
+    </Note>
   </Tab>
 </Tabs>
 
@@ -1672,6 +1710,200 @@ Confirm the final state from your open orders.
     ```json theme={null}
     { "status": "ok" }
     ```
+  </Tab>
+</Tabs>
+
+### Auto Cancel Orders
+
+Auto-cancel is a dead man's switch for your open orders. Arm it with a future
+deadline, and the exchange cancels every open order on your account when that
+deadline passes. Keep re-arming it with a fresh deadline while your integration
+runs. If the process crashes or loses connectivity, the re-arms stop, the
+deadline passes, and your resting orders leave the book with no action from
+you.
+
+The switch fires once. After it fires, the schedule clears itself, and orders
+you place afterwards are unprotected until you arm it again. Arming again
+replaces the current schedule, and the deadline must be at least five seconds
+in the future. Accounts can trigger auto-cancel a limited number of times per
+UTC day, so disarm the switch on graceful shutdown instead of letting it
+fire.
+
+<Tabs>
+  <Tab title="TypeScript">
+    Arm the switch with `session.armAutoCancel` and keep protection active by
+    re-arming on an interval shorter than the deadline.
+
+    <CodeGroup>
+      ```ts Arm and Re-Arm theme={null}
+      await session.armAutoCancel({ cancelAt: Date.now() + 60_000 });
+
+      const rearm = setInterval(() => {
+        // A missed re-arm is fail-safe: the armed switch still fires.
+        session.armAutoCancel({ cancelAt: Date.now() + 60_000 }).catch((error) => {
+          console.error("auto-cancel re-arm failed", error);
+        });
+      }, 20_000);
+      ```
+
+      ```ts Disarm theme={null}
+      clearInterval(rearm);
+      await session.disarmAutoCancel();
+      ```
+    </CodeGroup>
+
+    Arming throws `UserInputError` when `cancelAt` is less than five seconds in
+    the future, and `AutoCancelDailyLimitError` once the account reaches its daily
+    trigger limit. Disarming is always allowed. Check the armed deadline and
+    today's trigger usage with `session.fetchAutoCancelStatus()`.
+
+    ```ts theme={null}
+    const status = await session.fetchAutoCancelStatus();
+    ```
+
+    | Field        | Meaning                                                                  |
+    | ------------ | ------------------------------------------------------------------------ |
+    | `deadline`   | Armed cancel time in Unix milliseconds, or `null` when nothing is armed. |
+    | `triggered`  | Times the switch fired today.                                            |
+    | `dailyLimit` | Maximum triggers allowed per UTC day.                                    |
+    | `nextReset`  | When the daily trigger counter resets, in Unix milliseconds.             |
+  </Tab>
+
+  <Tab title="Python">
+    Arm the switch with `session.arm_auto_cancel` and keep protection active by
+    re-arming on an interval shorter than the deadline. `cancel_at` accepts a
+    `datetime` or a Unix timestamp in milliseconds.
+
+    <CodeGroup>
+      ```python Arm and Re-Arm theme={null}
+      import asyncio
+      import logging
+      from datetime import datetime, timedelta, timezone
+
+      async def keep_armed():
+          while True:
+              await asyncio.sleep(20)
+              try:
+                  await session.arm_auto_cancel(
+                      cancel_at=datetime.now(timezone.utc) + timedelta(seconds=60)
+                  )
+              except Exception:
+                  # A missed re-arm is fail-safe: the armed switch still fires.
+                  logging.exception("auto-cancel re-arm failed")
+
+      await session.arm_auto_cancel(
+          cancel_at=datetime.now(timezone.utc) + timedelta(seconds=60)
+      )
+      rearm = asyncio.create_task(keep_armed())
+      ```
+
+      ```python Disarm theme={null}
+      rearm.cancel()
+      await session.disarm_auto_cancel()
+      ```
+    </CodeGroup>
+
+    Arming raises `UserInputError` when `cancel_at` is less than five seconds in
+    the future, and `AutoCancelDailyLimitError` once the account reaches its daily
+    trigger limit. Disarming is always allowed. Check the armed deadline and
+    today's trigger usage with `session.fetch_auto_cancel_status()`.
+
+    ```python theme={null}
+    status = await session.fetch_auto_cancel_status()
+    # status: PerpsAutoCancelStatus
+    ```
+
+    | Field         | Meaning                                                                 |
+    | ------------- | ----------------------------------------------------------------------- |
+    | `deadline`    | Armed cancel time as a UTC `datetime`, or `None` when nothing is armed. |
+    | `triggered`   | Times the switch fired today.                                           |
+    | `daily_limit` | Maximum triggers allowed per UTC day.                                   |
+    | `next_reset`  | When the daily trigger counter resets, as a UTC `datetime`.             |
+  </Tab>
+
+  <Tab title="API">
+    Arm the switch with `PATCH /v1/trade/auto-cancel`. Use the same signing flow
+    as [Place Orders](#place-orders) to create `<auto_cancel_signature>`. For
+    hashing, sign the compact operation, not the structured JSON body.
+
+    The compact `args` holds the cancel time as a Unix timestamp in milliseconds,
+    and the JSON body passes it as `time`:
+
+    ```ts theme={null}
+    ["autoCancel", [1767000130000]];
+    ```
+
+    ```bash theme={null}
+    curl -X PATCH "https://api.perpetuals.polymarket.com/v1/trade/auto-cancel" \
+      -H "content-type: application/json" \
+      -d '{
+        "op": {
+          "type": "autoCancel",
+          "args": { "time": 1767000130000 }
+        },
+        "sig": "<auto_cancel_signature>",
+        "salt": 234567896,
+        "ts": 1767000070000
+      }'
+    ```
+
+    The response echoes the armed deadline:
+
+    ```json theme={null}
+    { "status": "ok", "deadline": 1767000130000 }
+    ```
+
+    To clear the schedule without triggering it, send `0` as the time:
+
+    ```ts theme={null}
+    ["autoCancel", [0]];
+    ```
+
+    ```bash theme={null}
+    curl -X PATCH "https://api.perpetuals.polymarket.com/v1/trade/auto-cancel" \
+      -H "content-type: application/json" \
+      -d '{
+        "op": {
+          "type": "autoCancel",
+          "args": { "time": 0 }
+        },
+        "sig": "<auto_cancel_signature>",
+        "salt": 234567897,
+        "ts": 1767000080000
+      }'
+    ```
+
+    A cleared schedule reports a `0` deadline:
+
+    ```json theme={null}
+    { "status": "ok", "deadline": 0 }
+    ```
+
+    Arming is rejected with `auto_cancel_daily_limit_reached` once the account
+    reaches its daily trigger limit. Clearing is always allowed. Check the armed
+    deadline and today's trigger usage with `GET /v1/account/auto-cancel`.
+
+    ```bash theme={null}
+    curl "https://api.perpetuals.polymarket.com/v1/account/auto-cancel" \
+      -H "polymarket-proxy: <proxy_address>" \
+      -H "polymarket-secret: <proxy_secret>"
+    ```
+
+    ```json theme={null}
+    {
+      "deadline": 1767000130000,
+      "triggered": 2,
+      "daily_limit": 1000,
+      "next_reset": 1767052800000
+    }
+    ```
+
+    | Field         | Meaning                                                               |
+    | ------------- | --------------------------------------------------------------------- |
+    | `deadline`    | Armed cancel time in Unix milliseconds, or `0` when nothing is armed. |
+    | `triggered`   | Times the switch fired today.                                         |
+    | `daily_limit` | Maximum triggers allowed per UTC day.                                 |
+    | `next_reset`  | When the daily trigger counter resets, in Unix milliseconds.          |
   </Tab>
 </Tabs>
 
@@ -2115,6 +2347,109 @@ change.
   </Tab>
 </Tabs>
 
+## Adjust Isolated Margin
+
+Adjust the collateral allocated to an open position when you want to give it
+more buffer or release collateral that is no longer needed.
+
+<Tabs>
+  <Tab title="TypeScript">
+    Use `updateMargin` on the authenticated Perps session.
+
+    <CodeGroup>
+      ```ts Add Margin theme={null}
+      await session.updateMargin({
+        instrumentId: instrument.id,
+        amount: "100.00",
+      });
+      ```
+
+      ```ts Remove Margin theme={null}
+      await session.updateMargin({
+        instrumentId: instrument.id,
+        amount: "-25.00",
+      });
+      ```
+    </CodeGroup>
+  </Tab>
+
+  <Tab title="Python">
+    Use `update_margin` on the authenticated Perps session.
+
+    <CodeGroup>
+      ```python Add Margin theme={null}
+      await session.update_margin(
+          instrument_id=instrument.id,
+          amount="100.00",
+      )
+      ```
+
+      ```python Remove Margin theme={null}
+      await session.update_margin(
+          instrument_id=instrument.id,
+          amount="-25.00",
+      )
+      ```
+    </CodeGroup>
+  </Tab>
+
+  <Tab title="API">
+    Submit a signed `updateMargin` operation to `PATCH /v1/trade/margin`. Use the
+    same signing flow as [Place Orders](#place-orders), and sign this compact
+    operation for each request:
+
+    ```ts theme={null}
+    ["updateMargin", [iid, amt]];
+    ```
+
+    <CodeGroup>
+      ```bash Add Margin theme={null}
+      curl -X PATCH "https://api.perpetuals.polymarket.com/v1/trade/margin" \
+        -H "content-type: application/json" \
+        -d '{
+          "op": {
+            "type": "updateMargin",
+            "args": {
+              "iid": 1,
+              "amt": "100.00"
+            }
+          },
+          "sig": "<margin_signature>",
+          "salt": 444444444,
+          "ts": 1767000013000
+        }'
+      ```
+
+      ```bash Remove Margin theme={null}
+      curl -X PATCH "https://api.perpetuals.polymarket.com/v1/trade/margin" \
+        -H "content-type: application/json" \
+        -d '{
+          "op": {
+            "type": "updateMargin",
+            "args": {
+              "iid": 1,
+              "amt": "-25.00"
+            }
+          },
+          "sig": "<margin_signature>",
+          "salt": 444444445,
+          "ts": 1767000013001
+        }'
+      ```
+    </CodeGroup>
+
+    The response uses the generic `{ "status": "ok" }` or `{ "status": "err",
+        "error": string }` shape.
+  </Tab>
+</Tabs>
+
+The amount is a precision-safe decimal string in the instrument's quote asset.
+A positive value adds isolated margin; a negative value removes it. This
+workflow applies only to an open position using isolated margin.
+
+For allocation and removal constraints, see [Adjusting Isolated
+Margin](/perps/learn-about-trading/margin#adjusting-isolated-margin).
+
 ## Reconcile Trade State
 
 Keep local trading state in sync by starting from a local snapshot, applying
@@ -2370,6 +2705,7 @@ reads. Track their lifecycle in addition to the position and fills they protect.
               "pep": "0",
               "pnl": "0",
               "liq": false,
+              "adl": false,
               "ts": 1767000010500,
               "coid": "7f9e4a2b6c8d0e1f1234567890abcdef"
             },
@@ -2401,6 +2737,7 @@ reads. Track their lifecycle in addition to the position and fills they protect.
               ],
               "margin": {
                 "total_account_value": "1000",
+                "available_order_margin": "870",
                 "total_initial_margin": "130",
                 "total_maintenance_margin": "13",
                 "total_position_value": "650"

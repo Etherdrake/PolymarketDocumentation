@@ -10,15 +10,6 @@ filled, and cancelled orders. For currently resting orders only, use Get Open Or
 Maximum of 100 entries returned per request.
 
 
-<Badge color="gray" size="md">Request Weight:</Badge>
-
-<br />
-
-<Badge color="gray" size="md">With order ID: **1**</Badge>
-
-<br />
-
-<Badge color="gray" size="md">Without order ID: **10**</Badge>
 
 
 ## OpenAPI
@@ -348,11 +339,13 @@ components:
         (`401`/`404`/`429`/`500`) this is a stable, machine-readable snake_case
         identifier that is part of the API contract and safe to branch on, e.g.
         `insufficient_margin`, `insufficient_balance`, `order_not_found`,
-        `reduce_only_invalid`, `unauthorized`, `not_found`. For `400` it is a
-        human-readable validation detail whose wording may change. See the Error
-        handling guide for the domain identifiers. (Post-only / Fill-or-Kill
-        outcomes are order statuses such as `post_only_rejected`, not
-        rejections.)
+        `reduce_only_invalid`, `price_outside_bounds`, `position_not_found`,
+        `invalid_margin_mode`, `invalid_margin_amount`,
+        `margin_below_required_initial`, `account_liquidating`, `unauthorized`,
+        `not_found`. For `400` it is a human-readable validation detail whose
+        wording may change. See the Error handling guide for the domain
+        identifiers. (Post-only / Fill-or-Kill outcomes are order statuses such
+        as `post_only_rejected`, not rejections.)
       example: insufficient_margin
   responses:
     Error400Response:

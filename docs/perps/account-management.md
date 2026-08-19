@@ -251,6 +251,7 @@ and liquidation state.
         ],
         "margin": {
           "total_account_value": "1000",
+          "available_order_margin": "870",
           "total_initial_margin": "130",
           "total_maintenance_margin": "65",
           "total_position_value": "650"
@@ -261,6 +262,10 @@ and liquidation state.
       }
       ```
     </Accordion>
+
+    `margin.available_order_margin` is the collateral available to margin new
+    orders, after existing positions, open orders, and any orders, isolated-margin
+    additions, withdrawals, or transfers still being processed.
   </Tab>
 </Tabs>
 
@@ -678,6 +683,7 @@ Use fills to reconcile executions, fees, realized PnL, and exposure changes.
             "previous_entry_price": "0",
             "pnl": "0",
             "liquidation": false,
+            "adl": false,
             "timestamp": 1767000010500,
             "hash": "0x1111111111111111111111111111111111111111111111111111111111111111"
           }
@@ -712,11 +718,13 @@ Use funding payments to explain periodic funding debits or credits for a market.
     ```
 
     Each page returns funding records you can use to explain non-trade PnL changes.
+    Each record has a unique `id` for storing or deduplicating funding payments.
 
     <Accordion title="Output: PerpsAccountFundingPayment[]">
       ```json theme={null}
       [
         {
+          "id": 3055723280187747,
           "instrumentId": 1,
           "size": "0.01",
           "fundingRate": "0.0001",
@@ -741,11 +749,13 @@ Use funding payments to explain periodic funding debits or credits for a market.
     ```
 
     Each page returns funding records you can use to explain non-trade PnL changes.
+    Each record has a unique `id` for storing or deduplicating funding payments.
 
     <Accordion title="Output: tuple[PerpsFundingPayment, ...]">
       ```json theme={null}
       [
         {
+          "id": 3055723280187747,
           "instrument_id": 1,
           "size": "0.01",
           "funding_rate": "0.0001",
@@ -771,12 +781,14 @@ Use funding payments to explain periodic funding debits or credits for a market.
     Use the response's `more` field to continue fetching older or newer records.
 
     Each page returns funding records you can use to explain non-trade PnL changes.
+    Each record has a unique `id` for storing or deduplicating funding payments.
 
     <Accordion title="Output: Funding Payments">
       ```json theme={null}
       {
         "data": [
           {
+            "id": 3055723280187747,
             "instrument_id": 1,
             "size": "0.01",
             "funding_rate": "0.0001",
@@ -814,7 +826,7 @@ Use deposits to reconcile collateral added to the Perps account.
         {
           "hash": "0x2222222222222222222222222222222222222222222222222222222222222222",
           "asset": "pUSD",
-          "amount": "100000000",
+          "amount": "100",
           "status": "confirmed",
           "from": "0x1234567890abcdef1234567890abcdef12345678",
           "to": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
@@ -845,7 +857,7 @@ Use deposits to reconcile collateral added to the Perps account.
         {
           "hash": "0x2222222222222222222222222222222222222222222222222222222222222222",
           "asset": "pUSD",
-          "amount": "100000000",
+          "amount": "100",
           "status": "confirmed",
           "from_address": "0x1234567890abcdef1234567890abcdef12345678",
           "to": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
@@ -879,7 +891,7 @@ Use deposits to reconcile collateral added to the Perps account.
           {
             "hash": "0x2222222222222222222222222222222222222222222222222222222222222222",
             "asset": "pUSD",
-            "amount": "100000000",
+            "amount": "100",
             "status": "confirmed",
             "from": "0x1234567890abcdef1234567890abcdef12345678",
             "to": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
@@ -918,7 +930,7 @@ Use withdrawals to reconcile collateral leaving the Perps account.
         {
           "withdrawalId": 1234567891,
           "asset": "pUSD",
-          "amount": "50000000",
+          "amount": "50",
           "fee": "1.5",
           "status": "confirmed",
           "to": "0x1234567890abcdef1234567890abcdef12345678",
@@ -931,6 +943,19 @@ Use withdrawals to reconcile collateral leaving the Perps account.
       ]
       ```
     </Accordion>
+
+    Branch on `status` using the `PerpsKnownWithdrawalStatus` enum.
+
+    | `status`                               | Meaning                                                                                                      |
+    | -------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+    | `PerpsKnownWithdrawalStatus.Pending`   | The withdrawal was accepted and is awaiting on-chain confirmation.                                           |
+    | `PerpsKnownWithdrawalStatus.Confirmed` | The on-chain transaction reached the required confirmations and the funds were sent to the destination.      |
+    | `PerpsKnownWithdrawalStatus.Removed`   | A chain reorganization removed the on-chain transaction after it was observed.                               |
+    | `PerpsKnownWithdrawalStatus.Failed`    | The withdrawal could not be executed on-chain and was reverted; the amount was credited back to the account. |
+
+    The status set can grow between SDK releases. `status` is typed
+    `PerpsWithdrawalStatus`, so a status added after your release arrives as a
+    plain string instead of failing the response parse.
   </Tab>
 
   <Tab title="Python">
@@ -950,7 +975,7 @@ Use withdrawals to reconcile collateral leaving the Perps account.
         {
           "withdrawal_id": 1234567891,
           "asset": "pUSD",
-          "amount": "50000000",
+          "amount": "50",
           "fee": "1.5",
           "status": "confirmed",
           "to": "0x1234567890abcdef1234567890abcdef12345678",
@@ -963,6 +988,19 @@ Use withdrawals to reconcile collateral leaving the Perps account.
       ]
       ```
     </Accordion>
+
+    Branch on `status` using the `PerpsKnownWithdrawalStatus` literals.
+
+    | `status`      | Meaning                                                                                                      |
+    | ------------- | ------------------------------------------------------------------------------------------------------------ |
+    | `"pending"`   | The withdrawal was accepted and is awaiting on-chain confirmation.                                           |
+    | `"confirmed"` | The on-chain transaction reached the required confirmations and the funds were sent to the destination.      |
+    | `"removed"`   | A chain reorganization removed the on-chain transaction after it was observed.                               |
+    | `"failed"`    | The withdrawal could not be executed on-chain and was reverted; the amount was credited back to the account. |
+
+    The status set can grow between SDK releases. `status` is typed
+    `PerpsWithdrawalStatus`, so a status added after your release arrives as a
+    plain string instead of failing validation.
   </Tab>
 
   <Tab title="API">
@@ -985,7 +1023,7 @@ Use withdrawals to reconcile collateral leaving the Perps account.
           {
             "withdrawal_id": 1234567891,
             "asset": "pUSD",
-            "amount": "50000000",
+            "amount": "50",
             "fee": "1.5",
             "status": "confirmed",
             "to": "0x1234567890abcdef1234567890abcdef12345678",
@@ -1000,6 +1038,13 @@ Use withdrawals to reconcile collateral leaving the Perps account.
       }
       ```
     </Accordion>
+
+    | `status`    | Meaning                                                                                                      |
+    | ----------- | ------------------------------------------------------------------------------------------------------------ |
+    | `pending`   | The withdrawal was accepted and is awaiting on-chain confirmation.                                           |
+    | `confirmed` | The on-chain transaction reached the required confirmations and the funds were sent to the destination.      |
+    | `removed`   | A chain reorganization removed the on-chain transaction after it was observed.                               |
+    | `failed`    | The withdrawal could not be executed on-chain and was reverted; the amount was credited back to the account. |
   </Tab>
 </Tabs>
 

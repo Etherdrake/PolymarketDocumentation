@@ -89,6 +89,7 @@ Users can close existing positions but cannot open new ones, on both the fronten
 | Lebanon                              | LB    |
 | Libya                                | LY    |
 | Myanmar                              | MM    |
+| New Zealand                          | NZ    |
 | Nicaragua                            | NI    |
 | North Korea                          | KP    |
 | Poland                               | PL    |

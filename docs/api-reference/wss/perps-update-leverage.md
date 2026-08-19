@@ -102,7 +102,7 @@ operations:
             id:
               type: integer
               description: Correlation ID for request-response matching
-              x-parser-schema-id: <anonymous-schema-114>
+              x-parser-schema-id: <anonymous-schema-133>
             req:
               type: string
               description: Request type
@@ -110,7 +110,7 @@ operations:
                 - post
                 - sub
                 - unsub
-              x-parser-schema-id: <anonymous-schema-115>
+              x-parser-schema-id: <anonymous-schema-134>
             op:
               type: object
               required:
@@ -121,7 +121,7 @@ operations:
                   type: string
                   enum:
                     - updateLeverage
-                  x-parser-schema-id: <anonymous-schema-117>
+                  x-parser-schema-id: <anonymous-schema-136>
                 args:
                   type: object
                   required:
@@ -133,28 +133,28 @@ operations:
                       type: integer
                       description: Instrument ID
                       example: 1
-                      x-parser-schema-id: <anonymous-schema-119>
+                      x-parser-schema-id: <anonymous-schema-138>
                     lev:
                       type: integer
                       description: Leverage
                       example: 10
-                      x-parser-schema-id: <anonymous-schema-120>
+                      x-parser-schema-id: <anonymous-schema-139>
                     cross:
                       type: boolean
                       description: Whether to use cross margin mode
-                      x-parser-schema-id: <anonymous-schema-121>
-                  x-parser-schema-id: <anonymous-schema-118>
-              x-parser-schema-id: <anonymous-schema-116>
+                      x-parser-schema-id: <anonymous-schema-140>
+                  x-parser-schema-id: <anonymous-schema-137>
+              x-parser-schema-id: <anonymous-schema-135>
             sig:
               type: string
               description: Signature in hex format
               example: 0x1234567890...
-              x-parser-schema-id: <anonymous-schema-122>
+              x-parser-schema-id: <anonymous-schema-141>
             salt:
               type: integer
               description: Salt
               example: 1234567890
-              x-parser-schema-id: <anonymous-schema-123>
+              x-parser-schema-id: <anonymous-schema-142>
             ts:
               type: integer
               description: >-
@@ -162,14 +162,14 @@ operations:
                 seconds for withdrawals (must match the on-chain EIP-712 struct
                 verified against block.timestamp).
               example: 1767225600000
-              x-parser-schema-id: <anonymous-schema-124>
+              x-parser-schema-id: <anonymous-schema-143>
           required:
             - req
             - op
             - sig
             - salt
             - ts
-          x-parser-schema-id: <anonymous-schema-113>
+          x-parser-schema-id: <anonymous-schema-132>
         title: Update Leverage Request
         description: Client submits a signed leverage update request
         example: |-
@@ -234,12 +234,15 @@ operations:
                       machine-readable snake_case identifier that is part of the
                       API contract and safe to branch on, e.g.
                       `insufficient_margin`, `insufficient_balance`,
-                      `order_not_found`, `reduce_only_invalid`, `unauthorized`,
-                      `not_found`. For `400` it is a human-readable validation
-                      detail whose wording may change. See the Error handling
-                      guide for the domain identifiers. (Post-only /
-                      Fill-or-Kill outcomes are order statuses such as
-                      `post_only_rejected`, not rejections.)
+                      `order_not_found`, `reduce_only_invalid`,
+                      `price_outside_bounds`, `position_not_found`,
+                      `invalid_margin_mode`, `invalid_margin_amount`,
+                      `margin_below_required_initial`, `account_liquidating`,
+                      `unauthorized`, `not_found`. For `400` it is a
+                      human-readable validation detail whose wording may change.
+                      See the Error handling guide for the domain identifiers.
+                      (Post-only / Fill-or-Kill outcomes are order statuses such
+                      as `post_only_rejected`, not rejections.)
                     required: true
         headers: []
         jsonPayloadSchema:
@@ -249,7 +252,7 @@ operations:
             id:
               type: integer
               description: Correlation ID for request-response matching
-              x-parser-schema-id: <anonymous-schema-126>
+              x-parser-schema-id: <anonymous-schema-145>
             data:
               oneOf:
                 - type: object
@@ -260,8 +263,8 @@ operations:
                       type: string
                       enum:
                         - ok
-                      x-parser-schema-id: <anonymous-schema-129>
-                  x-parser-schema-id: <anonymous-schema-128>
+                      x-parser-schema-id: <anonymous-schema-148>
+                  x-parser-schema-id: <anonymous-schema-147>
                 - type: object
                   required:
                     - status
@@ -271,7 +274,7 @@ operations:
                       type: string
                       enum:
                         - err
-                      x-parser-schema-id: <anonymous-schema-131>
+                      x-parser-schema-id: <anonymous-schema-150>
                     error:
                       type: string
                       description: >-
@@ -281,6 +284,9 @@ operations:
                         the API contract and safe to branch on, e.g.
                         `insufficient_margin`, `insufficient_balance`,
                         `order_not_found`, `reduce_only_invalid`,
+                        `price_outside_bounds`, `position_not_found`,
+                        `invalid_margin_mode`, `invalid_margin_amount`,
+                        `margin_below_required_initial`, `account_liquidating`,
                         `unauthorized`, `not_found`. For `400` it is a
                         human-readable validation detail whose wording may
                         change. See the Error handling guide for the domain
@@ -288,12 +294,12 @@ operations:
                         order statuses such as `post_only_rejected`, not
                         rejections.)
                       example: insufficient_margin
-                      x-parser-schema-id: <anonymous-schema-132>
-                  x-parser-schema-id: <anonymous-schema-130>
-              x-parser-schema-id: <anonymous-schema-127>
+                      x-parser-schema-id: <anonymous-schema-151>
+                  x-parser-schema-id: <anonymous-schema-149>
+              x-parser-schema-id: <anonymous-schema-146>
           required:
             - data
-          x-parser-schema-id: <anonymous-schema-125>
+          x-parser-schema-id: <anonymous-schema-144>
         title: Update Leverage Response
         description: Server responds with leverage update result
         example: |-

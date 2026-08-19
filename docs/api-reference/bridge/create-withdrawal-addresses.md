@@ -130,6 +130,9 @@ components:
               type: string
               description: Bitcoin bridge address
               example: bc1q8eau83qffxcj8ht4hsjdza3lha9r3egfqysj3g
+            tron:
+              type: string
+              description: Tron bridge address
         note:
           type: string
           description: Additional information about the bridge addresses

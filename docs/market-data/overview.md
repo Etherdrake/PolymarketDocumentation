@@ -71,4 +71,8 @@ Markets](/market-data/discover-markets).
   <Card title="Real-Time Data" icon="radio" href="/market-data/realtime-data">
     Keep your application current as markets and related data change.
   </Card>
+
+  <Card title="Chainlink TWAP Prices" icon="clock" href="/market-data/chainlink-twap">
+    Stream 30-second and 60-second time-weighted crypto prices.
+  </Card>
 </CardGroup>

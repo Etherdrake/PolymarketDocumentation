@@ -6,7 +6,6 @@
 
 > Get all instruments.
 
-<Badge color="gray" size="md">Request Weight: **2**</Badge>
 
 
 ## OpenAPI
@@ -35,7 +34,11 @@ paths:
           in: query
           required: false
           schema:
-            $ref: '#/components/schemas/instrument_id'
+            type: integer
+            format: int64
+            minimum: 0
+            maximum: 4294967295
+            description: Instrument ID
         - name: instrument_type
           in: query
           required: false
@@ -64,9 +67,6 @@ paths:
       security: []
 components:
   schemas:
-    instrument_id:
-      type: integer
-      description: Instrument ID
     instrument_type:
       type: string
       description: Instrument type
@@ -86,6 +86,7 @@ components:
         - instrument_id
         - instrument_type
         - category
+        - isolated_only
         - symbol
         - base_asset
         - quote_asset
@@ -100,6 +101,7 @@ components:
         - max_limit_notional
         - max_leverage
         - risk_tiers
+        - ui_live_time
       properties:
         instrument_id:
           $ref: '#/components/schemas/instrument_id'
@@ -107,6 +109,8 @@ components:
           $ref: '#/components/schemas/instrument_type'
         category:
           $ref: '#/components/schemas/category'
+        isolated_only:
+          $ref: '#/components/schemas/isolated_only'
         symbol:
           $ref: '#/components/schemas/symbol'
         base_asset:
@@ -137,6 +141,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RiskTier'
+        ui_live_time:
+          $ref: '#/components/schemas/ui_live_time'
+    instrument_id:
+      type: integer
+      description: Instrument ID
+    isolated_only:
+      type: boolean
+      description: >-
+        Whether the instrument supports only isolated account margin. When
+        false, both cross and isolated account margin modes are supported.
     symbol:
       type: string
       description: Instrument symbol
@@ -202,6 +216,16 @@ components:
           $ref: '#/components/schemas/lower_bound'
         max_leverage:
           $ref: '#/components/schemas/max_leverage'
+    ui_live_time:
+      type: integer
+      nullable: true
+      minimum: 0
+      maximum: 253402300799000
+      description: >-
+        Unix timestamp in milliseconds when first-party interfaces may display
+        the instrument. A null value means hidden. This advisory field does not
+        affect trading availability.
+      example: 1786032000000
     Error400:
       title: Error400
       type: object
@@ -252,11 +276,13 @@ components:
         (`401`/`404`/`429`/`500`) this is a stable, machine-readable snake_case
         identifier that is part of the API contract and safe to branch on, e.g.
         `insufficient_margin`, `insufficient_balance`, `order_not_found`,
-        `reduce_only_invalid`, `unauthorized`, `not_found`. For `400` it is a
-        human-readable validation detail whose wording may change. See the Error
-        handling guide for the domain identifiers. (Post-only / Fill-or-Kill
-        outcomes are order statuses such as `post_only_rejected`, not
-        rejections.)
+        `reduce_only_invalid`, `price_outside_bounds`, `position_not_found`,
+        `invalid_margin_mode`, `invalid_margin_amount`,
+        `margin_below_required_initial`, `account_liquidating`, `unauthorized`,
+        `not_found`. For `400` it is a human-readable validation detail whose
+        wording may change. See the Error handling guide for the domain
+        identifiers. (Post-only / Fill-or-Kill outcomes are order statuses such
+        as `post_only_rejected`, not rejections.)
       example: insufficient_margin
   responses:
     Error400Response:

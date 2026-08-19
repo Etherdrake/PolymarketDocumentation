@@ -438,6 +438,25 @@ authenticated wallet.
     }
     ```
 
+    To narrow the results to a single state, pass a `withdrawalStatus` filter with
+    a `PerpsKnownWithdrawalStatus` member. The filter accepts one status per
+    request. For example, list the withdrawals that are still pending:
+
+    ```ts theme={null}
+    import { PerpsKnownWithdrawalStatus } from "@polymarket/client";
+
+    const pages = session.listWithdrawals({
+      withdrawalStatus: PerpsKnownWithdrawalStatus.Pending,
+    });
+
+    for await (const page of pages) {
+      // page.items: PerpsWithdrawal[]
+    }
+    ```
+
+    For what each status means, see
+    [Withdrawals](/perps/account-management#withdrawals).
+
     For more details on authenticated sessions, see [Authenticated
     Sessions](/perps/authenticated-sessions).
   </Tab>
@@ -464,6 +483,22 @@ authenticated wallet.
     finally:
         await session.close()
     ```
+
+    To narrow the results to a single state, pass a `withdrawal_status` filter.
+    The filter accepts one status per request: `"pending"`, `"confirmed"`,
+    `"removed"`, or `"failed"`. For example, list the withdrawals that are still
+    pending:
+
+    ```python theme={null}
+    pages = session.list_withdrawals(withdrawal_status="pending")
+
+    async for page in pages:
+        # page.items: tuple[PerpsWithdrawal, ...]
+        pass
+    ```
+
+    For what each status means, see
+    [Withdrawals](/perps/account-management#withdrawals).
 
     For more details on authenticated sessions, see [Authenticated
     Sessions](/perps/authenticated-sessions).
@@ -636,6 +671,9 @@ authenticated wallet.
           -H "polymarket-secret: <proxy_secret>" \
           --data-urlencode "withdrawal_status=pending"
         ```
+
+        The `withdrawal_status` filter accepts `pending`, `confirmed`, `removed`, or
+        `failed`.
 
         For more details on proxy credentials and private account-read headers, see
         [Authenticated Sessions](/perps/authenticated-sessions).

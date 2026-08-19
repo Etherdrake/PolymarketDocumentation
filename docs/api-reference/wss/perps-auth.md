@@ -79,7 +79,7 @@ operations:
             id:
               type: integer
               description: Correlation ID for request-response matching
-              x-parser-schema-id: <anonymous-schema-134>
+              x-parser-schema-id: <anonymous-schema-202>
             req:
               type: string
               description: Request type
@@ -87,7 +87,7 @@ operations:
                 - post
                 - sub
                 - unsub
-              x-parser-schema-id: <anonymous-schema-135>
+              x-parser-schema-id: <anonymous-schema-203>
             op:
               type: object
               required:
@@ -98,7 +98,7 @@ operations:
                   type: string
                   enum:
                     - auth
-                  x-parser-schema-id: <anonymous-schema-137>
+                  x-parser-schema-id: <anonymous-schema-205>
                 args:
                   type: object
                   required:
@@ -109,18 +109,18 @@ operations:
                       type: string
                       description: Proxy address in hex format
                       example: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'
-                      x-parser-schema-id: <anonymous-schema-139>
+                      x-parser-schema-id: <anonymous-schema-207>
                     secret:
                       type: string
                       description: API secret
                       example: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-                      x-parser-schema-id: <anonymous-schema-140>
-                  x-parser-schema-id: <anonymous-schema-138>
-              x-parser-schema-id: <anonymous-schema-136>
+                      x-parser-schema-id: <anonymous-schema-208>
+                  x-parser-schema-id: <anonymous-schema-206>
+              x-parser-schema-id: <anonymous-schema-204>
           required:
             - req
             - op
-          x-parser-schema-id: <anonymous-schema-133>
+          x-parser-schema-id: <anonymous-schema-201>
         title: Auth
         description: Authenticate this WebSocket connection for private channels
         example: |-
@@ -182,12 +182,15 @@ operations:
                       machine-readable snake_case identifier that is part of the
                       API contract and safe to branch on, e.g.
                       `insufficient_margin`, `insufficient_balance`,
-                      `order_not_found`, `reduce_only_invalid`, `unauthorized`,
-                      `not_found`. For `400` it is a human-readable validation
-                      detail whose wording may change. See the Error handling
-                      guide for the domain identifiers. (Post-only /
-                      Fill-or-Kill outcomes are order statuses such as
-                      `post_only_rejected`, not rejections.)
+                      `order_not_found`, `reduce_only_invalid`,
+                      `price_outside_bounds`, `position_not_found`,
+                      `invalid_margin_mode`, `invalid_margin_amount`,
+                      `margin_below_required_initial`, `account_liquidating`,
+                      `unauthorized`, `not_found`. For `400` it is a
+                      human-readable validation detail whose wording may change.
+                      See the Error handling guide for the domain identifiers.
+                      (Post-only / Fill-or-Kill outcomes are order statuses such
+                      as `post_only_rejected`, not rejections.)
                     required: true
         headers: []
         jsonPayloadSchema:
@@ -197,7 +200,7 @@ operations:
             id:
               type: integer
               description: Correlation ID for request-response matching
-              x-parser-schema-id: <anonymous-schema-142>
+              x-parser-schema-id: <anonymous-schema-210>
             data:
               oneOf:
                 - type: object
@@ -208,8 +211,8 @@ operations:
                       type: string
                       enum:
                         - ok
-                      x-parser-schema-id: <anonymous-schema-145>
-                  x-parser-schema-id: <anonymous-schema-144>
+                      x-parser-schema-id: <anonymous-schema-213>
+                  x-parser-schema-id: <anonymous-schema-212>
                 - type: object
                   required:
                     - status
@@ -219,7 +222,7 @@ operations:
                       type: string
                       enum:
                         - err
-                      x-parser-schema-id: <anonymous-schema-147>
+                      x-parser-schema-id: <anonymous-schema-215>
                     error:
                       type: string
                       description: >-
@@ -229,6 +232,9 @@ operations:
                         the API contract and safe to branch on, e.g.
                         `insufficient_margin`, `insufficient_balance`,
                         `order_not_found`, `reduce_only_invalid`,
+                        `price_outside_bounds`, `position_not_found`,
+                        `invalid_margin_mode`, `invalid_margin_amount`,
+                        `margin_below_required_initial`, `account_liquidating`,
                         `unauthorized`, `not_found`. For `400` it is a
                         human-readable validation detail whose wording may
                         change. See the Error handling guide for the domain
@@ -236,12 +242,12 @@ operations:
                         order statuses such as `post_only_rejected`, not
                         rejections.)
                       example: insufficient_margin
-                      x-parser-schema-id: <anonymous-schema-148>
-                  x-parser-schema-id: <anonymous-schema-146>
-              x-parser-schema-id: <anonymous-schema-143>
+                      x-parser-schema-id: <anonymous-schema-216>
+                  x-parser-schema-id: <anonymous-schema-214>
+              x-parser-schema-id: <anonymous-schema-211>
           required:
             - data
-          x-parser-schema-id: <anonymous-schema-141>
+          x-parser-schema-id: <anonymous-schema-209>
         title: Auth Response
         description: Authentication result
         example: |-

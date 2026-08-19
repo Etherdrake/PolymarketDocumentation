@@ -77,6 +77,14 @@ paths:
             type: boolean
             default: false
         - in: query
+          name: includeArchived
+          schema:
+            type: boolean
+            default: false
+          description: >-
+            Include positions in archived markets that are still active.
+            Archived positions are excluded by default.
+        - in: query
           name: limit
           schema:
             type: integer
@@ -172,6 +180,21 @@ components:
           type: number
         initialValue:
           type: number
+        grossInitialValue:
+          type: number
+          description: >-
+            Remaining entry basis including attributed BUY fees, at six-decimal
+            source precision. `initialValue` and `avgPrice` keep their
+            fee-exclusive semantics, so the fee-exclusive basis is
+            `grossInitialValue - entryFeesUsdc`. Optional: treat an omitted
+            field as unavailable rather than as zero.
+        entryFeesUsdc:
+          type: number
+          description: >-
+            Attributed BUY-fee component of `grossInitialValue`, at six-decimal
+            source precision. SELL fees are exit costs and are never included.
+            Returned as an explicit `0` when the fee component is zero.
+            Optional: treat an omitted field as unavailable rather than as zero.
         currentValue:
           type: number
         cashPnl:

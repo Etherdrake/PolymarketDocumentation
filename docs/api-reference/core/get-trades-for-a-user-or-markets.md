@@ -189,6 +189,9 @@ components:
           type: string
         icon:
           type: string
+          description: >-
+            Market artwork. Falls back to the market image, then to the parent
+            event's icon and image, when the market has no icon of its own.
         eventSlug:
           type: string
         outcome:
