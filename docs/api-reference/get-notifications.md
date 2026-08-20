@@ -1,3 +1,4 @@
+<!-- Source: https://docs.polymarket.com/api-reference/get-notifications.md -->
 > ## Documentation Index
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
@@ -20,7 +21,6 @@ not yet reached your target sequence, wait briefly and retry with the same
 since_seq.
 
 
-<Badge color="gray" size="md">Request Weight: **10**</Badge>
 
 
 ## OpenAPI

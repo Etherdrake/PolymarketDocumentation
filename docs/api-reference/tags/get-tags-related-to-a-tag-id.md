@@ -1,3 +1,4 @@
+<!-- Source: https://docs.polymarket.com/api-reference/tags/get-tags-related-to-a-tag-id.md -->
 > ## Documentation Index
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.

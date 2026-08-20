@@ -1,3 +1,4 @@
+<!-- Source: https://docs.polymarket.com/api-reference/update-isolated-margin.md -->
 > ## Documentation Index
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
@@ -24,7 +25,6 @@ sequencer freshness revalidation with
 rejects with `signature_already_used`.
 
 
-<Badge color="gray" size="md">Request Weight: **1**</Badge> <Badge color="gray" size="md">Action Weight: **1**</Badge>
 
 
 ## OpenAPI

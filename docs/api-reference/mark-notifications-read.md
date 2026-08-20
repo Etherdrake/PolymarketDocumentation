@@ -1,3 +1,4 @@
+<!-- Source: https://docs.polymarket.com/api-reference/mark-notifications-read.md -->
 > ## Documentation Index
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
@@ -9,7 +10,6 @@ cursor to mark everything up to and including that point. You can only
 mark your own notifications.
 
 
-<Badge color="gray" size="md">Request Weight: **2**</Badge>
 
 
 ## OpenAPI
