@@ -1,4 +1,3 @@
-<!-- Source: https://docs.polymarket.com/changelog/predictions.md -->
 > ## Documentation Index
 > Fetch the complete documentation index at: https://docs.polymarket.com/llms.txt
 > Use this file to discover all available pages before exploring further.
@@ -194,7 +193,7 @@
 
 <Update label="Feb 12, 2026" description="5-Minute Crypto Markets">
   * **5-minute crypto markets**: Launched with taker fees enabled. Fees follow the same curve as 15-minute crypto markets, peaking at 1.56% at 50% probability.
-  * **Maker Rebates**: Liquidity providers earn daily USDC rebates paid by taker fees, same as 15-minute crypto markets.
+  * **Maker Rebates**: Liquidity providers earn daily USDC rebates funded by taker fees, same as 15-minute crypto markets.
 </Update>
 
 <Update label="Feb 11, 2026" description="Taker Fees & Maker Rebates: NCAAB and Serie A">
@@ -255,7 +254,7 @@
 </Update>
 
 <Update label="July 23, 2025" description="Get Book(s) update">
-  * We're adding new fields to the `get-book` and `get-books` CLOB endpoints to include key market metadata that previously required separate queries.
+  * We’re adding new fields to the `get-book` and `get-books` CLOB endpoints to include key market metadata that previously required separate queries.
     * `min_order_size`
       * type: string
       * description: Minimum price increment.
@@ -268,7 +267,7 @@
 </Update>
 
 <Update label="June 3, 2025" description="New Batch Orders Endpoint">
-  * We're excited to roll out a highly requested feature: **order batching**. With this new endpoint, users can now submit up to five trades in a single request. To help you get started, we've included sample code demonstrating how to use it. Please see [Place Orders](/trading/place-orders) for more details.
+  * We’re excited to roll out a highly requested feature: **order batching**. With this new endpoint, users can now submit up to five trades in a single request. To help you get started, we’ve included sample code demonstrating how to use it. Please see [Place Orders](/trading/place-orders) for more details.
 </Update>
 
 <Update label="June 3, 2025" description="Change to /data/trades">
@@ -283,7 +282,7 @@
 </Update>
 
 <Update label="May 28, 2025" description="New FAK Order Type">
-  We're excited to introduce a new order type soon to be available to all users: Fill and Kill (FAK). FAK orders behave similarly to the well-known Fill or Kill (FOK) orders, but with a key difference:
+  We’re excited to introduce a new order type soon to be available to all users: Fill and Kill (FAK). FAK orders behave similarly to the well-known Fill or Kill (FOK) orders, but with a key difference:
 
   * FAK will fill as many shares as possible immediately at your specified price, and any remaining unfilled portion will be canceled.
   * Unlike FOK, which requires the entire order to fill instantly or be canceled, FAK is more flexible and aims to capture partial fills if possible.
